@@ -1,0 +1,17 @@
+langchain == 0.3.27
+langchain-core == 0.3.78  
+langsmith >= 0.1.63
+
+# LangGraph related
+langgraph >= 0.6.0
+langgraph-sdk >= 0.1.66
+langgraph-checkpoint >= 2.0.23
+
+# Fireworks / downstream
+langchain-fireworks == 0.2.0  
+
+# Google / Gemini / GenAI
+langchain-google-genai == 2.0.10
+google-generativeai == 0.8.5
+google-ai-generativelanguage == 0.6.15
+
