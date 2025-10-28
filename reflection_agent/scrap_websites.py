@@ -152,8 +152,8 @@ def scrape_with_timesjobs(urls: List[str]) -> List[dict]:
         print(f"--- Scraping search: {base_url.split('?')[1][:50]}... ---")
         current_page = 1
         total_jobs_from_url = 0
-        
-        while True:
+        i = 0
+        while i < 10:
             # Construct the URL for the current page
             paginated_url = f"{base_url}&curPage={current_page}"
             
@@ -199,6 +199,7 @@ def scrape_with_timesjobs(urls: List[str]) -> List[dict]:
             
             # Be polite: add a small delay to avoid spamming the server
             time.sleep(1)
+            i += 1
         
         print(f"Total jobs from this URL: {total_jobs_from_url}")
     

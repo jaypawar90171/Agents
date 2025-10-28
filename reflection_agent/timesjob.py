@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import json
 from datetime import datetime
-import time  # Import time for a polite delay
+import time  
 
 def scrape_timesjobs_live(url):
     """Scrape live TimesJobs mobile site"""
@@ -66,7 +66,8 @@ for base_url in base_urls:
     print(f"--- Scraping search: {base_url.split('?')[1][:50]}... ---")
     current_page = 1
     
-    while True:
+    i = 0
+    while i < 10:
         # Construct the URL for the current page
         paginated_url = f"{base_url}&curPage={current_page}"
         
@@ -89,6 +90,7 @@ for base_url in base_urls:
         
         # Be polite: add a small delay to avoid spamming the server
         time.sleep(1) 
+        i += 1
 
 print(f"\n--- Total jobs found: {len(all_jobs)} ---")
 
