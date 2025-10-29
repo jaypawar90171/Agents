@@ -65,6 +65,7 @@ def generate_node(state: GraphState):
     })
     return {"messages": state["messages"] + [response]}
 
+# Create the reflection node
 def reflect_node(state: GraphState):
     response = reflection_chain.invoke({
         "messages": state["messages"]

@@ -17,6 +17,7 @@ from datetime import datetime
 load_dotenv()
 
 # Define State for our scraping workflow
+#typedict used to define the structure of the state that must follow the defined structure
 class ScrapingState(TypedDict):
     messages: List[BaseMessage]
     urls: List[str]
@@ -308,6 +309,7 @@ scraping_prompt = ChatPromptTemplate.from_messages([
     MessagesPlaceholder(variable_name="messages")
 ])
 
+# Scrape node that handles web scraping using TimesJobs scraper
 def scrape_node(state: ScrapingState):
     """Node that handles web scraping using TimesJobs scraper"""
     print("🔍 Starting scrape node...")
@@ -345,6 +347,7 @@ def scrape_node(state: ScrapingState):
     
     return state
 
+# Extract node that extracts structured data from scraped content
 def extract_node(state: ScrapingState):
     """Node that extracts structured data from scraped content"""
     print("📊 Starting extract node...")
@@ -397,7 +400,7 @@ print(app.get_graph().draw_mermaid())
 app.get_graph().print_ascii()
 
 if __name__ == "__main__":
-    print("🚀 Enhanced TimesJobs Scraping Agent")
+    print("TimesJobs Scraping Agent")
     print("=" * 60)
     
     initial_state = {
@@ -409,6 +412,7 @@ if __name__ == "__main__":
         "structured_data": []
     }
     
+    # Start the scraping workflow 
     print("Starting TimesJobs scraping workflow...")
     for event in app.stream(initial_state):
         for node, value in event.items():
