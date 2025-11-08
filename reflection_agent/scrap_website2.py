@@ -34,7 +34,7 @@ def scrape_timesjobs_live(url):
     }
     
     try:
-        print(f"🌐 Scraping URL: {url}")
+        print(f"Scraping URL: {url}")
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
         
@@ -45,7 +45,7 @@ def scrape_timesjobs_live(url):
         with open("debug_page.html", "w", encoding="utf-8") as f:
             f.write(str(soup))
         
-        print("🔍 Analyzing page structure...")
+        print("Analyzing page structure...")
         
         # METHOD 1: Look for job listing containers based on actual HTML structure
         # Common patterns in job portals
@@ -68,16 +68,16 @@ def scrape_timesjobs_live(url):
         for selector in container_selectors:
             containers = soup.select(selector)
             if containers:
-                print(f"✅ Found {len(containers)} elements with selector: {selector}")
+                print(f"Found {len(containers)} elements with selector: {selector}")
                 job_containers.extend(containers)
         
         # If no specific containers found, look for any divs with substantial content
         if not job_containers:
-            print("🔄 No specific job containers found. Looking for content-rich divs...")
+            print("No specific job containers found. Looking for content-rich divs...")
             all_divs = soup.find_all('div')
             # Filter divs that likely contain job data (have reasonable text length and structure)
             job_containers = [div for div in all_divs if 100 < len(div.get_text(strip=True)) < 2000]
-            print(f"🔄 Found {len(job_containers)} potential job containers")
+            print(f"Found {len(job_containers)} potential job containers")
         
         # Remove duplicates
         job_containers = list(set(job_containers))
@@ -102,22 +102,22 @@ def scrape_timesjobs_live(url):
                     # Validate this looks like a real job
                     if is_valid_job(job_data):
                         jobs.append(job_data)
-                        print(f"📝 Found job: {job_data['title']} at {job_data['company']}")
+                        print(f"Found job: {job_data['title']} at {job_data['company']}")
                 
             except Exception as e:
-                print(f"❌ Error parsing container: {e}")
+                print(f"Error parsing container: {e}")
                 continue
         
         # METHOD 2: If no jobs found, try parsing the entire page structure
         if not jobs:
-            print("🔄 Trying full page analysis...")
+            print("Trying full page analysis...")
             jobs = parse_full_page_structure(soup, url)
         
-        print(f"✅ Found {len(jobs)} total jobs")
+        print(f"Found {len(jobs)} total jobs")
         return jobs
         
     except Exception as e:
-        print(f"❌ Error scraping {url}: {e}")
+        print(f"Error scraping {url}: {e}")
         return []
 
 def extract_job_data(container, base_url):
@@ -312,11 +312,11 @@ scraping_prompt = ChatPromptTemplate.from_messages([
 # Scrape node that handles web scraping using TimesJobs scraper
 def scrape_node(state: ScrapingState):
     """Node that handles web scraping using TimesJobs scraper"""
-    print("🔍 Starting scrape node...")
+    print(" Starting scrape node...")
     
     # If we don't have URLs yet, generate them
     if not state.get("urls") or len(state["urls"]) == 0:
-        print("📝 Generating URLs from user query...")
+        print("Generating URLs from user query...")
         user_query = state["messages"][-1].content
         
         # Use simpler, more direct URLs
@@ -327,11 +327,11 @@ def scrape_node(state: ScrapingState):
             "https://m.timesjobs.com/mobile/jobs-search-result.html?txtKeywords=web+developer",
             "https://m.timesjobs.com/mobile/jobs-search-result.html?txtKeywords=full+stack+developer"
         ]
-        print(f"🎯 Using {len(state['urls'])} TimesJobs URLs to scrape")
+        print(f" Using {len(state['urls'])} TimesJobs URLs to scrape")
     
     # Scrape all URLs using TimesJobs scraper
     if state["urls"] and (not state.get("raw_data") or len(state.get("raw_data", [])) == 0):
-        print("🌐 Starting web scraping...")
+        print(" Starting web scraping...")
         scraped_results = scrape_with_timesjobs(state["urls"])
         state["raw_data"] = scraped_results
         
@@ -350,7 +350,7 @@ def scrape_node(state: ScrapingState):
 # Extract node that extracts structured data from scraped content
 def extract_node(state: ScrapingState):
     """Node that extracts structured data from scraped content"""
-    print("📊 Starting extract node...")
+    print(" Starting extract node...")
     
     if state.get("raw_data") and len(state["raw_data"]) > 0:
         new_structured_data = []
@@ -372,7 +372,7 @@ def extract_node(state: ScrapingState):
                     "scraping_status": "success"
                 }
                 new_structured_data.append(structured_info)
-                print(f"✅ Extracted: {job_data['title'][:50]}...")
+                print(f" Extracted: {job_data['title'][:50]}...")
         
         state["structured_data"] = new_structured_data
         
@@ -383,7 +383,7 @@ def extract_node(state: ScrapingState):
             "structured_data": state["structured_data"]
         }
     else:
-        print("❌ No raw data available for extraction")
+        print(" No raw data available for extraction")
     
     return state
 
@@ -418,6 +418,6 @@ if __name__ == "__main__":
         for node, value in event.items():
             if value.get('messages'):
                 last_msg = value['messages'][-1]
-                print(f"🟢 {node.upper()}: {last_msg.content}")
+                print(f" {node.upper()}: {last_msg.content}")
     
-    print("\n✅ Workflow completed!")
+    print("\n Workflow completed!")
