@@ -42,7 +42,7 @@ def tool_router(state: childState):
     else:
         return END
     
-tool_node = ToolNode(tools=tools);
+tool_node = ToolNode(tools=tools)
 
 subgraph = StateGraph(childState)
 

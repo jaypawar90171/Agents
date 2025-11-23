@@ -28,7 +28,7 @@ def setup_driver():
     })
     return driver
 
-def scrape_foundit_paginated(keyword, location=None, max_pages=5):
+def scrape_foundit_paginated(keyword, location=None, max_pages=2):
     driver = setup_driver()
     jobs_data = []
 
@@ -48,7 +48,7 @@ def scrape_foundit_paginated(keyword, location=None, max_pages=5):
         print(f"📄 Page Title: {driver.title}")
 
         current_page = 1
-        while current_page <= max_pages:
+        while current_page <= 2:
             print(f"⏳ Waiting for jobs to load on page {current_page}...")
             try:
                 WebDriverWait(driver, 20).until(

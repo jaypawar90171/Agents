@@ -34,7 +34,7 @@ def setup_driver():
         pass
     return driver
 
-def scrape_foundit_paginated(keyword: str, location: str = None, max_pages: int = 5) -> List[Dict[str, str]]:
+def scrape_foundit_paginated(keyword: str, location: str = None, max_pages: int = 3) -> List[Dict[str, str]]:
     """
     Returns a list of dicts: {'Job Title': ..., 'Link': ...}
     """
@@ -54,7 +54,7 @@ def scrape_foundit_paginated(keyword: str, location: str = None, max_pages: int 
         driver.get(url)
         time.sleep(2)
         current_page = 1
-        while current_page <= max_pages:
+        while current_page <= 1:
             try:
                 WebDriverWait(driver, 20).until(
                     EC.presence_of_element_located((By.XPATH,
