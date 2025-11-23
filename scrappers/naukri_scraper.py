@@ -82,7 +82,7 @@ class NaukriScraper:
                     for element in elements:
                         if element.is_displayed():
                             self.driver.execute_script("arguments[0].click();", element)
-                            print(f"✅ Closed popup with selector: {selector}")
+                            print(f" Closed popup with selector: {selector}")
                             time.sleep(1)
                 except:
                     continue
@@ -98,7 +98,7 @@ class NaukriScraper:
                 pass
                 
         except Exception as e:
-            print(f"⚠️ Popup handling issue: {e}")
+            print(f" Popup handling issue: {e}")
 
     def smart_scroll(self):
         """Smart scrolling to load dynamic content"""
@@ -126,13 +126,13 @@ class NaukriScraper:
 
     def scrape_page(self, url):
         try:
-            print(f"🌐 Loading URL: {url}")
+            print(f" Loading URL: {url}")
             self.driver.get(url)
             time.sleep(random.uniform(3, 5))
             
             # Debug info
-            print(f"📄 Page title: {self.driver.title}")
-            print(f"🔗 Current URL: {self.driver.current_url}")
+            print(f" Page title: {self.driver.title}")
+            print(f" Current URL: {self.driver.current_url}")
             
             # Close popups
             self.close_popups()
@@ -145,11 +145,11 @@ class NaukriScraper:
             try:
                 wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, ".jobTuple, .srp-jobtuple, [data-job-id], .tuple")))
             except TimeoutException:
-                print("❌ No job listings found with common selectors")
+                print(" No job listings found with common selectors")
                 # Save page source for debugging
                 with open("naukri_debug.html", "w", encoding="utf-8") as f:
                     f.write(self.driver.page_source)
-                print("💾 Saved page source to naukri_debug.html for inspection")
+                print(" Saved page source to naukri_debug.html for inspection")
                 return
 
             page_source = self.driver.page_source
@@ -159,10 +159,10 @@ class NaukriScraper:
             job_containers = soup.select(".jobTuple, .srp-jobtuple, [data-job-id], .tuple, .list")
             
             if not job_containers:
-                print("❌ No job containers found with any selector")
+                print(" No job containers found with any selector")
                 return
                 
-            print(f"🔍 Found {len(job_containers)} job containers")
+            print(f" Found {len(job_containers)} job containers")
 
             for container in job_containers[:25]:  # Limit per page
                 try:
@@ -225,18 +225,18 @@ class NaukriScraper:
 
                     if title != "N/A" and company != "N/A":
                         self.jobs.append(job_data)
-                        print(f"✅ Scraped: {title[:40]}... at {company} | {location}")
+                        print(f" Scraped: {title[:40]}... at {company} | {location}")
 
                 except Exception as e:
-                    print(f"⚠️ Error parsing job container: {e}")
+                    print(f" Error parsing job container: {e}")
                     continue
 
-            print(f"📊 Page completed: {len(job_containers)} containers processed")
+            print(f"Page completed: {len(job_containers)} containers processed")
 
         except TimeoutException:
-            print(f"❌ Timeout loading {url}")
+            print(f"Timeout loading {url}")
         except Exception as e:
-            print(f"❌ Error scraping {url}: {e}")
+            print(f"Error scraping {url}: {e}")
 
     def scrape_multiple_pages(self, max_pages=3):
         """Scrape multiple pages with improved pagination"""
@@ -250,7 +250,7 @@ class NaukriScraper:
                     current_url = f"{self.base_url}-{page}"
                 
                 print(f"\n{'='*50}")
-                print(f"📖 Scraping Page {page}: {current_url}")
+                print(f"Scraping Page {page}: {current_url}")
                 print(f"{'='*50}")
                 
                 self.scrape_page(current_url)
@@ -261,7 +261,7 @@ class NaukriScraper:
                 time.sleep(delay)
                 
         except Exception as e:
-            print(f"❌ Error in multi-page scraping: {e}")
+            print(f"Error in multi-page scraping: {e}")
         finally:
             if self.driver:
                 self.driver.quit()
@@ -276,7 +276,7 @@ class NaukriScraper:
             print(f"\n🎉 Successfully saved {len(self.jobs)} jobs to {filename}")
             
             # Print summary
-            print(f"\n📈 Summary:")
+            print(f"\nSummary:")
             print(f"   Total jobs: {len(self.jobs)}")
             print(f"   Unique companies: {df['company'].nunique()}")
             print(f"   Locations: {df['location'].unique()[:5]}")  # Show first 5 locations
@@ -287,7 +287,7 @@ class NaukriScraper:
         """Get scraping statistics"""
         if self.jobs:
             df = pd.DataFrame(self.jobs)
-            print(f"\n📊 Scraping Statistics:")
+            print(f"\nScraping Statistics:")
             print(f"   Total jobs scraped: {len(self.jobs)}")
             print(f"   Unique companies: {df['company'].nunique()}")
             print(f"   Most common locations: {df['location'].value_counts().head(3).to_dict()}")
@@ -301,7 +301,7 @@ if __name__ == "__main__":
     
     for query in queries[:1]: 
         print(f"\n{'#'*60}")
-        print(f"🚀 Starting Naukri Scraper for: {query}")
+        print(f"Starting Naukri Scraper for: {query}")
         print(f"{'#'*60}")
         
         scraper = NaukriScraper(query)

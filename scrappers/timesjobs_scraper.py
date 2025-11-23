@@ -38,7 +38,7 @@ def scrape_timesjobs_live(url):
         for selector in job_selectors:
             job_listings = soup.find_all('div', class_=selector)
             if job_listings:
-                print(f"✅ Found {len(job_listings)} jobs using selector: {selector}")
+                print(f"Found {len(job_listings)} jobs using selector: {selector}")
                 break
         
         if not job_listings:
@@ -46,7 +46,7 @@ def scrape_timesjobs_live(url):
             job_listings = soup.find_all('div', {'data-jobid': True})
             if not job_listings:
                 job_listings = soup.find_all('div', class_=re.compile(r'srp|job|tuple'))
-                print(f"🔍 Found {len(job_listings)} jobs using regex selector")
+                print(f"Found {len(job_listings)} jobs using regex selector")
         
         for job in job_listings:
             try:
@@ -137,25 +137,25 @@ def scrape_timesjobs_live(url):
                 # Only add valid jobs
                 if title != "N/A" and company != "N/A":
                     jobs.append(job_data)
-                    print(f"✅ Found: {title[:40]}... at {company}")
+                    print(f"Found: {title[:40]}... at {company}")
                 
             except Exception as e:
-                print(f"⚠️ Error parsing job: {e}")
+                print(f"Error parsing job: {e}")
                 continue
                 
         return jobs
         
     except requests.exceptions.RequestException as e:
-        print(f"❌ Network error scraping {url}: {e}")
+        print(f"Network error scraping {url}: {e}")
         return []
     except Exception as e:
-        print(f"❌ Error scraping {url}: {e}")
+        print(f"Error scraping {url}: {e}")
         return []
 
 def save_to_csv(jobs, filename=None):
     """Save jobs data to CSV file"""
     if not jobs:
-        print("❌ No jobs to save.")
+        print("No jobs to save.")
         return None
     
     if filename is None:
@@ -169,23 +169,23 @@ def save_to_csv(jobs, filename=None):
         df['skills'] = df['skills'].apply(lambda x: ', '.join(x) if isinstance(x, list) else x)
         
         df.to_csv(filename, index=False, encoding='utf-8')
-        print(f"💾 Saved {len(jobs)} jobs to {filename}")
+        print(f"Saved {len(jobs)} jobs to {filename}")
         
         # Print summary
-        print(f"\n📊 Summary:")
+        print(f"\nSummary:")
         print(f"   Total jobs: {len(jobs)}")
         print(f"   Unique companies: {df['company'].nunique()}")
         print(f"   Locations: {df['location'].value_counts().head(3).to_dict()}")
         
         return filename
     except Exception as e:
-        print(f"❌ Error saving to CSV: {e}")
+        print(f"Error saving to CSV: {e}")
         return None
 
 def save_to_excel(jobs, filename=None):
     """Save jobs data to Excel file with multiple sheets"""
     if not jobs:
-        print("❌ No jobs to save.")
+        print("No jobs to save.")
         return None
     
     if filename is None:
@@ -213,7 +213,7 @@ def save_to_excel(jobs, filename=None):
             skills_count.columns = ['Skill', 'Count']
             skills_count.to_excel(writer, sheet_name='Skills_Analysis', index=False)
         
-        print(f"💾 Saved to Excel: {filename}")
+        print(f"Saved to Excel: {filename}")
         return filename
         
     except Exception as e:
@@ -239,8 +239,8 @@ def main():
     # Loop through each search URL
     for i, base_url in enumerate(base_urls):
         print(f"\n{'='*60}")
-        print(f"🔍 Scraping URL {i+1}/{len(base_urls)}")
-        print(f"📝 Search: {base_url.split('?')[1][:50]}...")
+        print(f"Scraping URL {i+1}/{len(base_urls)}")
+        print(f"Search: {base_url.split('?')[1][:50]}...")
         print(f"{'='*60}")
         
         current_page = 1
@@ -251,7 +251,7 @@ def main():
             # Construct the URL for the current page
             paginated_url = f"{base_url}&curPage={current_page}"
             
-            print(f"📄 Scraping page {current_page}: {paginated_url}")
+            print(f"Scraping page {current_page}: {paginated_url}")
             jobs = scrape_timesjobs_live(paginated_url)
             
             if not jobs:
@@ -259,7 +259,7 @@ def main():
                 break
                 
             all_jobs.extend(jobs)
-            print(f"✅ Found {len(jobs)} jobs on page {current_page}")
+            print(f"Found {len(jobs)} jobs on page {current_page}")
             
             # Move to the next page
             current_page += 1
@@ -268,24 +268,24 @@ def main():
             # Be polite: add delay to avoid spamming the server
             if pages_scraped < max_pages_per_url:
                 delay = 2  # seconds
-                print(f"⏳ Waiting {delay} seconds before next page...")
+                print(f"Waiting {delay} seconds before next page...")
                 time.sleep(delay)
         
-        print(f"📊 Completed URL {i+1}: {pages_scraped} pages, {len([j for j in all_jobs if j.get('source_url') == base_url])} total jobs from this search")
+        print(f"Completed URL {i+1}: {pages_scraped} pages, {len([j for j in all_jobs if j.get('source_url') == base_url])} total jobs from this search")
         
         # Delay between different search URLs
         if i < len(base_urls) - 1:
             delay_between_searches = 3
-            print(f"🕒 Waiting {delay_between_searches} seconds before next search...")
+            print(f"Waiting {delay_between_searches} seconds before next search...")
             time.sleep(delay_between_searches)
 
     print(f"\n{'='*60}")
     print(f"🎉 SCRAPING COMPLETED!")
     print(f"{'='*60}")
-    print(f"📊 Total jobs found: {len(all_jobs)}")
+    print(f"Total jobs found: {len(all_jobs)}")
     
     if not all_jobs:
-        print("❌ No jobs were scraped. Please check:")
+        print("No jobs were scraped. Please check:")
         print("   - Internet connection")
         print("   - URL accessibility")
         print("   - CSS selectors (might need updating)")
@@ -299,7 +299,7 @@ def main():
     
     # Print sample of scraped data
     print(f"\n{'='*60}")
-    print("📋 SAMPLE OF SCRAPED JOBS (First 5):")
+    print("SAMPLE OF SCRAPED JOBS (First 5):")
     print(f"{'='*60}")
     
     for i, job in enumerate(all_jobs[:5]):

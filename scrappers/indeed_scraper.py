@@ -46,7 +46,7 @@ def generate_indeed_urls(query: str, num_pages: int = 5) -> List[Dict[str, str]]
     for page in range(1, num_pages + 1):
         url = f"{base_url}&start={(page-1)*10}"  # Indeed pagination uses start=0,10,20,...
         urls.append({"site": "indeed", "url": url})
-    print(f"🎯 Generated {len(urls)} URLs for Indeed")
+    print(f" Generated {len(urls)} URLs for Indeed")
     return urls
 
 def init_driver():
