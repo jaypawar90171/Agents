@@ -1,4 +1,3 @@
-# foundit_scrapper2.py
 import csv
 import requests
 from bs4 import BeautifulSoup
@@ -132,11 +131,11 @@ def scrape_foundit(csv_path: str = './foundit_jobs.csv',
             return results
 
     total_urls = len(url_list)
-    print(f"\n📊 Total URLs to process: {total_urls}")
+    print(f"\n Total URLs to process: {total_urls}")
 
     for idx, url in enumerate(url_list, 1):
         try:
-            print(f"[{idx}/{total_urls}] 🔗 Scraping: {url}")
+            print(f"[{idx}/{total_urls}]  Scraping: {url}")
             
             response = requests.get(
                 url, 
@@ -155,14 +154,14 @@ def scrape_foundit(csv_path: str = './foundit_jobs.csv',
             
             if div:
                 content = div.get_text(separator=' ', strip=True)
-                print(f"   ✓ Content extracted: {len(content)} characters")
+                print(f"Content extracted: {len(content)} characters")
             else:
-                print(f"   ⚠ break-words div not found, trying article...")
+                print(f"break-words div not found, trying article...")
                 article = soup.find('article')
                 if article:
                     content = article.get_text(separator=' ', strip=True)
                 else:
-                    print(f"   ⚠ article not found, using body text...")
+                    print(f"article not found, using body text...")
                     if soup.body:
                         content = soup.body.get_text(separator=' ', strip=True)
             
@@ -170,7 +169,7 @@ def scrape_foundit(csv_path: str = './foundit_jobs.csv',
                 # Parse the extracted content to get structured details
                 job_details = extract_job_details_from_text(url, content)
                 results.append(job_details)
-                print(f"   ✓ Job: {job_details['job_title'][:40]}")
+                print(f"Job: {job_details['job_title'][:40]}")
             else:
                 # Return raw content
                 results.append({'url': url, 'content': content})
@@ -183,7 +182,7 @@ def scrape_foundit(csv_path: str = './foundit_jobs.csv',
             time.sleep(1.5)
             
         except requests.exceptions.Timeout:
-            print(f"   ✗ Timeout: {url}")
+            print(f"Timeout: {url}")
             results.append({
                 'url': url,
                 'job_title': 'Error',
@@ -195,7 +194,7 @@ def scrape_foundit(csv_path: str = './foundit_jobs.csv',
                 'description': 'Request timed out'
             })
         except requests.exceptions.RequestException as e:
-            print(f"   ✗ Request error: {url}")
+            print(f"Request error: {url}")
             results.append({
                 'url': url,
                 'job_title': 'Error',
@@ -219,7 +218,7 @@ def scrape_foundit(csv_path: str = './foundit_jobs.csv',
                 'description': str(e)
             })
 
-    print(f"\n✅ Completed scraping {len(results)} URLs\n")
+    print(f"\n Completed scraping {len(results)} URLs\n")
     return results
 
 
@@ -228,7 +227,7 @@ def format_jobs_output(jobs: List[Dict[str, str]]) -> str:
     Format job results nicely for display.
     """
     output = "\n" + "="*120 + "\n"
-    output += f"📋 FOUND {len(jobs)} JOB LISTINGS\n"
+    output += f" FOUND {len(jobs)} JOB LISTINGS\n"
     output += "="*120 + "\n\n"
     
     for i, job in enumerate(jobs, 1):
