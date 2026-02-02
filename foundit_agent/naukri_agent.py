@@ -310,7 +310,7 @@ if __name__ == "__main__":
         # Print Result
         print(f"Result: {json.dumps(extracted, indent=2)}")
         
-        # Save to file (optional)
+        # Save to file 
         with open("naukri_data.jsonl", "a") as f:
             f.write(json.dumps(extracted) + "\n")
 

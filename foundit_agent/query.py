@@ -6,7 +6,7 @@ import pymongo
 
 
 MONGO_URI = os.getenv("MONGO_URI")
-DB_NAME = os.getenv("DB_NAME", "foundit_records") # Second arg is a default fallback
+DB_NAME = os.getenv("DB_NAME", "foundit_records") 
 COLLECTION_NAME = os.getenv("COLLECTION_NAME", "jobs")
 MODEL_NAME = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
 
@@ -36,7 +36,12 @@ results = collection.aggregate([
             "job_title": 1,
             "company": 1,
             "job_url": 1,
-            "score": {"$meta": "vectorSearchScore"} # See how good the match is
+            "score": {"$meta": "vectorSearchScore"}
+        }
+    },
+    {
+        "$match": {
+            "score": {"$gte": 0.8}
         }
     }
 ])
