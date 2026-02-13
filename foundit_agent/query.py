@@ -4,9 +4,6 @@ from dotenv import load_dotenv
 import ollama
 import pymongo
 
-# --------------------------------------------------
-# LOAD ENV
-# --------------------------------------------------
 load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI")
@@ -16,23 +13,17 @@ COLLECTION_NAME = os.getenv("COLLECTION_NAME", "jobs")
 EMBED_MODEL = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
 CHAT_MODEL = "granite4"
 
-VECTOR_INDEX = "vector_index"
-VECTOR_PATH = "skills_embedding"   # 🔁 CHANGE LATER TO combined_embedding
-
 TOP_K = 5
 MIN_SCORE = 0.8
 MAX_CONTEXT_CHARS = 3500
 
-# --------------------------------------------------
-# DB CONNECTION
-# --------------------------------------------------
 try:
     client = pymongo.MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
     client.admin.command("ping")
     collection = client[DB_NAME][COLLECTION_NAME]
-    print(f"✅ Connected to database: {DB_NAME}")
+    print(f"Connected to database: {DB_NAME}")
 except Exception as e:
-    print(f"❌ Database connection failed: {e}")
+    print(f"Database connection failed: {e}")
     sys.exit(1)
 
 # --------------------------------------------------
@@ -57,8 +48,8 @@ def retrieve_documents(query_embedding):
     pipeline = [
         {
             "$vectorSearch": {
-                "index": VECTOR_INDEX,
-                "path": VECTOR_PATH,
+                "index": "foundit_job_vector_index",
+                "path": "job_embedding",
                 "queryVector": query_embedding,
                 "numCandidates": 20,
                 "limit": TOP_K
@@ -92,13 +83,13 @@ def build_context(docs):
     context = ""
     for i, doc in enumerate(docs, start=1):
         context += f"""
---- Job {i} ---
-Company: {doc.get('company', 'N/A')}
-Job Title: {doc.get('job_title', 'N/A')}
-Location: {doc.get('location', 'N/A')}
-Skills Required: {', '.join(doc.get('skills_required', []))}
-Summary: {doc.get('job_description_summary', 'N/A')}
-"""
+                --- Job {i} ---
+                Company: {doc.get('company', 'N/A')}
+                Job Title: {doc.get('job_title', 'N/A')}
+                Location: {doc.get('location', 'N/A')}
+                Skills Required: {', '.join(doc.get('skills_required', []))}
+                Summary: {doc.get('job_description_summary', 'N/A')}
+                """
     return context.strip()
 
 # --------------------------------------------------
@@ -119,12 +110,12 @@ def generate_answer(question: str, context: str):
     )
 
     user_prompt = f"""
-User Question:
-{question}
+            User Question:
+            {question}
 
-Relevant Job Context:
-{context}
-"""
+            Relevant Job Context:
+            {context}
+            """
 
     response = ollama.generate(
         model=CHAT_MODEL,
@@ -141,9 +132,9 @@ def rag_pipeline(user_query: str):
 
     # Step 0: Validate query
     if not validate_query(user_query):
-        return "❌ Please ask a meaningful job-related question.", []
+        return "Please ask a meaningful job-related question.", []
 
-    print(f"\n🔍 Searching Foundit for: {user_query}")
+    print(f"\nSearching Foundit for: {user_query}")
 
     # Step 1: Embed query
     query_embedding = embed_query(user_query)
@@ -152,7 +143,7 @@ def rag_pipeline(user_query: str):
     docs = retrieve_documents(query_embedding)
 
     if not docs:
-        return "❌ No relevant Foundit jobs found.", []
+        return "No relevant Foundit jobs found.", []
 
     # Step 3: Build context
     context = build_context(docs)
@@ -165,9 +156,7 @@ def rag_pipeline(user_query: str):
 
     return answer, docs
 
-# --------------------------------------------------
-# RUN
-# --------------------------------------------------
+
 if __name__ == "__main__":
 
     user_question = input("\nAsk a question about Foundit jobs: ")
@@ -176,17 +165,17 @@ if __name__ == "__main__":
         answer, sources = rag_pipeline(user_question)
 
         print("\n" + "=" * 60)
-        print("🤖 AI ASSISTANT ANSWER:\n")
+        print("AI ASSISTANT ANSWER:\n")
         print(answer)
         print("=" * 60)
 
-        print("\n📌 Sources:")
-        for src in sources:
-            print(
-                f"- {src['company']} | {src['job_title']} "
-                f"(Score: {src.get('score', 0):.3f})\n"
-                f"  Link: {src.get('job_url', 'N/A')}"
-            )
+        # print("\nSources:")
+        # for src in sources:
+        #     print(
+        #         f"- {src['company']} | {src['job_title']} "
+        #         f"(Score: {src.get('score', 0):.3f})\n"
+        #         f"  Link: {src.get('job_url', 'N/A')}"
+        #     )
 
     except Exception as e:
-        print(f"❌ Error occurred: {e}")
+        print(f"Error occurred: {e}")

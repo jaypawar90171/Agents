@@ -22,9 +22,9 @@ try:
     client = pymongo.MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
     client.admin.command("ping")
     collection = client[DB_NAME][COLLECTION_NAME]
-    print(f"✅ Connected to MongoDB: {DB_NAME}")
+    print(f" Connected to MongoDB: {DB_NAME}")
 except Exception as e:
-    print(f"❌ MongoDB Connection Error: {e}")
+    print(f" MongoDB Connection Error: {e}")
     sys.exit(1)
 
 # ---------------- RAG: CONTEXT BUILDER ----------------
@@ -35,13 +35,13 @@ def build_context(docs):
     context = ""
     for i, doc in enumerate(docs, start=1):
         context += f"""
---- Job {i} ---
-Company: {doc.get('company', 'N/A')}
-Job Title: {doc.get('job_title', 'N/A')}
-Location: {doc.get('location', 'N/A')}
-Skills Required: {', '.join(doc.get('skills_required', []))}
-Summary: {doc.get('job_description_summary', 'N/A')}
-"""
+                --- Job {i} ---
+                Company: {doc.get('company', 'N/A')}
+                Job Title: {doc.get('job_title', 'N/A')}
+                Location: {doc.get('location', 'N/A')}
+                Skills Required: {', '.join(doc.get('skills_required', []))}
+                Summary: {doc.get('job_description_summary', 'N/A')}
+                """
     return context.strip()
 
 # ---------------- RAG: GENERATION ----------------
@@ -57,12 +57,12 @@ def generate_answer(question, context):
     )
 
     user_prompt = f"""
-User Question:
-{question}
+                User Question:
+                {question}
 
-Relevant Job Context:
-{context}
-"""
+                Relevant Job Context:
+                {context}
+                """
 
     response = ollama.generate(
         model=CHAT_MODEL,
@@ -74,21 +74,20 @@ Relevant Job Context:
 
 # ---------------- MAIN RAG PIPELINE ----------------
 def rag_pipeline(user_query):
-    print(f"\n🔍 Searching for: {user_query}")
+    print(f"\nSearching for: {user_query}")
 
-    # 1️⃣ Embed the query
+    # 1️. Embed the query
     query_embedding = ollama.embeddings(
         model=EMBED_MODEL,
         prompt=user_query
     )["embedding"]
 
-    # 2️⃣ Vector search (CURRENTLY using skills_embedding)
-    # ⚠️ You will later replace this with combined_embedding
+    # 2️. Vector search
     pipeline = [
         {
             "$vectorSearch": {
-                "index": "vector_index",
-                "path": "skills_embedding",   # CHANGE LATER
+                "index": "naukri_job_vector_index",
+                "path": "job_embedding",  
                 "queryVector": query_embedding,
                 "numCandidates": 20,
                 "limit": TOP_K
@@ -116,12 +115,12 @@ def rag_pipeline(user_query):
     results = list(collection.aggregate(pipeline))
 
     if not results:
-        return "❌ No relevant job data found for your question.", []
+        return "No relevant job data found for your question.", []
 
-    # 3️⃣ Build context
+    # 3️. Build context
     context = build_context(results)
 
-    # 4️⃣ Generate grounded answer
+    # 4️. Generate grounded answer
     answer = generate_answer(user_query, context)
 
     return answer, results
@@ -134,13 +133,13 @@ if __name__ == "__main__":
         answer, sources = rag_pipeline(user_question)
 
         print("\n" + "=" * 60)
-        print("🤖 AI ASSISTANT ANSWER:\n")
+        print(" AI ASSISTANT ANSWER:\n")
         print(answer)
         print("=" * 60)
 
-        print("\n📌 Sources:")
-        for src in sources:
-            print(f"- {src['company']} | {src['job_title']} (Score: {src.get('score', 0):.3f})")
+        # print("\n Sources:")
+        # for src in sources:
+        #     print(f"- {src['company']} | {src['job_title']} (Score: {src.get('score', 0):.3f})")
 
     except Exception as e:
-        print(f"❌ Error occurred: {e}")
+        print(f" Error occurred: {e}")

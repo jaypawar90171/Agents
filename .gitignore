@@ -1,3 +1,9 @@
 .env
 venv
 __pycache__
+*.jsonl
+*.csv
+*.pdf
+*.pptx
+*.docx
+*.tldr
