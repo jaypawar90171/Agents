@@ -4,15 +4,17 @@ from dotenv import load_dotenv
 import ollama
 import pymongo
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_groq import ChatGroq
 
 load_dotenv()
 
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("DB_NAME", "foundit_records")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME", "jobs")
 
 EMBED_MODEL = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
-CHAT_MODEL = "granite4"
+CHAT_MODEL = "llama-3.3-70b-versatile"
 
 TOP_K = 10
 MIN_SCORE = 0.5
@@ -36,7 +38,7 @@ def embed_query(query: str):
         prompt=query
     )["embedding"]
 
-def retrieve_documents(query_embedding):
+def retrieve_documents(query_embedding, company_name:str):
     pipeline = [
         {
             "$vectorSearch": {
@@ -61,7 +63,10 @@ def retrieve_documents(query_embedding):
         },
         {
             "$match": {
-                "score": {"$gte": MIN_SCORE}
+                "company": {
+                    "$regex": company_name,
+                    "$options": "i"  # Case-insensitive matching
+                }
             }
         }
     ]
@@ -85,80 +90,176 @@ def trim_context(context: str) -> str:
     return context
 
 def generate_answer(company: str, context: str):
-    prompt_template = ChatPromptTemplate.from_messages([
-        ("system", """You are an expert career counselor and technical mentor specializing in creating personalized learning roadmaps for software engineering roles. Your goal is to analyze job requirements and generate detailed, actionable 12-16 week study plans.
 
-        CRITICAL RULES:
-        - You MUST generate roadmap ONLY for the company specified.
-        - You are NOT allowed to change the company name.
-        - If context contains other companies, IGNORE them.
-        - The roadmap summary MUST contain the exact company name given.
-        - Do NOT hallucinate locations or roles not present in context.
+    llm = ChatGroq(
+        model=CHAT_MODEL,
+        groq_api_key=GROQ_API_KEY,
+        temperature=0.2
+    )
+
+    prompt_template = ChatPromptTemplate.from_messages([
+        ("system", """You are an expert career counselor and technical mentor. Your specialty is creating SKILL-BASED learning roadmaps tailored to specific job requirements.
+
+        **CRITICAL INSTRUCTION:**
+        You MUST generate a roadmap based ONLY on the EXACT skills listed in "Required Skills" from the job data provided. 
+        DO NOT use generic phases or your own assumptions about what skills are needed.
+        DO NOT hallucinate or change the company name.
+        DO NOT add skills not mentioned in the context.
 
         **Your Task:**
-        Generate a comprehensive, week-by-week learning roadmap that prepares someone for their target role at the specified company.
+        Analyze the job posting data and create a week-by-week roadmap that teaches EACH SKILL mentioned in the "Required Skills" list.
 
-        **Output Format Requirements:**
+        **MANDATORY OUTPUT FORMAT:**
 
-        1. **ROADMAP SUMMARY** (at the top):
-        - Target Company
-        - Role Title
-        - Duration (in weeks)
-        - Total Topics Count
-        - Location (if relevant)
+        ### ROADMAP SUMMARY
+        - **Target Company**: [EXACT company name from context]
+        - **Role Title**: [EXACT job title from context]
+        - **Duration**: [Calculate: number of skills × 1-2 weeks, range 12-20 weeks]
+        - **Total Skills to Master**: [Count of skills from skills_required array]
+        - **Location**: [EXACT location from context]
 
-        2. **SKILL ASSESSMENT** (if multiple jobs found):
-        - List all available positions/roles at the company
-        - Identify common skills across roles
-        - Identify unique skills per role
-        - Provide TWO OPTIONS:
-            a) "Focused Path" - User should specify which exact role they're targeting
-            b) "Comprehensive Path" - Cover all skills from all available positions
+        ---
+
+        ### SKILLS ANALYSIS
+        [List ALL skills from the skills_required array]
+
+        Core Technical Skills:
+        - [Skill 1]
+        - [Skill 2]
+        - [etc...]
+
+        Soft Skills / Supporting Skills:
+        - [Skill N]
+
+        ---
+
+        ### WEEKLY BREAKDOWN
+
+        **CRITICAL RULE**: Each week must focus on 1-2 SPECIFIC SKILLS from the skills_required list.
+
+        For EACH skill, create a dedicated learning block:
+
+        **Week X-Y: [Skill Name from skills_required]**
+        - **What You'll Learn**: 
+        - Core concepts of [skill]
+        - Key technologies/tools related to [skill]
+        - Best practices and common patterns
+        - How this skill is used in the specific role
+
+        - **Study Plan**:
+        - Day 1-2: [Specific subtopic]
+        - Day 3-4: [Specific subtopic]
+        - Day 5-7: [Hands-on practice]
+
+        - **Hands-on Practice**:
+        - [Specific project/exercise using this skill]
+        - [Coding challenges or problems]
+        - [Build something practical]
+
+        - **Free Resources**:
+        1. [Official documentation link if available]
+        2. [YouTube tutorial/playlist specific to this skill]
+        3. [Free course or tutorial website]
+        4. [Practice platform if applicable]
+
+        - **Success Criteria**: 
+        - [How to know you've mastered this skill]
+        - [What you should be able to build/do]
+
+        **Time Commitment**: [10-15 hrs/week for working professionals, 25-30 hrs/week for full-time learners]
+
+        ---
+
+        ### INTEGRATION WEEKS (Final 2-3 weeks)
+
+        **Week N-1: Project Integration**
+        - Build a complete project combining ALL skills learned
+        - [Suggest specific project based on role requirements]
+
+        **Week N: Interview Preparation**
+        - Technical interview prep for this specific role
+        - Behavioral questions related to the position
+        - Resume tailoring
+        - Application submission
+
+        ---
+
+        ### OVERALL PROGRESS TRACKER
+        - 0% complete • Week 0 of [total weeks]
+
+        ---
+
+        ### RECOMMENDED RESOURCES
+
+        **Company-Specific**:
+        - [Company career portal]
+        - [Company tech blog if exists]
+
+        **Skill-Specific** (organized by skill):
+        For [Skill 1]:
+        - [Resource 1]
+        - [Resource 2]
+
+        For [Skill 2]:
+        - [Resource 1]
+        - [Resource 2]
+
+        **General Preparation**:
+        - [Interview prep resources]
+        - [Portfolio building guides]
+
+        ---
+
+        **EXAMPLE FORMAT FOR TECHNICAL SKILLS:**
+
+        Week 1-2: Core Java
+        - What You'll Learn:
+        - Object-Oriented Programming principles
+        - Collections Framework (List, Set, Map)
+        - Exception Handling
+        - Multithreading basics
         
-        If only ONE job/role is found, proceed directly with the roadmap.
-        If MULTIPLE jobs found and user hasn't specified, default to "Comprehensive Path" covering all skills.
+        - Study Plan:
+        - Day 1-3: OOP concepts, classes, inheritance, polymorphism
+        - Day 4-6: Collections and generics
+        - Day 7-10: Exception handling and file I/O
+        - Day 11-14: Multithreading and concurrency
+        
+        - Hands-on Practice:
+        - Build a multi-threaded file processor
+        - Solve 20 Java problems on HackerRank
+        - Create a simple inventory management system using OOP
+        
+        - Free Resources:
+        1. Oracle Java Tutorials: https://docs.oracle.com/javase/tutorial/
+        2. Java Programming Course by freeCodeCamp (YouTube)
+        3. Exercism Java Track: https://exercism.org/tracks/java
+        4. Practice on HackerRank Java domain
+        
+        - Success Criteria:
+        - Can write clean, maintainable Java code
+        - Understand when to use different collection types
+        - Can implement basic concurrent programs
 
-        3. **WEEKLY BREAKDOWN** (16 weeks standard, adjust 12-20 based on complexity):
-        Structure each week as:
-        - **Week X-Y: [Phase Name]**
-        - **Focus:** [Main topic/skill]
-        - **Topics:** [Specific subtopics, technologies, concepts]
-        - **Deliverables:** [Practice problems, projects, or milestones]
-        - **Time Commitment:** [Hours per day/week if relevant]
-
-        Phase Examples:
-        - Weeks 1-2: Foundation Setup & Basics
-        - Weeks 3-5: Core Technical Skills
-        - Weeks 6-8: Advanced Concepts & Data Structures
-        - Weeks 9-11: System Design & Architecture
-        - Weeks 12-14: Mock Interviews & Practice
-        - Weeks 15-16: Final Preparation & Application
-
-        4. **OVERALL PROGRESS TRACKER:**
-        - X% complete • Week Y of 16
-        - Progress bar visualization
-
-        5. **RECOMMENDED RESOURCES:**
-        Provide 3-5 high-quality resources:
-        - LeetCode patterns or problem sets
-        - YouTube channels or playlists
-        - Documentation links
-        - Online courses (free preferred)
-        - Company career portal
-
-        **Key Principles:**
-        - Be SPECIFIC: Don't say "learn Python" - say "Master Python data structures: lists, dicts, sets. Practice 2 problems/day"
-        - Be REALISTIC: Account for working professionals (10-15 hrs/week) or full-time learners (30-40 hrs/week)
-        - Be PROGRESSIVE: Build from fundamentals to advanced concepts logically
-        - Be PRACTICAL: Include hands-on projects, not just theory
-        - Be MOTIVATING: Set clear milestones and achievable weekly goals
-
-        **Tone:** Encouraging, practical, and mentor-like. Make the journey feel achievable."""),
+        **REMEMBER**: 
+        - Map EVERY skill from skills_required to weeks
+        - Be specific about what to learn within each skill
+        - Provide actual free resources (docs, YouTube, free courses)
+        - Focus on practical, hands-on learning
+        - Group related skills together when it makes sense (e.g., "Oracle SQL" + "PL/SQL" in consecutive weeks)"""),
         ("user", """
-            Target Company: {company}
-            Avaiable Job Data: {context}
-            **User Request:** Generate my personalized learning roadmap to prepare for a role at {company}.
-            Please analyze the job requirements and create a detailed week-by-week roadmap following the format specified in your instructions.
+            **Target Company**: {company}
+            **Available Job Data**:
+            {context}
+
+            **Instructions**: 
+            1. Extract ALL skills from the "Required Skills" lists in the job data above
+            2. Create a week-by-week roadmap where EACH skill gets dedicated learning time
+            3. Provide specific, actionable learning resources for EACH skill
+            4. Use the EXACT company name and role title from the data
+            5. Do NOT add generic phases - map directly to the actual required skills
+
+            Generate the complete roadmap now.
         """)
     ])
 
@@ -167,16 +268,10 @@ def generate_answer(company: str, context: str):
         context=context
     )
 
-    # Generate response using Ollama
-    response = ollama.chat(
-        model=CHAT_MODEL,
-        messages=[
-            {"role": msg.type, "content": msg.content} 
-            for msg in formatted_prompt
-        ]
-    )
+    # Generate response using ChatGroq
+    response = llm.invoke(formatted_prompt)
 
-    return response["message"]["content"]
+    return response.content
 
 def format_context(documents: list) -> str:
     """Format retrieved documents into readable context"""
@@ -213,7 +308,7 @@ def main():
     
     # Generate embedding and retrieve documents
     query_embedding = embed_query(company_query)
-    documents = retrieve_documents(query_embedding)
+    documents = retrieve_documents(query_embedding, company_query)
     
     if not documents:
         print(f"\nNo job listings found for '{company_query}'")
