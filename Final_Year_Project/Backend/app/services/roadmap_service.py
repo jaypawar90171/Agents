@@ -19,7 +19,7 @@ CHAT_MODEL = "llama-3.3-70b-versatile"
 TOP_K = 10
 MIN_SCORE = 0.5
 MAX_CONTEXT_CHARS = 3500
-VECTOR_INDEX = "foundit_job_vector_index"
+VECTOR_INDEX = "vector_index"
 
 # Custom exceptions for the route to map to HTTP status codes
 class RoadmapValidationError(ValueError):
@@ -281,7 +281,7 @@ def generate_answer(company: str, context: str) -> str:
     llm = ChatGroq(
         model=CHAT_MODEL,
         groq_api_key=GROQ_API_KEY,
-        temperature=0.2,
+        temperature=0.5,
     )
     prompt_template = _build_roadmap_prompt()
     formatted_prompt = prompt_template.format_messages(company=company, context=context)
