@@ -61,7 +61,7 @@ def setup_driver():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     return driver
 
-def get_job_links(keyword, location=None, max_pages=1):
+def get_job_links(keyword, location=None, max_pages=10):
     """
     Standard Python function (not a node) to get a list of URLs.
     """
@@ -306,14 +306,14 @@ if __name__ == "__main__":
     LOCATION = "bangalore"
 
     # 1. Get List of Links (Standard Python)
-    job_list = get_job_links(KEYWORD, LOCATION, max_pages=2)
+    job_list = get_job_links(KEYWORD, LOCATION, max_pages=10)
 
     print(f"\nFound {len(job_list)} jobs. Starting AI Pipeline...\n")
 
     # 2. Loop through and invoke Agent for each
     for i, job in enumerate(job_list):
-        if i == 3: # Limit to 3 for testing
-            break
+        # if i == 3: # Limit to 3 for testing
+        #     break
         url = job['url']
         title = job['title']
         company = job['company']
