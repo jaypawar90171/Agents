@@ -1,7 +1,9 @@
 import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Bell, Rocket } from 'lucide-react';
 
 const Header: React.FC = () => {
+  const location = useLocation();
   return (
     <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -18,12 +20,18 @@ const Header: React.FC = () => {
 
           {/* Nav Links */}
           <nav className="hidden md:flex space-x-8">
-            <a href="#" className="text-indigo-500 font-semibold border-b-2 border-indigo-500 px-1 py-5">
+            <Link
+              to="/"
+              className={`px-1 py-5 font-medium transition-colors ${location.pathname === '/' ? 'text-indigo-500 font-semibold border-b-2 border-indigo-500' : 'text-slate-500 hover:text-indigo-500'}`}
+            >
               Explore
-            </a>
-            <a href="#" className="text-slate-500 hover:text-indigo-500 font-medium px-1 py-5 transition-colors">
+            </Link>
+            <Link
+              to="/roadmap"
+              className={`px-1 py-5 font-medium transition-colors ${location.pathname === '/roadmap' ? 'text-indigo-500 font-semibold border-b-2 border-indigo-500' : 'text-slate-500 hover:text-indigo-500'}`}
+            >
               Roadmap
-            </a>
+            </Link>
             <a href="#" className="text-slate-500 hover:text-indigo-500 font-medium px-1 py-5 transition-colors">
               Chat
             </a>

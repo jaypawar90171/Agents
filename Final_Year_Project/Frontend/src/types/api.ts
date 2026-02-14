@@ -14,6 +14,20 @@ export interface ApiJobResponse {
   jobs: ApiJob[];
 }
 
+// Roadmap API types
+export interface RoadmapJobUsed {
+  company: string;
+  job_title: string;
+  location: string;
+  skills_required: string[];
+  job_url: string;
+}
+
+export interface RoadmapResponse {
+  roadmap: string;
+  jobs_used: RoadmapJobUsed[];
+}
+
 // UI Job Type (for display)
 export interface Job {
   id: string;

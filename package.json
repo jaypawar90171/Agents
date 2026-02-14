@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "jotai": "^2.17.1",
+    "lucide-react": "^0.564.0",
+    "react-markdown": "^10.1.0",
+    "react-router-dom": "^7.13.0"
+  },
+  "devDependencies": {
+    "@types/react-router-dom": "^5.3.3"
+  }
+}

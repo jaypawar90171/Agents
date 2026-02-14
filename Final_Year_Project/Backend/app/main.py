@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api.routes import job_routes
+from app.api.routes import job_routes, roadmap_routes
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title='Job API')  
@@ -13,3 +13,4 @@ app.add_middleware(
 )
 
 app.include_router(job_routes.router)
+app.include_router(roadmap_routes.router)

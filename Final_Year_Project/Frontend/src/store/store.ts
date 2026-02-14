@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
-import { Job } from '../types/api';
+import { Job, RoadmapResponse } from '../types/api';
 
 // ============================================================================
 // ENUMS
@@ -37,6 +37,14 @@ export const jobsLoadingAtom = atom<boolean>(false);
 export const jobsErrorAtom = atom<string | null>(null);
 
 // ============================================================================
+// ROADMAP ATOMS
+// ============================================================================
+
+export const roadmapDataAtom = atom<RoadmapResponse | null>(null);
+export const roadmapLoadingAtom = atom<boolean>(false);
+export const roadmapErrorAtom = atom<string | null>(null);
+
+// ============================================================================
 // SEARCH & FILTER ATOMS
 // ============================================================================
 
@@ -63,7 +71,7 @@ export const selectedLocationAtom = atom<string>('');
  * Filtered jobs based on search query and all filters
  * This is a derived atom that automatically updates when any dependency changes
  */
-export const filteredJobsAtom = atom((get) => {
+export const filteredJobsAtom = atom((get : any) => {
   const jobs = get(jobsDataAtom);
   const searchQuery = get(searchQueryAtom).toLowerCase();
   const selectedJobTypes = get(selectedJobTypesAtom);
@@ -71,21 +79,21 @@ export const filteredJobsAtom = atom((get) => {
   const salaryRange = get(salaryRangeAtom);
   const selectedLocation = get(selectedLocationAtom);
 
-  return jobs.filter((job) => {
+  return jobs.filter((job: Job) => {
     // Search filter - searches in company, title, location, and skills
     const matchesSearch = 
       searchQuery === '' ||
       job.company.toLowerCase().includes(searchQuery) ||
       job.title.toLowerCase().includes(searchQuery) ||
       job.location.toLowerCase().includes(searchQuery) ||
-      (job.skills && job.skills.some(skill => 
+      (job.skills && job.skills.some((skill: string) => 
         skill.toLowerCase().includes(searchQuery)
       ));
 
     // Job type filter
     const matchesJobType = 
       selectedJobTypes.length === 0 ||
-      selectedJobTypes.some(type => 
+      selectedJobTypes.some((type: JobType) => 
         job.title.toLowerCase().includes(type.toLowerCase()) ||
         (job.description && job.description.toLowerCase().includes(type.toLowerCase()))
       );
@@ -93,7 +101,7 @@ export const filteredJobsAtom = atom((get) => {
     // Industry filter (map company to industry - you may need to enhance this)
     const matchesIndustry = 
       selectedIndustries.length === 0 ||
-      selectedIndustries.some(industry => {
+      selectedIndustries.some((industry: Industry) => {
         // This is a simple mapping - you might want to add an industry field to your API
         const industryKeywords: Record<Industry, string[]> = {
           [Industry.TECHNOLOGY]: ['tech', 'software', 'it', 'developer', 'engineer'],
@@ -127,14 +135,14 @@ export const filteredJobsAtom = atom((get) => {
 /**
  * Jobs count atom - for displaying total results
  */
-export const jobsCountAtom = atom((get) => {
+export const jobsCountAtom = atom((get: any) => {
   return get(filteredJobsAtom).length;
 });
 
 /**
  * Active filters count - for UI badges
  */
-export const activeFiltersCountAtom = atom((get) => {
+export const activeFiltersCountAtom = atom((get : any) => {
   let count = 0;
   if (get(selectedJobTypesAtom).length > 0) count++;
   if (get(selectedIndustriesAtom).length > 0) count++;
@@ -148,7 +156,7 @@ export const activeFiltersCountAtom = atom((get) => {
  */
 export const resetFiltersAtom = atom(
   null,
-  (get, set) => {
+  (get : any, set : any) => {
     set(searchQueryAtom, '');
     set(selectedJobTypesAtom, []);
     set(selectedIndustriesAtom, []);

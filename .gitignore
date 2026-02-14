@@ -7,3 +7,6 @@ __pycache__
 *.pptx
 *.docx
 *.tldr
+
+node_modules
+dist
