@@ -16,3 +16,20 @@ export interface JobsState {
   loading: boolean;
   error: string | null;
 }
+
+export interface RoadmapJobUsed {
+  company: string;
+  job_title: string;
+  location: string;
+  skills_required: string[];
+  job_url: string;
+}
+
+export interface RoadmapResponse {
+  roadmap: string;  // Markdown formatted roadmap
+  jobs_used: RoadmapJobUsed[];
+}
+
+export interface RoadmapError {
+  detail: string;
+}

@@ -22,6 +22,7 @@ from dotenv import load_dotenv
 import os
 import ollama
 from datetime import datetime
+from langchain_groq import ChatGroq
 load_dotenv()
 
 
@@ -44,8 +45,8 @@ class AgentState(TypedDict):
     job_description_summary: str
 
 MONGO_URI = os.getenv("MONGO_URI")
-DB_NAME = os.getenv("FOUNDIT_DB_NAME", "job_portal") # Second arg is a default fallback
-COLLECTION_NAME = os.getenv("FOUNDIT_COLLECTION_NAME", "jobs")
+DB_NAME = os.getenv("DB_NAME", "job_records") # Second arg is a default fallback
+COLLECTION_NAME = os.getenv("COLLECTION_NAME", "jobs")
 MODEL_NAME = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
 
 client = pymongo.MongoClient(MONGO_URI)
@@ -53,9 +54,7 @@ collection = client[DB_NAME][COLLECTION_NAME]
 
 print(f"Connected to database: {DB_NAME}")
 
-# Initialize Local LLM (Ollama)
-# Make sure you have run `ollama run granite4` (or your chosen model) in your terminal
-llm = ChatOllama(model="granite4", temperature=0, format="json")
+llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
 parser = JsonOutputParser(pydantic_object=JobPosting)
 
 # --- 2. PHASE 1: SELENIUM SEARCH SCRAPER (Getting the List) ---
@@ -313,14 +312,14 @@ if __name__ == "__main__":
     LOCATION = "mumbai"
 
     # 1. Get List of Links (Standard Python)
-    job_list = get_job_links(KEYWORD, LOCATION, max_pages=10)
+    job_list = get_job_links(KEYWORD, LOCATION, max_pages=1)
 
     print(f"\n Found {len(job_list)} jobs. Starting AI Pipeline...\n")
 
     # 2. Loop through and invoke Agent for each
     for i, job in enumerate(job_list):
-        # if i == 3:
-        #     break
+        if i == 3:
+            break
         url = job['url']
         title = job['title']
         company = job['company']

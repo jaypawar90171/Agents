@@ -3,16 +3,17 @@ import sys
 from dotenv import load_dotenv
 import ollama
 import pymongo
+from langchain_groq import ChatGroq
 
 load_dotenv()
 
 # ---------------- CONFIG ----------------
 MONGO_URI = os.getenv("MONGO_URI")
-DB_NAME = os.getenv("NAUKRI_DB_NAME", "job_portal")
-COLLECTION_NAME = os.getenv("NAUKRI_COLLECTION_NAME", "jobs")
+DB_NAME = os.getenv("DB_NAME", "job_records") # Second arg is a default fallback
+COLLECTION_NAME = os.getenv("COLLECTION_NAME", "jobs")
 
 EMBED_MODEL = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
-CHAT_MODEL = "granite4"
+CHAT_MODEL = "llama-3.3-70b-versatile"
 
 TOP_K = 5
 MIN_SCORE = 0.6
@@ -64,7 +65,7 @@ def generate_answer(question, context):
                 {context}
                 """
 
-    response = ollama.generate(
+    response = ChatGroq(
         model=CHAT_MODEL,
         system=system_prompt,
         prompt=user_prompt
@@ -86,7 +87,7 @@ def rag_pipeline(user_query):
     pipeline = [
         {
             "$vectorSearch": {
-                "index": "naukri_job_vector_index",
+                "index": "vector_index",
                 "path": "job_embedding",  
                 "queryVector": query_embedding,
                 "numCandidates": 20,

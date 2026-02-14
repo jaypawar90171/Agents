@@ -10,7 +10,7 @@ load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 MONGO_URI = os.getenv("MONGO_URI")
-DB_NAME = os.getenv("DB_NAME", "foundit_records")
+DB_NAME = os.getenv("DB_NAME", "job_records")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME", "jobs")
 
 EMBED_MODEL = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
@@ -42,7 +42,7 @@ def retrieve_documents(query_embedding, company_name:str):
     pipeline = [
         {
             "$vectorSearch": {
-                "index": "foundit_job_vector_index",
+                "index": "vector_index",
                 "path": "job_embedding",
                 "queryVector": query_embedding,
                 "numCandidates": 50,
@@ -94,7 +94,7 @@ def generate_answer(company: str, context: str):
     llm = ChatGroq(
         model=CHAT_MODEL,
         groq_api_key=GROQ_API_KEY,
-        temperature=0.2
+        temperature=0.5
     )
 
     prompt_template = ChatPromptTemplate.from_messages([

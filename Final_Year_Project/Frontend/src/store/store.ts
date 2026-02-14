@@ -40,8 +40,13 @@ export const jobsErrorAtom = atom<string | null>(null);
 // ROADMAP ATOMS
 // ============================================================================
 
+// Roadmap data atom
 export const roadmapDataAtom = atom<RoadmapResponse | null>(null);
+
+// Loading state atom
 export const roadmapLoadingAtom = atom<boolean>(false);
+
+// Error state atom
 export const roadmapErrorAtom = atom<string | null>(null);
 
 // ============================================================================
@@ -164,3 +169,4 @@ export const resetFiltersAtom = atom(
     set(selectedLocationAtom, '');
   }
 );
+

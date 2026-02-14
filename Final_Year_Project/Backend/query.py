@@ -3,19 +3,26 @@ import sys
 from dotenv import load_dotenv
 import ollama
 import pymongo
+from langchain_groq import ChatGroq
+from langchain_core.messages import SystemMessage, HumanMessage
 
 load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI")
-DB_NAME = os.getenv("DB_NAME", "foundit_records")
+DB_NAME = os.getenv("DB_NAME", "job_records") # Second arg is a default fallback
 COLLECTION_NAME = os.getenv("COLLECTION_NAME", "jobs")
 
 EMBED_MODEL = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
-CHAT_MODEL = "granite4"
+CHAT_MODEL = "llama-3.3-70b-versatile"
 
 TOP_K = 5
-MIN_SCORE = 0.8
+MIN_SCORE = 0.6
 MAX_CONTEXT_CHARS = 3500
+
+llm = ChatGroq(
+    model=CHAT_MODEL,
+    temperature=0
+)
 
 try:
     client = pymongo.MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
@@ -48,7 +55,7 @@ def retrieve_documents(query_embedding):
     pipeline = [
         {
             "$vectorSearch": {
-                "index": "foundit_job_vector_index",
+                "index": "vector_index",
                 "path": "job_embedding",
                 "queryVector": query_embedding,
                 "numCandidates": 20,
@@ -117,13 +124,14 @@ def generate_answer(question: str, context: str):
             {context}
             """
 
-    response = ollama.generate(
-        model=CHAT_MODEL,
-        system=system_prompt,
-        prompt=user_prompt
-    )
+    messages = [
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=user_prompt)
+    ]
 
-    return response["response"]
+    response = llm.invoke(messages)   
+
+    return response.content
 
 # --------------------------------------------------
 # COMPLETE RAG PIPELINE

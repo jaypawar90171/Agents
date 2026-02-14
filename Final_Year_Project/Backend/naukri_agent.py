@@ -19,6 +19,7 @@ import json
 import pymongo
 import ollama
 import os
+from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -39,8 +40,8 @@ class AgentState(TypedDict):
 
 # MongoDB Configuration
 MONGO_URI = os.getenv("MONGO_URI")
-DB_NAME = os.getenv("NAUKRI_DB_NAME", "job_portal") # Second arg is a default fallback
-COLLECTION_NAME = os.getenv("NAUKRI_COLLECTION_NAME", "jobs")
+DB_NAME = os.getenv("DB_NAME", "job_records") # Second arg is a default fallback
+COLLECTION_NAME = os.getenv("COLLECTION_NAME", "jobs")
 MODEL_NAME = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
 
 client = pymongo.MongoClient(MONGO_URI) # Connect to MongoDB
@@ -49,7 +50,7 @@ collection = client[DB_NAME][COLLECTION_NAME] # Select database and collection
 print(f"Connected to database: {DB_NAME}")
 
 # LLM Configuration
-llm = ChatOllama(model="granite4", temperature=0, format="json")
+llm = ChatGroq(model="llama-3.3-70b-versatile", temperature=0)
 parser = JsonOutputParser(pydantic_object=JobPosting)
 
 def setup_driver():
