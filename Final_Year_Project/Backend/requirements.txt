@@ -4,4 +4,4 @@ pymongo
 python-dotenv
 ollama
 langchain-core
-langchain-groq
+langchain-groqsvix

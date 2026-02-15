@@ -4,6 +4,7 @@ import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import JobCard from './JobCard';
 import { useJobs } from '../hooks/useJobs';
 import { filteredJobsAtom, jobsCountAtom } from '../store/store';
+import { Job } from '../types/api';
 
 const JobList: React.FC = () => {
   const { loading, error, refetch } = useJobs();
@@ -57,7 +58,7 @@ const JobList: React.FC = () => {
     );
   }
 
-  // Jobs grid with results count
+
   return (
     <div>
       {/* Results count */}
@@ -69,7 +70,7 @@ const JobList: React.FC = () => {
       
       {/* Jobs grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredJobs.map((job) => (
+        {filteredJobs.map((job: Job) => (
           <JobCard key={job.id} job={job} />
         ))}
       </div>

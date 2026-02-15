@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import Header from '../components/Header';
-import RoadmapDisplay from '../components/RoadMapDisplay';
-import RoadmapJobsUsed from '../components/RoadmapJobsUsed';
-import { useRoadmap } from '../hooks/useRoadmap';
-import { Loader2, Zap } from 'lucide-react';
+import React, { useState } from "react";
+import Header from "../components/Header";
+import RoadmapDisplay from "../components/RoadMapDisplay";
+import RoadmapJobsUsed from "../components/RoadmapJobsUsed";
+import { useRoadmap } from "../hooks/useRoadmap";
+import { Loader2, Zap } from "lucide-react";
 
 const MIN_COMPANY_LENGTH = 3;
 
 const Roadmap: React.FC = () => {
   const { roadmap, loading, error, generateRoadmap } = useRoadmap();
-  const [companyName, setCompanyName] = useState('');
+  const [companyName, setCompanyName] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +21,7 @@ const Roadmap: React.FC = () => {
 
   const handleAddToProfile = () => {
     // This will be connected to your backend
-    console.log('Adding roadmap to profile:', companyName);
+    console.log("Adding roadmap to profile:", companyName);
     // TODO: Implement API call to save roadmap to user profile
   };
 
@@ -36,13 +36,16 @@ const Roadmap: React.FC = () => {
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
             <Zap className="w-8 h-8 text-indigo-500" />
-            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wide">Career Roadmap Generator</span>
+            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wide">
+              Career Roadmap Generator
+            </span>
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent mb-4">
             Your Path to Success
           </h1>
           <p className="text-lg text-slate-600 max-w-2xl">
-            Enter a company name to get a personalized, skill-based learning roadmap tailored to their hiring requirements.
+            Enter a company name to get a personalized, skill-based learning
+            roadmap tailored to their hiring requirements.
           </p>
         </div>
 
@@ -77,11 +80,13 @@ const Roadmap: React.FC = () => {
             </button>
           </div>
 
-          {companyName.trim().length > 0 && companyName.trim().length < MIN_COMPANY_LENGTH && (
-            <p className="text-sm text-amber-600 mt-3 font-medium">
-              💡 Company name must be at least {MIN_COMPANY_LENGTH} characters.
-            </p>
-          )}
+          {companyName.trim().length > 0 &&
+            companyName.trim().length < MIN_COMPANY_LENGTH && (
+              <p className="text-sm text-amber-600 mt-3 font-medium">
+                💡 Company name must be at least {MIN_COMPANY_LENGTH}{" "}
+                characters.
+              </p>
+            )}
         </form>
 
         {/* Error State */}
@@ -110,7 +115,10 @@ const Roadmap: React.FC = () => {
 
             {/* Main Roadmap */}
             <div className="rounded-3xl bg-white border-2 border-indigo-200 shadow-xl shadow-indigo-500/10 p-8">
-              <RoadmapDisplay content={roadmap.roadmap} onAddToProfile={handleAddToProfile} />
+              <RoadmapDisplay
+                content={roadmap.roadmap}
+                onAddToProfile={handleAddToProfile}
+              />
             </div>
           </div>
         )}
@@ -125,7 +133,8 @@ const Roadmap: React.FC = () => {
               Ready to start your learning journey?
             </h3>
             <p className="text-slate-600 max-w-md mx-auto">
-              Search for a company above to generate a personalized roadmap with essential skills and learning milestones.
+              Search for a company above to generate a personalized roadmap with
+              essential skills and learning milestones.
             </p>
           </div>
         )}
@@ -134,12 +143,28 @@ const Roadmap: React.FC = () => {
       <footer className="bg-white border-t border-slate-200 mt-auto py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-sm text-slate-500 text-center md:text-left font-medium">
-            © 2024 LearnLaunch. All rights reserved. <br className="md:hidden" /> Designed for future leaders.
+            © 2024 LearnLaunch. All rights reserved.{" "}
+            <br className="md:hidden" /> Designed for future leaders.
           </p>
           <div className="flex gap-8">
-            <a href="#" className="text-sm text-slate-500 hover:text-indigo-500 font-medium transition-colors">Privacy</a>
-            <a href="#" className="text-sm text-slate-500 hover:text-indigo-500 font-medium transition-colors">Terms</a>
-            <a href="#" className="text-sm text-slate-500 hover:text-indigo-500 font-medium transition-colors">Support</a>
+            <a
+              href="#"
+              className="text-sm text-slate-500 hover:text-indigo-500 font-medium transition-colors"
+            >
+              Privacy
+            </a>
+            <a
+              href="#"
+              className="text-sm text-slate-500 hover:text-indigo-500 font-medium transition-colors"
+            >
+              Terms
+            </a>
+            <a
+              href="#"
+              className="text-sm text-slate-500 hover:text-indigo-500 font-medium transition-colors"
+            >
+              Support
+            </a>
           </div>
         </div>
       </footer>
