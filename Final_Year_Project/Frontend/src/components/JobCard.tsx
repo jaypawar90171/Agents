@@ -16,13 +16,13 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
   const getTagStyle = (color?: string) => {
     switch (color) {
       case "green":
-        return "bg-emerald-50 text-emerald-600";
+        return "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/40 dark:text-emerald-300";
       case "blue":
-        return "bg-blue-50 text-blue-600";
+        return "bg-blue-50 text-blue-600 dark:bg-blue-900/40 dark:text-blue-300";
       case "orange":
-        return "bg-orange-50 text-orange-600";
+        return "bg-orange-50 text-orange-600 dark:bg-orange-900/40 dark:text-orange-300";
       default:
-        return "bg-slate-50 text-slate-600";
+        return "bg-slate-50 text-slate-600 dark:bg-slate-800 dark:text-slate-300";
     }
   };
 
@@ -52,9 +52,9 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
   };
 
   return (
-    <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-soft hover:shadow-lg hover:border-indigo-500/30 transition-all duration-300 group flex flex-col h-full">
+    <div className="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-soft hover:shadow-lg hover:border-indigo-500/30 transition-all duration-300 group flex flex-col h-full">
       <div className="flex justify-between items-start mb-5">
-        <div className="w-14 h-14 rounded-xl bg-white p-2 shadow-sm border border-slate-100 flex items-center justify-center overflow-hidden">
+        <div className="w-14 h-14 rounded-xl bg-white dark:bg-slate-900 p-2 shadow-sm border border-slate-100 dark:border-slate-700 flex items-center justify-center overflow-hidden">
           <img
             src={job.logo}
             alt={`${job.company} Logo`}
@@ -79,21 +79,21 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
         )}
       </div>
 
-      <h3 className="text-xl font-bold text-slate-900 mb-1 group-hover:text-indigo-500 transition-colors">
+      <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1 group-hover:text-indigo-400 transition-colors">
         {job.company}
       </h3>
 
-      <div className="flex items-center gap-1.5 text-slate-500 mb-6">
+      <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400 mb-6">
         <MapPin size={16} className="opacity-70" />
         <span className="text-sm font-medium">{job.location}</span>
       </div>
 
       <div className="space-y-3 mb-8 flex-grow">
         <div className="flex items-start text-sm">
-          <span className="w-24 text-slate-400 font-medium flex-shrink-0">
+          <span className="w-24 text-slate-400 dark:text-slate-500 font-medium flex-shrink-0">
             Role:
           </span>
-          <span className="font-semibold text-slate-700 line-clamp-2">
+          <span className="font-semibold text-slate-700 dark:text-slate-200 line-clamp-2">
             {job.title}
           </span>
         </div>

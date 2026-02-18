@@ -43,3 +43,32 @@ export interface Job {
   description?: string;
   ingestedAt?: string;
 }
+
+export interface ChatSource {
+  company?: string;
+  job_title?: string;
+  location?: string;
+  skills_required?: string[];
+  job_description_summary?: string;
+  job_url?: string;
+  score?: number;
+}
+
+export interface SendMessageRequest {
+  message: string;
+  session_id?: string | null;
+}
+
+export interface SendMessageResponse {
+  reply: string;
+  sources: ChatSource[];
+  session_id: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  sources?: ChatSource[];
+  createdAt: number;
+}

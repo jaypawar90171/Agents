@@ -1,7 +1,10 @@
 import AppRoute from './Routes/AppRoute'
+import ThemeProvider from './components/ThemeProvider'
 
 export default function App() {
   return (
-    <AppRoute />
+    <ThemeProvider>
+      <AppRoute />
+    </ThemeProvider>
   )
 }

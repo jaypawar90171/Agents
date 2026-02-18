@@ -3,7 +3,6 @@ import {
   ChevronDown,
   Sparkles,
   Target,
-  BookOpen,
   Award,
   Calendar,
   Code,
@@ -14,17 +13,20 @@ import {
   TrendingUp,
   CheckCircle2,
   Lightbulb,
+  Loader2,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 interface RoadmapDisplayProps {
   content: string;
   onAddToProfile?: () => void;
+  isSaving?: boolean;
 }
 
 const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
   content,
   onAddToProfile,
+  isSaving = false,
 }) => {
   // Initialize with first section expanded for better UX
   const [expandedSections, setExpandedSections] = useState<{
@@ -187,10 +189,20 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
         {onAddToProfile && (
           <button
             onClick={onAddToProfile}
-            className="group inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 text-white font-bold shadow-xl shadow-indigo-500/40 hover:shadow-2xl hover:shadow-indigo-500/60 transition-all duration-300 transform hover:scale-110 active:scale-95"
+            disabled={isSaving}
+            className="group inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold shadow-xl shadow-indigo-500/40 hover:shadow-2xl hover:shadow-indigo-500/60 transition-all duration-300 transform hover:scale-110 active:scale-95"
           >
-            <Sparkles size={20} className="group-hover:animate-spin" />
-            Save to Profile
+            {isSaving ? (
+              <>
+                <Loader2 size={20} className="animate-spin" />
+                Saving…
+              </>
+            ) : (
+              <>
+                <Sparkles size={20} className="group-hover:animate-spin" />
+                Save to Profile
+              </>
+            )}
           </button>
         )}
       </div>
@@ -457,14 +469,24 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
             {onAddToProfile && (
               <button
                 onClick={onAddToProfile}
-                className="group/btn inline-flex items-center gap-3 px-10 py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 text-white font-black text-lg shadow-2xl shadow-indigo-500/50 hover:shadow-3xl hover:shadow-indigo-500/70 transition-all duration-300 transform hover:scale-110 active:scale-95 uppercase tracking-wider"
+                disabled={isSaving}
+                className="group/btn inline-flex items-center gap-3 px-10 py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 disabled:opacity-70 disabled:cursor-not-allowed text-white font-black text-lg shadow-2xl shadow-indigo-500/50 hover:shadow-3xl hover:shadow-indigo-500/70 transition-all duration-300 transform hover:scale-110 active:scale-95 uppercase tracking-wider"
               >
-                <Sparkles size={22} className="group-hover/btn:animate-spin" />
-                Save This Roadmap
-                <Rocket
-                  size={22}
-                  className="group-hover/btn:translate-x-1 transition-transform"
-                />
+                {isSaving ? (
+                  <>
+                    <Loader2 size={22} className="animate-spin" />
+                    Saving…
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={22} className="group-hover/btn:animate-spin" />
+                    Save This Roadmap
+                    <Rocket
+                      size={22}
+                      className="group-hover/btn:translate-x-1 transition-transform"
+                    />
+                  </>
+                )}
               </button>
             )}
           </div>

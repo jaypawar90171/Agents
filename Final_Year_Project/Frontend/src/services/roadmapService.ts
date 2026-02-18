@@ -4,6 +4,22 @@ import { RoadmapResponse } from '../types/api';
 // Update this to match your backend URL
 const API_BASE_URL = 'http://localhost:8000';
 
+export interface SaveRoadmapPayload {
+  content: string;
+  userId: string;
+  jobDetails?: {
+    company?: string;
+    role?: string;
+    location?: string;
+  };
+}
+
+export interface SaveRoadmapResponse {
+  message: string;
+  roadmap: Record<string, unknown>;
+  userRoadmap: Record<string, unknown>;
+}
+
 class RoadmapService {
   /**
    * Generate a learning roadmap for a company
@@ -39,6 +55,51 @@ class RoadmapService {
       }
       throw error;
     }
+  }
+
+  /**
+   * Parse markdown roadmap content and save to MongoDB (backend parses and saves).
+   * Use this when the user clicks "Save to Profile" / "Save This Roadmap".
+   */
+  async parseAndSaveRoadmap(
+    content: string,
+    userId: string,
+    jobDetails?: SaveRoadmapPayload['jobDetails']
+  ): Promise<SaveRoadmapResponse> {
+    const response = await axios.post<SaveRoadmapResponse>(
+      `${API_BASE_URL}/api/roadmaps/parse-and-save`,
+      {
+        content,
+        userId,
+        jobDetails: jobDetails ?? undefined,
+      },
+      {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 15000,
+      }
+    );
+    return response.data;
+  }
+
+  /**
+   * Save already-parsed roadmap data (e.g. when frontend has structured data).
+   */
+  async saveRoadmap(
+    roadmapData: Record<string, unknown>,
+    userId: string
+  ): Promise<SaveRoadmapResponse> {
+    const response = await axios.post<SaveRoadmapResponse>(
+      `${API_BASE_URL}/api/roadmaps/save`,
+      {
+        roadmap_data: roadmapData,
+        userId,
+      },
+      {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 15000,
+      }
+    );
+    return response.data;
   }
 }
 
