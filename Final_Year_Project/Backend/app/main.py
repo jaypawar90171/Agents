@@ -1,8 +1,16 @@
 from fastapi import FastAPI
-from app.api.routes import job_routes, roadmap_routes, webhook_routes
+from app.api.routes import job_routes, roadmap_routes, roadmaps, chat
 from fastapi.middleware.cors import CORSMiddleware
+from app.db.mongodb import MongoDB
 
-app = FastAPI(title='Job API')  
+async def lifespan(app: FastAPI):
+    # Startup
+    await MongoDB.connect_db()
+    yield
+    # Shutdown
+    await MongoDB.close_db()
+
+app = FastAPI(title='Job API', lifespan=lifespan)  
 
 app.add_middleware(
     CORSMiddleware,
@@ -14,4 +22,5 @@ app.add_middleware(
 
 app.include_router(job_routes.router)
 app.include_router(roadmap_routes.router)
-app.include_router(webhook_routes.router)
+app.include_router(roadmaps.router)
+app.include_router(chat.router)
