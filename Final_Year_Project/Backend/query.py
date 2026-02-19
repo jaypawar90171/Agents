@@ -1,15 +1,20 @@
 import os
 import sys
+import uuid
+from typing import TypedDict, Annotated, List, Dict, Any
 from dotenv import load_dotenv
 import ollama
 import pymongo
 from langchain_groq import ChatGroq
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage, AIMessage
+from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import MemorySaver
+from operator import add
 
 load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI")
-DB_NAME = os.getenv("DB_NAME", "job_records") # Second arg is a default fallback
+DB_NAME = os.getenv("DB_NAME", "job_records")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME", "jobs")
 
 EMBED_MODEL = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
@@ -28,29 +33,23 @@ try:
     client = pymongo.MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
     client.admin.command("ping")
     collection = client[DB_NAME][COLLECTION_NAME]
-    print(f"Connected to database: {DB_NAME}")
+    print(f"Connected to database: {DB_NAME}[web:1]")
 except Exception as e:
     print(f"Database connection failed: {e}")
     sys.exit(1)
 
 # --------------------------------------------------
-# STEP 0: QUERY VALIDATION
+# RAG Components (unchanged)
 # --------------------------------------------------
 def validate_query(query: str) -> bool:
     return bool(query and len(query.strip()) >= 3)
 
-# --------------------------------------------------
-# STEP 1: EMBED QUERY
-# --------------------------------------------------
 def embed_query(query: str):
     return ollama.embeddings(
         model=EMBED_MODEL,
         prompt=query
     )["embedding"]
 
-# --------------------------------------------------
-# STEP 2: VECTOR RETRIEVAL
-# --------------------------------------------------
 def retrieve_documents(query_embedding):
     pipeline = [
         {
@@ -80,18 +79,15 @@ def retrieve_documents(query_embedding):
             }
         }
     ]
-
     return list(collection.aggregate(pipeline))
 
-# --------------------------------------------------
-# STEP 3: BUILD CONTEXT
-# --------------------------------------------------
 def build_context(docs):
     context = ""
     for i, doc in enumerate(docs, start=1):
         context += f"""
                 --- Job {i} ---
                 Company: {doc.get('company', 'N/A')}
+                "Job URL: {doc.get('job_url', 'N/A')}
                 Job Title: {doc.get('job_title', 'N/A')}
                 Location: {doc.get('location', 'N/A')}
                 Skills Required: {', '.join(doc.get('skills_required', []))}
@@ -99,91 +95,183 @@ def build_context(docs):
                 """
     return context.strip()
 
-# --------------------------------------------------
-# STEP 3.5: CONTEXT SIZE CONTROL
-# --------------------------------------------------
 def trim_context(context: str):
     return context[:MAX_CONTEXT_CHARS]
 
-# --------------------------------------------------
-# STEP 4: GENERATION
-# --------------------------------------------------
-def generate_answer(question: str, context: str):
+def generate_answer(question: str, context: str, history: List[BaseMessage]):
     system_prompt = (
         "You are a professional Job & Career Assistant.\n"
         "Answer ONLY using the provided job context.\n"
         "If the answer is not present in the context, say so clearly.\n"
-        "Be concise, factual, and professional."
+        "Be concise, factual, and professional.\n"
+        "Use the conversation history to provide context-aware responses."
     )
 
-    user_prompt = f"""
-            User Question:
-            {question}
+    history_str = "\n".join([f"{msg.type.upper()}: {msg.content}" for msg in history[-6:]] )  # Last 3 exchanges
 
-            Relevant Job Context:
-            {context}
-            """
+    user_prompt = f"""
+        User Question: {question}
+
+        Conversation History:
+        {history_str}
+
+        Relevant Job Context:
+        {context}
+        """
 
     messages = [
         SystemMessage(content=system_prompt),
         HumanMessage(content=user_prompt)
     ]
 
-    response = llm.invoke(messages)   
+    response = llm.invoke(messages)
 
     return response.content
 
 # --------------------------------------------------
-# COMPLETE RAG PIPELINE
+# LangGraph Agent State
 # --------------------------------------------------
-def rag_pipeline(user_query: str):
+class AgentState(TypedDict):
+    messages: Annotated[List[BaseMessage], add]
+    context: str
+    sources: List[Dict]
+    query: str
 
-    # Step 0: Validate query
-    if not validate_query(user_query):
-        return "Please ask a meaningful job-related question.", []
+# --------------------------------------------------
+# Agent Nodes
+# --------------------------------------------------
+def route_query(state: AgentState):
+    """Router: RAG or general chat"""
+    last_msg = state['messages'][-1].content.lower()
+    if any(word in last_msg for word in ['job', 'position', 'role', 'career', 'apply', 'foundit', 'skills', 'location', 'apply link', 'url']):
+        return "rag"
+    return "chat"
 
-    print(f"\nSearching Foundit for: {user_query}")
+def rag_node(state: AgentState):
+    query = state['messages'][-1].content
 
-    # Step 1: Embed query
-    query_embedding = embed_query(user_query)
+    if not validate_query(query):
+        return {
+            "messages": [AIMessage(content="Please ask a meaningful job-related question.")],
+            "context": "",
+            "sources": []
+        }
 
-    # Step 2: Retrieve documents
+    print(f"\nSearching Foundit for: {query}")
+
+    query_embedding = embed_query(query)
     docs = retrieve_documents(query_embedding)
 
     if not docs:
-        return "No relevant Foundit jobs found.", []
+        return {
+            "messages": [AIMessage(content="No relevant Foundit jobs found.")],
+            "context": "",
+            "sources": []
+        }
 
-    # Step 3: Build context
-    context = build_context(docs)
+    context = trim_context(build_context(docs))
+    answer = generate_answer(query, context, state['messages'])
 
-    # Step 3.5: Trim context
-    context = trim_context(context)
+    return {
+        "messages": [AIMessage(content=answer)],
+        "context": context,
+        "sources": docs,
+        "query": query
+    }
 
-    # Step 4: Generate answer
-    answer = generate_answer(user_query, context)
+def chat_node(state: AgentState):
+    """Direct chat without RAG"""
+    prompt = (
+        "You are a helpful Job & Career Assistant.\n"
+        "Help with career advice, resume tips, interview prep, or job search strategies.\n"
+        "If they ask about specific jobs, suggest using job search commands."
+    )
+    messages = [SystemMessage(content=prompt)] + state['messages'][-6:]
+    response = llm.invoke(messages)
+    return {"messages": [response]}
 
-    return answer, docs
+# --------------------------------------------------
+# LangGraph Workflow
+# --------------------------------------------------
+workflow = StateGraph(AgentState)
 
+workflow.add_node("rag", rag_node)
+workflow.add_node("chat", chat_node)
+
+# Router
+workflow.add_conditional_edges(
+    START,
+    route_query,
+    {
+        "rag": "rag",
+        "chat": "chat"
+    }
+)
+
+# End after nodes
+workflow.add_edge("rag", END)
+workflow.add_edge("chat", END)
+
+# Compile with memory (handles sessions via thread_id)
+memory = MemorySaver()
+rag_agent = workflow.compile(checkpointer=memory)
+
+# --------------------------------------------------
+# Interactive Chat with Session Management (Perplexity-like)
+# --------------------------------------------------
+sessions: Dict[str, str] = {}  # session_name -> thread_id
+
+def get_or_create_session(session_name: str):
+    if session_name not in sessions:
+        sessions[session_name] = str(uuid.uuid4())
+        print(f"New conversation created: {session_name} (thread: {sessions[session_name][:8]})")
+    return sessions[session_name]
 
 if __name__ == "__main__":
+    print("Perplexity-like Job RAG Chatbot")
+    print("Commands: /new <name> - new conversation, /switch <name> - switch, /list - sessions, /quit - exit\n")
 
-    user_question = input("\nAsk a question about Foundit jobs: ")
+    current_session = "default"
+    config = {"configurable": {"thread_id": get_or_create_session(current_session)}}
 
-    try:
-        answer, sources = rag_pipeline(user_question)
+    while True:
+        user_input = input(f"({current_session}) You: ").strip()
 
-        print("\n" + "=" * 60)
-        print("AI ASSISTANT ANSWER:\n")
-        print(answer)
-        print("=" * 60)
+        if user_input.lower() == "/quit":
+            break
+        elif user_input.startswith("/new "):
+            name = user_input[5:].strip() or f"session_{len(sessions)+1}"
+            current_session = name
+            config["configurable"]["thread_id"] = get_or_create_session(current_session)
+            continue
+        elif user_input.startswith("/switch "):
+            name = user_input[8:].strip()
+            if name in sessions:
+                current_session = name
+                config["configurable"]["thread_id"] = sessions[name]
+                print(f"Switched to: {current_session}")
+            else:
+                print("Session not found. Use /new to create.")
+            continue
+        elif user_input == "/list":
+            print("Sessions:", ", ".join(sessions.keys()))
+            continue
+        elif not user_input:
+            continue
 
-        # print("\nSources:")
-        # for src in sources:
-        #     print(
-        #         f"- {src['company']} | {src['job_title']} "
-        #         f"(Score: {src.get('score', 0):.3f})\n"
-        #         f"  Link: {src.get('job_url', 'N/A')}"
-        #     )
+        # Run agent
+        for event in rag_agent.stream(
+            {"messages": [HumanMessage(content=user_input)]},
+            config,
+            stream_mode="values"
+        ):
+            if "messages" in event:
+                last_msg = event["messages"][-1]
+                if isinstance(last_msg, AIMessage):
+                    print(f"Bot: {last_msg.content}")
+                    if "sources" in event and event["sources"]:
+                        print(f"(Sources available - {len(event['sources'])} jobs found)")
+                        for i, src in enumerate(event["sources"], start=1):
+                            print(f"  [{i}] {src.get('job_title', 'N/A')} at {src.get('company', 'N/A')} - {src.get('job_url', 'N/A')}")
 
-    except Exception as e:
-        print(f"Error occurred: {e}")
+        print()  # New line for readability

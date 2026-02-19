@@ -31,10 +31,10 @@ const Sidebar: React.FC = () => {
 
   return (
     <aside className="w-full lg:w-64 flex-shrink-0 space-y-8">
-      <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-soft sticky top-24">
+      <div className="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-soft sticky top-24">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-2">
-            <h3 className="font-bold text-lg text-slate-900">Filters</h3>
+            <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100">Filters</h3>
             {activeFiltersCount > 0 && (
               <span className="bg-indigo-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                 {activeFiltersCount}
@@ -53,7 +53,7 @@ const Sidebar: React.FC = () => {
 
         {/* Job Type Section */}
         <div className="mb-8">
-          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">
+          <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">
             Job Type
           </h4>
           <div className="space-y-3">
@@ -61,7 +61,7 @@ const Sidebar: React.FC = () => {
               <label key={type} className="flex items-center space-x-3 cursor-pointer group">
                 <div className={`
                     w-4 h-4 rounded border flex items-center justify-center transition-colors
-                    ${selectedJobTypes.includes(type) ? 'bg-indigo-500 border-indigo-500' : 'border-slate-300 bg-white group-hover:border-indigo-500'}
+                    ${selectedJobTypes.includes(type) ? 'bg-indigo-500 border-indigo-500' : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 group-hover:border-indigo-500'}
                 `}>
                     {selectedJobTypes.includes(type) && (
                         <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -75,7 +75,7 @@ const Sidebar: React.FC = () => {
                   checked={selectedJobTypes.includes(type)}
                   onChange={() => toggleJobType(type)}
                 />
-                <span className={`text-sm transition-colors ${selectedJobTypes.includes(type) ? 'text-slate-900 font-medium' : 'text-slate-600 group-hover:text-indigo-500'}`}>
+                <span className={`text-sm transition-colors ${selectedJobTypes.includes(type) ? 'text-slate-900 dark:text-slate-100 font-medium' : 'text-slate-600 dark:text-slate-400 group-hover:text-indigo-500'}`}>
                     {type}
                 </span>
               </label>
@@ -85,7 +85,7 @@ const Sidebar: React.FC = () => {
 
         {/* Salary Range Section */}
         <div className="mb-8">
-          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">
+          <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">
             Salary Range
           </h4>
           <div className="relative pt-2">
@@ -98,7 +98,7 @@ const Sidebar: React.FC = () => {
               onChange={(e) => setSalaryRange(Number(e.target.value))}
               className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-500" 
             />
-            <div className="flex justify-between text-xs text-slate-500 mt-3 font-medium">
+            <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-3 font-medium">
               <span>$0</span>
               <span className="text-indigo-500 font-bold">
                 {salaryRange === 0 ? 'Any' : `$${(salaryRange/1000).toFixed(0)}k+`}
@@ -109,7 +109,7 @@ const Sidebar: React.FC = () => {
 
         {/* Industry Section */}
         <div>
-          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">
+          <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">
             Industry
           </h4>
           <div className="space-y-3">
@@ -117,7 +117,7 @@ const Sidebar: React.FC = () => {
               <label key={ind} className="flex items-center space-x-3 cursor-pointer group">
                 <div className={`
                     w-4 h-4 rounded border flex items-center justify-center transition-colors
-                    ${selectedIndustries.includes(ind) ? 'bg-indigo-500 border-indigo-500' : 'border-slate-300 bg-white group-hover:border-indigo-500'}
+                    ${selectedIndustries.includes(ind) ? 'bg-indigo-500 border-indigo-500' : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 group-hover:border-indigo-500'}
                 `}>
                     {selectedIndustries.includes(ind) && (
                         <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -131,7 +131,7 @@ const Sidebar: React.FC = () => {
                   checked={selectedIndustries.includes(ind)}
                   onChange={() => toggleIndustry(ind)}
                 />
-                <span className={`text-sm transition-colors ${selectedIndustries.includes(ind) ? 'text-slate-900 font-medium' : 'text-slate-600 group-hover:text-indigo-500'}`}>
+                <span className={`text-sm transition-colors ${selectedIndustries.includes(ind) ? 'text-slate-900 dark:text-slate-100 font-medium' : 'text-slate-600 dark:text-slate-400 group-hover:text-indigo-500'}`}>
                     {ind}
                 </span>
               </label>

@@ -10,7 +10,7 @@ function Signup() {
       </SignedIn>
 
       {/* Show only signup page */}
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
         <SignUp
           path="/signup"
           routing="path"
