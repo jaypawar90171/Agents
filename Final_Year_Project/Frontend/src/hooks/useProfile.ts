@@ -86,6 +86,7 @@ export const useProfile = (): UseProfileReturn => {
       handsOnPractice: boolean[];
     }
   ) => {
+    console.log('useProfile updateWeekProgress called', { userRoadmapId, weekNumber, isCompleted, subProgress });
     try {
       const updated = await roadmapService.updateProgress({
         userRoadmapId,
@@ -93,6 +94,7 @@ export const useProfile = (): UseProfileReturn => {
         isCompleted,
         subProgress,
       });
+      console.log('API response:', updated);
       setUserRoadmaps((prev) =>
         prev.map((ur) => (ur._id === userRoadmapId ? updated : ur))
       );
@@ -100,6 +102,7 @@ export const useProfile = (): UseProfileReturn => {
         setSelectedUserRoadmap(updated);
       }
     } catch (err) {
+      console.error('Error updating progress:', err);
       setError(getErrorMessage(err));
     }
   };

@@ -183,23 +183,38 @@ def parse_roadmap_content(
                 continue
             first_num = int(head.group(2))
             second_num = head.group(3)
-            week_number = int(second_num) if second_num else first_num
-            week_topic = head.group(4).strip() or f"Week {week_number}"
+            week_topic = head.group(4).strip() or f"Week {first_num}"
             week_content = part[head.end() :]
-            result["weeks"].append(
-                _build_week_dict(week_number, week_topic, week_content)
-            )
+
+            # Expand week ranges
+            if second_num:
+                end_num = int(second_num)
+                for week_num in range(first_num, end_num + 1):
+                    result["weeks"].append(
+                        _build_week_dict(week_num, week_topic, week_content)
+                    )
+            else:
+                result["weeks"].append(
+                    _build_week_dict(first_num, week_topic, week_content)
+                )
         result["totalDurationWeeks"] = len(result["weeks"])
         return result
 
     for match in week_matches:
         first_num = int(match.group(1))
         second_num = match.group(2)
-        week_number = int(second_num) if second_num else first_num
-        week_topic = match.group(3).strip() or f"Week {week_number}"
+        week_topic = match.group(3).strip() or f"Week {first_num}"
         week_content = match.group(4)
-        week = _build_week_dict(week_number, week_topic, week_content)
-        result["weeks"].append(week)
+
+        # Expand week ranges (e.g., Week 1-2 creates 2 separate weeks)
+        if second_num:
+            end_num = int(second_num)
+            for week_num in range(first_num, end_num + 1):
+                week = _build_week_dict(week_num, week_topic, week_content)
+                result["weeks"].append(week)
+        else:
+            week = _build_week_dict(first_num, week_topic, week_content)
+            result["weeks"].append(week)
 
     result["totalDurationWeeks"] = len(result["weeks"])
 

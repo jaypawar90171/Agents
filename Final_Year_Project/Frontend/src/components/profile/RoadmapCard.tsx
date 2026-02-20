@@ -71,7 +71,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
           <div className="flex flex-wrap gap-1">
             {userRoadmap.roadmap.weeks.slice(0, 4).map((week, idx) => (
               <span 
-                key={idx}
+                key={`${week.weekNumber}-${idx}`}
                 className="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs rounded"
                 title={week.topic}
               >

@@ -17,7 +17,7 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 EMBED_MODEL = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
 CHAT_MODEL = "llama-3.3-70b-versatile"
 TOP_K = 10
-MIN_SCORE = 0.5
+MIN_SCORE = 0.4
 MAX_CONTEXT_CHARS = 3500
 VECTOR_INDEX = "vector_index"
 

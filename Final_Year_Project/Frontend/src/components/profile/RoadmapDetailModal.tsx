@@ -33,9 +33,16 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
   const [localProgress, setLocalProgress] = useState<Record<string, WeeklyProgress>>({});
 
   useEffect(() => {
+    console.log('useEffect triggered', { 
+      userRoadmapId: userRoadmap?._id, 
+      weeklyProgress: userRoadmap?.weeklyProgress,
+      hasSubProgress: userRoadmap?.weeklyProgress?.some(wp => wp.subProgress)
+    });
+    
     if (userRoadmap?.weeklyProgress) {
       const progressMap: Record<string, WeeklyProgress> = {};
       userRoadmap.weeklyProgress.forEach(wp => {
+        console.log('Setting progress for week', wp.weekNumber, wp);
         progressMap[wp.weekNumber.toString()] = wp;
       });
       setLocalProgress(progressMap);
@@ -80,34 +87,52 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
     index: number,
     week: any
   ) => {
-    const progress = getWeekProgress(weekNumber);
-    const currentSubProgress = progress?.subProgress || {
-      whatYoullLearn: new Array(week.whatYoullLearn.length).fill(false),
-      studyPlan: new Array(week.studyPlan.length).fill(false),
-      handsOnPractice: new Array(week.handsOnPractice.length).fill(false),
-    };
+    try {
+      console.log('handleSubItemToggle called', { weekNumber, category, index });
+      
+      const progress = getWeekProgress(weekNumber);
+      console.log('current progress:', progress);
+      
+      const currentSubProgress = progress?.subProgress || {
+        whatYoullLearn: new Array(week.whatYoullLearn.length).fill(false),
+        studyPlan: new Array(week.studyPlan.length).fill(false),
+        handsOnPractice: new Array(week.handsOnPractice.length).fill(false),
+      };
 
-    const newSubProgress = {
-      ...currentSubProgress,
-      [category]: currentSubProgress[category].map((val: boolean, i: number) => 
-        i === index ? !val : val
-      ),
-    };
+      const newSubProgress = {
+        ...currentSubProgress,
+        [category]: currentSubProgress[category].map((val: boolean, i: number) => 
+          i === index ? !val : val
+        ),
+      };
 
-    const weekIsCompleted = newSubProgress.whatYoullLearn.every((v: boolean) => v) &&
-                            newSubProgress.studyPlan.every((v: boolean) => v) &&
-                            newSubProgress.handsOnPractice.every((v: boolean) => v);
+      console.log('new subProgress:', newSubProgress);
 
-    setLocalProgress(prev => ({
-      ...prev,
-      [weekNumber.toString()]: {
+      const weekIsCompleted = newSubProgress.whatYoullLearn.every((v: boolean) => v) &&
+                              newSubProgress.studyPlan.every((v: boolean) => v) &&
+                              newSubProgress.handsOnPractice.every((v: boolean) => v);
+
+      setLocalProgress(prev => ({
+        ...prev,
+        [weekNumber.toString()]: {
+          weekNumber,
+          isCompleted: weekIsCompleted,
+          subProgress: newSubProgress,
+        },
+      }));
+
+      console.log('calling onUpdateProgress with:', {
+        userRoadmapId: userRoadmap._id,
         weekNumber,
         isCompleted: weekIsCompleted,
-        subProgress: newSubProgress,
-      },
-    }));
-
-    await onUpdateProgress(userRoadmap._id, weekNumber, weekIsCompleted, newSubProgress);
+        subProgress: newSubProgress
+      });
+      
+      await onUpdateProgress(userRoadmap._id, weekNumber, weekIsCompleted, newSubProgress);
+      console.log('onUpdateProgress completed');
+    } catch (err) {
+      console.error('Error in handleSubItemToggle:', err);
+    }
   };
 
   const completedWeeks = userRoadmap.weeklyProgress?.filter(wp => {
@@ -180,7 +205,7 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
-              {roadmapDetail?.weeks?.map((week) => {
+              {roadmapDetail?.weeks?.map((week, idx) => {
                 const weekProgress = getWeekProgress(week.weekNumber);
                 const isExpanded = expandedWeeks.has(week.weekNumber);
                 const weekProgPercent = calculateWeekProgress(week, week.weekNumber);
@@ -188,7 +213,7 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
 
                 return (
                   <div
-                    key={week.weekNumber}
+                    key={`${week.weekNumber}-${idx}`}
                     className={`border rounded-lg transition-colors ${
                       isWeekComplete
                         ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20'
