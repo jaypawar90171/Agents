@@ -39,10 +39,15 @@ def _build_week_dict(week_number: int, week_topic: str, week_content: str) -> Di
         items = _bullet_items(study_match.group(1))
         for item in items:
             text = item.strip()
-            day_match = re.match(r"^(Day\s*\d+[-\s]*\d*)[:\s-]*(.*)", text, re.IGNORECASE)
+            day_match = re.match(
+                r"^(Day\s*\d+[-\s]*\d*)[:\s-]*(.*)", text, re.IGNORECASE
+            )
             if day_match:
                 week["studyPlan"].append(
-                    {"dayRange": day_match.group(1).strip(), "content": day_match.group(2).strip()}
+                    {
+                        "dayRange": day_match.group(1).strip(),
+                        "content": day_match.group(2).strip(),
+                    }
                 )
             else:
                 week["studyPlan"].append({"dayRange": "General", "content": text})
@@ -66,7 +71,9 @@ def _build_week_dict(week_number: int, week_topic: str, week_content: str) -> Di
             text = item.strip()
             url_match = re.search(r"\[([^\]]+)\]\(([^)]+)\)", text)
             if url_match:
-                week["resources"].append({"name": url_match.group(1), "url": url_match.group(2)})
+                week["resources"].append(
+                    {"name": url_match.group(1), "url": url_match.group(2)}
+                )
             else:
                 week["resources"].append({"name": text, "url": ""})
     # Extract Success Criteria
@@ -84,16 +91,15 @@ def _build_week_dict(week_number: int, week_topic: str, week_content: str) -> Di
 
 
 def parse_roadmap_content(
-    content: str, 
-    job_details: Optional[Dict[str, str]] = None
+    content: str, job_details: Optional[Dict[str, str]] = None
 ) -> Dict:
     """
     Parse markdown roadmap content into structured data
-    
+
     Args:
         content: Markdown formatted roadmap content
         job_details: Optional dict with company, role, location
-    
+
     Returns:
         Structured roadmap data matching Pydantic model
     """
@@ -114,75 +120,75 @@ def parse_roadmap_content(
         "weeks": [],
         "metadata": {
             "location": job_details.get("location", ""),
-            "createdAt": datetime.utcnow().isoformat()
-        }
+            "createdAt": datetime.utcnow().isoformat(),
+        },
     }
-    
-    lines = content.split('\n')
-    
+
+    lines = content.split("\n")
+
     # Extract title
     for line in lines:
-        if line.startswith('# ') or line.startswith('## '):
-            result["title"] = re.sub(r'^#{1,2}\s+', '', line).strip()
+        if line.startswith("# ") or line.startswith("## "):
+            result["title"] = re.sub(r"^#{1,2}\s+", "", line).strip()
             break
-    
+
     if not result["title"] and job_details.get("company") and job_details.get("role"):
         result["title"] = f"{job_details['company']} - {job_details['role']}"
     elif not result["title"]:
         result["title"] = "Learning Roadmap"
-    
+
     # Extract skills
     skills_match = re.search(
-        r'##\s*Skills?\s*Analysis(.*?)(?=##|$)', 
-        content, 
-        re.IGNORECASE | re.DOTALL
+        r"##\s*Skills?\s*Analysis(.*?)(?=##|$)", content, re.IGNORECASE | re.DOTALL
     )
-    
+
     if skills_match:
         skills_content = skills_match.group(1)
-        skill_items = re.findall(r'[-•*]\s*([^\n]+)', skills_content)
+        skill_items = re.findall(r"[-•*]\s*([^\n]+)", skills_content)
         result["skills"] = [
-            re.sub(r'\*\*', '', item).strip() 
-            for item in skill_items 
-            if item.strip()
+            re.sub(r"\*\*", "", item).strip() for item in skill_items if item.strip()
         ]
         result["totalSkills"] = len(result["skills"])
-    
+
     # Extract weeks - support multiple formats from generated roadmaps:
     #   **Week 1-2: Java/J2EE**   (bold with range)
     #   ### Week 1: Topic         (heading)
     #   #### Weeks 1-2: Topic     (heading with range)
+    #   Week 1: Topic             (no markdown)
     # Topic: capture until we hit ** or newline (use greedy so we get full topic)
-    week_header = r'(?:^|\n)(?:#{2,4}\s*|\*\*)\s*Weeks?\s+(\d+)(?:-(\d+))?\s*[:\-]\s*([^\n*#]+)(?:\s*\*\*)?'
+    week_header = r"(?:^|\n)(?:#{1,4}\s*|\*\*)\s*Weeks?\s+(\d+)(?:-(\d+))?\s*[:\-]?\s*([^\n*#]+)(?:\s*\*\*)?"
     # Stop at next week header (**Week or # Week) or any ## / ### section
-    week_content_until_next = r'(.*?)(?=(?:^|\n)\s*(?:\*\*Week\s|\#+\s)|\Z)'
+    week_content_until_next = r"(.*?)(?=(?:^|\n)\s*(?:\*\*Week\s|Week\s+\d|#+\s)|\Z)"
     combined = re.compile(
-        week_header + r'\s*' + week_content_until_next,
-        re.IGNORECASE | re.DOTALL
+        week_header + r"\s*" + week_content_until_next, re.IGNORECASE | re.DOTALL
     )
     week_matches = list(combined.finditer(content))
 
     # Fallback: if no weeks found but content clearly has **Week N** format, split manually
     if not week_matches and re.search(r"\*\*Week\s+\d", content, re.IGNORECASE):
-        # Split by newline followed by **Week (so each part after the first starts with **Week...)
-        parts = re.split(r"(?=\n\s*\*\*Week\s+\d)", content, flags=re.IGNORECASE)
+        # Split by **Week or just Week to handle various formats
+        parts = re.split(
+            r"(?=(\n\s*\*\*Week\s+\d)|(\n\s*Week\s+\d))", content, flags=re.IGNORECASE
+        )
         for part in parts:
             part = part.lstrip("\n\r")
-            if not re.search(r"^\s*\*\*Week\s+\d", part, re.IGNORECASE):
+            if not re.search(r"(\*\*Week\s+\d)|(Week\s+\d)", part, re.IGNORECASE):
                 continue
             head = re.match(
-                r"^\s*\*\*Weeks?\s+(\d+)(?:-(\d+))?\s*[:\-]\s*([^\n*#]+)(?:\s*\*\*)?\s*",
+                r"^\s*(\*\*)?Weeks?\s+(\d+)(?:-(\d+))?\s*[:\-]?\s*([^\n*#]+)(?:\s*\*\*)?\s*",
                 part,
                 re.IGNORECASE | re.DOTALL,
             )
             if not head:
                 continue
-            first_num = int(head.group(1))
-            second_num = head.group(2)
+            first_num = int(head.group(2))
+            second_num = head.group(3)
             week_number = int(second_num) if second_num else first_num
-            week_topic = head.group(3).strip() or f"Week {week_number}"
+            week_topic = head.group(4).strip() or f"Week {week_number}"
             week_content = part[head.end() :]
-            result["weeks"].append(_build_week_dict(week_number, week_topic, week_content))
+            result["weeks"].append(
+                _build_week_dict(week_number, week_topic, week_content)
+            )
         result["totalDurationWeeks"] = len(result["weeks"])
         return result
 
@@ -194,39 +200,53 @@ def parse_roadmap_content(
         week_content = match.group(4)
         week = _build_week_dict(week_number, week_topic, week_content)
         result["weeks"].append(week)
-    
+
     result["totalDurationWeeks"] = len(result["weeks"])
-    
+
     return result
 
 
 def extract_skills_from_content(content: str) -> List[str]:
     """Extract skills from markdown content"""
     skills = set()
-    
+
     # Extract from Skills Analysis section
     skills_match = re.search(
-        r'##\s*Skills?\s*Analysis(.*?)(?=##|$)',
-        content,
-        re.IGNORECASE | re.DOTALL
+        r"##\s*Skills?\s*Analysis(.*?)(?=##|$)", content, re.IGNORECASE | re.DOTALL
     )
-    
+
     if skills_match:
-        skill_items = re.findall(r'[-•*]\s*([^\n]+)', skills_match.group(1))
+        skill_items = re.findall(r"[-•*]\s*([^\n]+)", skills_match.group(1))
         for item in skill_items:
-            skill = re.sub(r'\*\*', '', item).strip()
+            skill = re.sub(r"\*\*", "", item).strip()
             if skill:
                 skills.add(skill)
-    
+
     # Common tech keywords
     tech_keywords = [
-        'Java', 'Python', 'JavaScript', 'React', 'Node.js', 'AWS', 'Docker',
-        'Kubernetes', 'SQL', 'MongoDB', 'Redis', 'Kafka', 'Spring Boot',
-        'REST API', 'GraphQL', 'TypeScript', 'Git', 'CI/CD', 'Microservices'
+        "Java",
+        "Python",
+        "JavaScript",
+        "React",
+        "Node.js",
+        "AWS",
+        "Docker",
+        "Kubernetes",
+        "SQL",
+        "MongoDB",
+        "Redis",
+        "Kafka",
+        "Spring Boot",
+        "REST API",
+        "GraphQL",
+        "TypeScript",
+        "Git",
+        "CI/CD",
+        "Microservices",
     ]
-    
+
     for keyword in tech_keywords:
-        if re.search(rf'\b{keyword}\b', content, re.IGNORECASE):
+        if re.search(rf"\b{keyword}\b", content, re.IGNORECASE):
             skills.add(keyword)
-    
+
     return list(skills)
