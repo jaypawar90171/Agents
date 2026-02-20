@@ -72,3 +72,42 @@ export interface ChatMessage {
   sources?: ChatSource[];
   createdAt: number;
 }
+
+export interface WeeklyProgress {
+  weekNumber: number;
+  isCompleted: boolean;
+  completedAt?: string;
+  notes?: string;
+}
+
+export interface RoadmapWeek {
+  weekNumber: number;
+  title: string;
+  topics: string[];
+  skills: string[];
+  resources?: string[];
+}
+
+export interface RoadmapDetail {
+  _id: string;
+  title: string;
+  targetCompany: string;
+  roleTitle: string;
+  description?: string;
+  weeks: RoadmapWeek[];
+  skillsTargeted: string[];
+  createdAt: string;
+}
+
+export interface UserRoadmap {
+  _id: string;
+  userId: string;
+  roadmapId: string;
+  status: 'in-progress' | 'completed' | 'paused';
+  overallProgress: number;
+  weeklyProgress: WeeklyProgress[];
+  skillsMastered: string[];
+  startDate: string;
+  lastAccessed: string;
+  roadmap?: RoadmapDetail;
+}

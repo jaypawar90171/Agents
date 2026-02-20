@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { RoadmapResponse } from '../types/api';
+import { RoadmapResponse, UserRoadmap, RoadmapDetail, WeeklyProgress } from '../types/api';
 
 // Update this to match your backend URL
 const API_BASE_URL = 'http://localhost:8000';
@@ -81,7 +81,7 @@ class RoadmapService {
     return response.data;
   }
 
-  /**
+/**
    * Save already-parsed roadmap data (e.g. when frontend has structured data).
    */
   async saveRoadmap(
@@ -94,6 +94,56 @@ class RoadmapService {
         roadmap_data: roadmapData,
         userId,
       },
+      {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 15000,
+      }
+    );
+    return response.data;
+  }
+
+  async getUserRoadmaps(userId: string): Promise<UserRoadmap[]> {
+    const response = await axios.get<UserRoadmap[]>(
+      `${API_BASE_URL}/api/roadmaps/user/${userId}`,
+      {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 15000,
+      }
+    );
+    return response.data;
+  }
+
+  async getRoadmapById(roadmapId: string): Promise<RoadmapDetail> {
+    const response = await axios.get<RoadmapDetail>(
+      `${API_BASE_URL}/api/roadmaps/${roadmapId}`,
+      {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 15000,
+      }
+    );
+    return response.data;
+  }
+
+  async updateProgress(payload: {
+    userRoadmapId: string;
+    weekNumber: number;
+    isCompleted: boolean;
+    notes?: string;
+  }): Promise<UserRoadmap> {
+    const response = await axios.put<UserRoadmap>(
+      `${API_BASE_URL}/api/roadmaps/progress`,
+      payload,
+      {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 15000,
+      }
+    );
+    return response.data;
+  }
+
+  async deleteUserRoadmap(userRoadmapId: string): Promise<{ message: string }> {
+    const response = await axios.delete<{ message: string }>(
+      `${API_BASE_URL}/api/roadmaps/user/${userRoadmapId}`,
       {
         headers: { 'Content-Type': 'application/json' },
         timeout: 15000,

@@ -62,12 +62,16 @@ const Header: React.FC = () => {
             >
               Chat
             </Link>
-            <a
-              href="#"
-              className="text-slate-500 dark:text-slate-400 hover:text-indigo-500 font-medium px-1 py-5 transition-colors"
+            <Link
+              to="/profile"
+              className={`px-1 py-5 font-medium transition-colors ${
+                location.pathname === "/profile"
+                  ? "text-indigo-500 font-semibold border-b-2 border-indigo-500"
+                  : "text-slate-500 dark:text-slate-400 hover:text-indigo-500"
+              }`}
             >
               Profile
-            </a>
+            </Link>
           </nav>
 
           {/* Right Actions */}

@@ -4,6 +4,7 @@ import Login from "../screens/Login";
 import Roadmap from "../screens/Roadmap";
 import Signup from "../screens/Signup";
 import JobChat from "../screens/JobChat";
+import Profile from "../screens/Profile";
 import LandingPage from "../screens/LandingPage";
 
 export default function AppRoute() {
@@ -16,6 +17,7 @@ export default function AppRoute() {
         <Route path="/home" element={<Home />} />
         <Route path="/roadmap" element={<Roadmap />} />
         <Route path="/chat" element={<JobChat />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   );
