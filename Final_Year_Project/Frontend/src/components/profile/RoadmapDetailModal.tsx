@@ -40,7 +40,7 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
       });
       setLocalProgress(progressMap);
     }
-  }, [userRoadmap?.weeklyProgress]);
+  }, [userRoadmap?._id, userRoadmap?.weeklyProgress]);
 
   if (!userRoadmap) return null;
 
