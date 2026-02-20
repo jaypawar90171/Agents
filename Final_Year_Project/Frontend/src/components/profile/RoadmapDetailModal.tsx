@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserRoadmap, RoadmapDetail, WeeklyProgress } from '../../types/api';
-import { X, CheckCircle2, Circle, Trash2, Building2, Briefcase } from 'lucide-react';
+import { X, CheckCircle2, Circle, Trash2, Building2, Briefcase, ChevronDown, ChevronUp, BookOpen, ListChecks, Wrench, Award } from 'lucide-react';
 
 interface RoadmapDetailModalProps {
   userRoadmap: UserRoadmap | null;
@@ -10,7 +10,12 @@ interface RoadmapDetailModalProps {
   onUpdateProgress: (
     userRoadmapId: string,
     weekNumber: number,
-    isCompleted: boolean
+    isCompleted: boolean,
+    subProgress?: {
+      whatYoullLearn: boolean[];
+      studyPlan: boolean[];
+      handsOnPractice: boolean[];
+    }
   ) => Promise<void>;
   onDelete: (userRoadmapId: string) => void;
 }
@@ -23,22 +28,94 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
   onUpdateProgress,
   onDelete,
 }) => {
-  const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [expandedWeeks, setExpandedWeeks] = useState<Set<number>>(new Set());
+  const [localProgress, setLocalProgress] = useState<Record<string, WeeklyProgress>>({});
+
+  useEffect(() => {
+    if (userRoadmap?.weeklyProgress) {
+      const progressMap: Record<string, WeeklyProgress> = {};
+      userRoadmap.weeklyProgress.forEach(wp => {
+        progressMap[wp.weekNumber.toString()] = wp;
+      });
+      setLocalProgress(progressMap);
+    }
+  }, [userRoadmap?.weeklyProgress]);
 
   if (!userRoadmap) return null;
 
+  const toggleWeek = (weekNumber: number) => {
+    setExpandedWeeks(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(weekNumber)) {
+        newSet.delete(weekNumber);
+      } else {
+        newSet.add(weekNumber);
+      }
+      return newSet;
+    });
+  };
+
   const getWeekProgress = (weekNumber: number): WeeklyProgress | undefined => {
-    return userRoadmap.weeklyProgress?.find((wp) => wp.weekNumber === weekNumber);
+    return localProgress[weekNumber.toString()];
   };
 
-  const handleCheckboxClick = async (weekNumber: number, currentStatus: boolean) => {
-    if (userRoadmap) {
-      await onUpdateProgress(userRoadmap._id, weekNumber, !currentStatus);
-    }
+  const calculateWeekProgress = (week: any, weekNumber: number) => {
+    const progress = getWeekProgress(weekNumber);
+    if (!progress?.subProgress) return 0;
+
+    const { whatYoullLearn, studyPlan, handsOnPractice } = progress.subProgress;
+    const total = week.whatYoullLearn.length + week.studyPlan.length + week.handsOnPractice.length;
+    if (total === 0) return progress.isCompleted ? 100 : 0;
+
+    const completed = whatYoullLearn.filter(Boolean).length + 
+                      studyPlan.filter(Boolean).length + 
+                      handsOnPractice.filter(Boolean).length;
+    return Math.round((completed / total) * 100);
   };
 
-  const completedWeeks =
-    userRoadmap.weeklyProgress?.filter((wp) => wp.isCompleted).length || 0;
+  const handleSubItemToggle = async (
+    weekNumber: number,
+    category: 'whatYoullLearn' | 'studyPlan' | 'handsOnPractice',
+    index: number,
+    week: any
+  ) => {
+    const progress = getWeekProgress(weekNumber);
+    const currentSubProgress = progress?.subProgress || {
+      whatYoullLearn: new Array(week.whatYoullLearn.length).fill(false),
+      studyPlan: new Array(week.studyPlan.length).fill(false),
+      handsOnPractice: new Array(week.handsOnPractice.length).fill(false),
+    };
+
+    const newSubProgress = {
+      ...currentSubProgress,
+      [category]: currentSubProgress[category].map((val: boolean, i: number) => 
+        i === index ? !val : val
+      ),
+    };
+
+    const weekIsCompleted = newSubProgress.whatYoullLearn.every((v: boolean) => v) &&
+                            newSubProgress.studyPlan.every((v: boolean) => v) &&
+                            newSubProgress.handsOnPractice.every((v: boolean) => v);
+
+    setLocalProgress(prev => ({
+      ...prev,
+      [weekNumber.toString()]: {
+        weekNumber,
+        isCompleted: weekIsCompleted,
+        subProgress: newSubProgress,
+      },
+    }));
+
+    await onUpdateProgress(userRoadmap._id, weekNumber, weekIsCompleted, newSubProgress);
+  };
+
+  const completedWeeks = userRoadmap.weeklyProgress?.filter(wp => {
+    const week = roadmapDetail?.weeks?.find(w => w.weekNumber === wp.weekNumber);
+    if (!week) return wp.isCompleted;
+    return calculateWeekProgress(week, wp.weekNumber) === 100;
+  }).length || 0;
+
   const totalWeeks = roadmapDetail?.weeks?.length || 0;
   const calculatedProgress = totalWeeks > 0 ? Math.round((completedWeeks / totalWeeks) * 100) : 0;
 
@@ -51,7 +128,7 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800">
           <div>
             <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
@@ -105,68 +182,199 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
             <div className="space-y-4">
               {roadmapDetail?.weeks?.map((week) => {
                 const weekProgress = getWeekProgress(week.weekNumber);
-                const isCompleted = weekProgress?.isCompleted || false;
+                const isExpanded = expandedWeeks.has(week.weekNumber);
+                const weekProgPercent = calculateWeekProgress(week, week.weekNumber);
+                const isWeekComplete = weekProgPercent === 100;
 
                 return (
                   <div
                     key={week.weekNumber}
-                    className={`border rounded-lg p-4 transition-colors ${
-                      isCompleted
+                    className={`border rounded-lg transition-colors ${
+                      isWeekComplete
                         ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20'
                         : 'border-slate-200 dark:border-slate-700'
                     }`}
                   >
-                    <div className="flex items-start gap-3">
-                      <button
-                        onClick={() =>
-                          handleCheckboxClick(week.weekNumber, isCompleted)
-                        }
-                        className="mt-0.5 flex-shrink-0"
-                      >
-                        {isCompleted ? (
-                          <CheckCircle2 className="w-6 h-6 text-green-500" />
-                        ) : (
-                          <Circle className="w-6 h-6 text-slate-400 hover:text-indigo-500 transition-colors" />
-                        )}
-                      </button>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-slate-900 dark:text-slate-100">
-                          Week {week.weekNumber}: {week.title}
-                        </h4>
-                        <div className="mt-2">
-                          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                            Topics:
+                    <button
+                      onClick={() => toggleWeek(week.weekNumber)}
+                      className="w-full flex items-center justify-between p-4 text-left"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                          isWeekComplete ? 'bg-green-500' : 'bg-indigo-100 dark:bg-indigo-900'
+                        }`}>
+                          {isWeekComplete ? (
+                            <CheckCircle2 className="w-5 h-5 text-white" />
+                          ) : (
+                            <span className="text-sm font-bold text-indigo-600 dark:text-indigo-400">
+                              {week.weekNumber}
+                            </span>
+                          )}
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-slate-900 dark:text-slate-100">
+                            Week {week.weekNumber}: {week.topic}
+                          </h4>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            {week.whatYoullLearn.length} topics • {week.studyPlan.length} study items • {week.handsOnPractice.length} practice items
                           </p>
-                          <div className="flex flex-wrap gap-1.5 mt-1">
-                            {week.topics?.map((topic, idx) => (
-                              <span
-                                key={idx}
-                                className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs rounded"
-                              >
-                                {topic}
-                              </span>
-                            ))}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="w-24">
+                          <div className="h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${isWeekComplete ? 'bg-green-500' : 'bg-indigo-500'}`}
+                              style={{ width: `${weekProgPercent}%` }}
+                            />
                           </div>
                         </div>
-                        {week.skills && week.skills.length > 0 && (
-                          <div className="mt-2">
-                            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                              Skills:
-                            </p>
-                            <div className="flex flex-wrap gap-1.5 mt-1">
-                              {week.skills.map((skill, idx) => (
-                                <span
+                        {isExpanded ? (
+                          <ChevronUp className="w-5 h-5 text-slate-400" />
+                        ) : (
+                          <ChevronDown className="w-5 h-5 text-slate-400" />
+                        )}
+                      </div>
+                    </button>
+
+                    {isExpanded && (
+                      <div className="px-4 pb-4 border-t border-slate-200 dark:border-slate-700 pt-4 space-y-4">
+                        {week.whatYoullLearn && week.whatYoullLearn.length > 0 && (
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <BookOpen className="w-4 h-4 text-indigo-500" />
+                              <h5 className="font-medium text-slate-900 dark:text-slate-100 text-sm">
+                                What You'll Learn
+                              </h5>
+                            </div>
+                            <div className="space-y-2 ml-6">
+                              {week.whatYoullLearn.map((item, idx) => {
+                                const isChecked = weekProgress?.subProgress?.whatYoullLearn?.[idx] || false;
+                                return (
+                                  <button
+                                    key={idx}
+                                    onClick={() => handleSubItemToggle(week.weekNumber, 'whatYoullLearn', idx, week)}
+                                    className="flex items-start gap-2 text-left w-full group"
+                                  >
+                                    {isChecked ? (
+                                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                                    ) : (
+                                      <Circle className="w-5 h-5 text-slate-300 group-hover:text-indigo-500 flex-shrink-0 mt-0.5" />
+                                    )}
+                                    <span className={`text-sm ${isChecked ? 'text-slate-400 line-through' : 'text-slate-600 dark:text-slate-300'}`}>
+                                      {item}
+                                    </span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {week.studyPlan && week.studyPlan.length > 0 && (
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <ListChecks className="w-4 h-4 text-blue-500" />
+                              <h5 className="font-medium text-slate-900 dark:text-slate-100 text-sm">
+                                Study Plan
+                              </h5>
+                            </div>
+                            <div className="space-y-2 ml-6">
+                              {week.studyPlan.map((item, idx) => {
+                                const isChecked = weekProgress?.subProgress?.studyPlan?.[idx] || false;
+                                return (
+                                  <button
+                                    key={idx}
+                                    onClick={() => handleSubItemToggle(week.weekNumber, 'studyPlan', idx, week)}
+                                    className="flex items-start gap-2 text-left w-full group"
+                                  >
+                                    {isChecked ? (
+                                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                                    ) : (
+                                      <Circle className="w-5 h-5 text-slate-300 group-hover:text-indigo-500 flex-shrink-0 mt-0.5" />
+                                    )}
+                                    <span className={`text-sm ${isChecked ? 'text-slate-400 line-through' : 'text-slate-600 dark:text-slate-300'}`}>
+                                      <span className="font-medium text-indigo-600 dark:text-indigo-400">{item.dayRange}:</span> {item.content}
+                                    </span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {week.handsOnPractice && week.handsOnPractice.length > 0 && (
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <Wrench className="w-4 h-4 text-amber-500" />
+                              <h5 className="font-medium text-slate-900 dark:text-slate-100 text-sm">
+                                Hands-on Practice
+                              </h5>
+                            </div>
+                            <div className="space-y-2 ml-6">
+                              {week.handsOnPractice.map((item, idx) => {
+                                const isChecked = weekProgress?.subProgress?.handsOnPractice?.[idx] || false;
+                                return (
+                                  <button
+                                    key={idx}
+                                    onClick={() => handleSubItemToggle(week.weekNumber, 'handsOnPractice', idx, week)}
+                                    className="flex items-start gap-2 text-left w-full group"
+                                  >
+                                    {isChecked ? (
+                                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                                    ) : (
+                                      <Circle className="w-5 h-5 text-slate-300 group-hover:text-indigo-500 flex-shrink-0 mt-0.5" />
+                                    )}
+                                    <span className={`text-sm ${isChecked ? 'text-slate-400 line-through' : 'text-slate-600 dark:text-slate-300'}`}>
+                                      {item}
+                                    </span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+
+                        {week.resources && week.resources.length > 0 && (
+                          <div>
+                            <h5 className="font-medium text-slate-900 dark:text-slate-100 text-sm mb-2">
+                              Resources
+                            </h5>
+                            <div className="space-y-1 ml-6">
+                              {week.resources.map((resource, idx) => (
+                                <a
                                   key={idx}
-                                  className="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs rounded"
+                                  href={resource.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-2 text-sm text-indigo-600 dark:text-indigo-400 hover:underline"
                                 >
-                                  {skill}
-                                </span>
+                                  📚 {resource.name}
+                                </a>
                               ))}
                             </div>
                           </div>
                         )}
+
+                        {week.successCriteria && week.successCriteria.length > 0 && (
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <Award className="w-4 h-4 text-green-500" />
+                              <h5 className="font-medium text-slate-900 dark:text-slate-100 text-sm">
+                                Success Criteria
+                              </h5>
+                            </div>
+                            <ul className="space-y-1 ml-6">
+                              {week.successCriteria.map((criteria, idx) => (
+                                <li key={idx} className="text-sm text-slate-600 dark:text-slate-300">
+                                  ✓ {criteria}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
                       </div>
-                    </div>
+                    )}
                   </div>
                 );
               })}
@@ -191,8 +399,7 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
                 Delete Roadmap?
               </h3>
               <p className="text-slate-500 dark:text-slate-400 mb-4">
-                This action cannot be undone. Are you sure you want to delete this
-                roadmap?
+                This action cannot be undone. Are you sure you want to delete this roadmap?
               </p>
               <div className="flex gap-3">
                 <button

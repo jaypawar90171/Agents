@@ -1,6 +1,6 @@
 import React from 'react';
 import { UserRoadmap } from '../../types/api';
-import { Building2, Briefcase, Trash2, Eye } from 'lucide-react';
+import { Building2, Briefcase, Trash2, Eye, Calendar, BookOpen } from 'lucide-react';
 
 interface RoadmapCardProps {
   userRoadmap: UserRoadmap;
@@ -32,6 +32,9 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
     setShowDeleteConfirm(false);
   };
 
+  const totalWeeks = userRoadmap.roadmap?.weeks?.length || 0;
+  const completedWeeks = userRoadmap.weeklyProgress?.filter(wp => wp.isCompleted).length || 0;
+
   return (
     <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-5 hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-4">
@@ -59,6 +62,31 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
         </span>
       </div>
 
+      {userRoadmap.roadmap?.weeks && userRoadmap.roadmap.weeks.length > 0 && (
+        <div className="mb-4 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+          <div className="flex items-center gap-2 mb-2">
+            <BookOpen className="w-4 h-4 text-indigo-500" />
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Weekly Topics</span>
+          </div>
+          <div className="flex flex-wrap gap-1">
+            {userRoadmap.roadmap.weeks.slice(0, 4).map((week, idx) => (
+              <span 
+                key={idx}
+                className="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-xs rounded"
+                title={week.topic}
+              >
+                W{week.weekNumber}: {week.topic.substring(0, 15)}{week.topic.length > 15 ? '...' : ''}
+              </span>
+            ))}
+            {userRoadmap.roadmap.weeks.length > 4 && (
+              <span className="px-2 py-0.5 text-xs text-slate-500">
+                +{userRoadmap.roadmap.weeks.length - 4} more
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="mb-4">
         <div className="flex justify-between text-sm mb-1">
           <span className="text-slate-600 dark:text-slate-300">Progress</span>
@@ -72,12 +100,13 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
             style={{ width: `${userRoadmap.overallProgress}%` }}
           />
         </div>
-      </div>
-
-      <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-4">
-        <span>
-          Last accessed: {new Date(userRoadmap.lastAccessed).toLocaleDateString()}
-        </span>
+        <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <span className="flex items-center gap-1">
+            <Calendar className="w-3 h-3" />
+            {totalWeeks} weeks
+          </span>
+          <span>{completedWeeks}/{totalWeeks} completed</span>
+        </div>
       </div>
 
       <div className="flex gap-2">

@@ -80,14 +80,18 @@ export const useProfile = (): UseProfileReturn => {
     userRoadmapId: string,
     weekNumber: number,
     isCompleted: boolean,
-    notes?: string
+    subProgress?: {
+      whatYoullLearn: boolean[];
+      studyPlan: boolean[];
+      handsOnPractice: boolean[];
+    }
   ) => {
     try {
       const updated = await roadmapService.updateProgress({
         userRoadmapId,
         weekNumber,
         isCompleted,
-        notes,
+        subProgress,
       });
       setUserRoadmaps((prev) =>
         prev.map((ur) => (ur._id === userRoadmapId ? updated : ur))

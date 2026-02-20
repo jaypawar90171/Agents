@@ -78,14 +78,31 @@ export interface WeeklyProgress {
   isCompleted: boolean;
   completedAt?: string;
   notes?: string;
+  subProgress?: {
+    whatYoullLearn: boolean[];
+    studyPlan: boolean[];
+    handsOnPractice: boolean[];
+  };
+}
+
+export interface Resource {
+  name: string;
+  url: string;
+}
+
+export interface StudyPlanItem {
+  dayRange: string;
+  content: string;
 }
 
 export interface RoadmapWeek {
   weekNumber: number;
-  title: string;
-  topics: string[];
-  skills: string[];
-  resources?: string[];
+  topic: string;
+  whatYoullLearn: string[];
+  studyPlan: StudyPlanItem[];
+  handsOnPractice: string[];
+  resources: Resource[];
+  successCriteria: string[];
 }
 
 export interface RoadmapDetail {
@@ -93,10 +110,14 @@ export interface RoadmapDetail {
   title: string;
   targetCompany: string;
   roleTitle: string;
-  description?: string;
+  totalDurationWeeks: number;
+  totalSkills: number;
+  skills: string[];
   weeks: RoadmapWeek[];
-  skillsTargeted: string[];
-  createdAt: string;
+  metadata?: {
+    location?: string;
+    createdAt?: string;
+  };
 }
 
 export interface UserRoadmap {

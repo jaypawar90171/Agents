@@ -119,16 +119,18 @@ const Profile: React.FC = () => {
           </div>
         </footer>
 
-        {selectedUserRoadmap && (
-          <RoadmapDetailModal
-            userRoadmap={selectedUserRoadmap}
-            roadmapDetail={roadmapDetail}
-            loading={roadmapDetailLoading}
-            onClose={closeRoadmapDetail}
-            onUpdateProgress={updateWeekProgress}
-            onDelete={deleteRoadmap}
-          />
-        )}
+          {selectedUserRoadmap && (
+            <RoadmapDetailModal
+              userRoadmap={selectedUserRoadmap}
+              roadmapDetail={roadmapDetail}
+              loading={roadmapDetailLoading}
+              onClose={closeRoadmapDetail}
+              onUpdateProgress={(userRoadmapId, weekNumber, isCompleted, subProgress) => 
+                updateWeekProgress(userRoadmapId, weekNumber, isCompleted, subProgress)
+              }
+              onDelete={deleteRoadmap}
+            />
+          )}
       </div>
     </SignedIn>
   );

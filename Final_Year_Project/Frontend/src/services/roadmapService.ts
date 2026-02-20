@@ -128,7 +128,11 @@ class RoadmapService {
     userRoadmapId: string;
     weekNumber: number;
     isCompleted: boolean;
-    notes?: string;
+    subProgress?: {
+      whatYoullLearn: boolean[];
+      studyPlan: boolean[];
+      handsOnPractice: boolean[];
+    };
   }): Promise<UserRoadmap> {
     const response = await axios.put<{ message: string; userRoadmap: UserRoadmap }>(
       `${API_BASE_URL}/api/roadmaps/progress`,
