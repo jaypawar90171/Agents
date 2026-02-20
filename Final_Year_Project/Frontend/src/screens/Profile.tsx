@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { SignedIn, SignedOut, useUser } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
@@ -11,6 +11,7 @@ import { Map } from 'lucide-react';
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useUser();
+  const hasFetchedRef = useRef(false);
   const {
     userRoadmaps,
     loading,
@@ -26,7 +27,8 @@ const Profile: React.FC = () => {
   } = useProfile();
 
   useEffect(() => {
-    if (user?.id) {
+    if (user?.id && !hasFetchedRef.current) {
+      hasFetchedRef.current = true;
       fetchUserRoadmaps(user.id);
     }
   }, [user?.id, fetchUserRoadmaps]);
@@ -41,7 +43,7 @@ const Profile: React.FC = () => {
 
   return (
     <SignedIn>
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans overflow-x-hidden">
         <Header />
 
         <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
