@@ -71,6 +71,44 @@ const JobList: React.FC = () => {
     );
   }
 
+  const getPaginationRange = () => {
+  const totalNumbers = 5; // How many buttons to show (excluding first/last and ellipses)
+  const siblingCount = 1; // Number of pages to show on either side of the current page
+
+  // Case 1: If total pages is less than the range we want to show
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  const leftSiblingIndex = Math.max(currentPage - siblingCount, 1);
+  const rightSiblingIndex = Math.min(currentPage + siblingCount, totalPages);
+
+  const shouldShowLeftDots = leftSiblingIndex > 2;
+  const shouldShowRightDots = rightSiblingIndex < totalPages - 2;
+
+  // Case 2: No left dots, but right dots
+  if (!shouldShowLeftDots && shouldShowRightDots) {
+    let leftItemCount = 3 + 2 * siblingCount;
+    let leftRange = Array.from({ length: leftItemCount }, (_, i) => i + 1);
+    return [...leftRange, '...', totalPages];
+  }
+
+  // Case 3: No right dots, but left dots
+  if (shouldShowLeftDots && !shouldShowRightDots) {
+    let rightItemCount = 3 + 2 * siblingCount;
+    let rightRange = Array.from({ length: rightItemCount }, (_, i) => totalPages - rightItemCount + i + 1);
+    return [1, '...', ...rightRange];
+  }
+
+  // Case 4: Both left and right dots
+  if (shouldShowLeftDots && shouldShowRightDots) {
+    let middleRange = Array.from(
+      { length: rightSiblingIndex - leftSiblingIndex + 1 },
+      (_, i) => leftSiblingIndex + i
+    );
+    return [1, '...', ...middleRange, '...', totalPages];
+  }
+};
 
   return (
     <div>
@@ -97,52 +135,70 @@ const JobList: React.FC = () => {
       </div>
 
       {/* Pagination controls */}
-      {totalPages > 1 && (
-        <div className="flex justify-center mt-8">
-          <nav className="inline-flex rounded-xl shadow-sm bg-white dark:bg-slate-900 p-1 gap-1 border border-slate-200 dark:border-slate-800">
-            <button
-              type="button"
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                currentPage === 1
-                  ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed'
-                  : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-              }`}
-            >
-              Previous
-            </button>
+{totalPages > 1 && (
+  <div className="flex justify-center mt-8 pb-4">
+    <nav className="inline-flex rounded-2xl shadow-sm bg-white dark:bg-slate-900 p-1 gap-1 border border-slate-200 dark:border-slate-800 items-center">
+      {/* Previous Button */}
+      <button
+        type="button"
+        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+        disabled={currentPage === 1}
+        className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+          currentPage === 1
+            ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed'
+            : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+        }`}
+      >
+        Previous
+      </button>
 
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                type="button"
-                onClick={() => setCurrentPage(page)}
-                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                  page === currentPage
-                    ? 'bg-indigo-500 text-white shadow-md'
-                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-                }`}
+      {/* Page Numbers */}
+      <div className="flex items-center gap-1">
+        {getPaginationRange()?.map((page, index) => {
+          if (page === '...') {
+            return (
+              <span 
+                key={`dots-${index}`} 
+                className="px-3 py-2 text-slate-400 dark:text-slate-600 font-medium"
               >
-                {page}
-              </button>
-            ))}
+                ...
+              </span>
+            );
+          }
 
+          return (
             <button
+              key={index}
               type="button"
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
-              className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-                currentPage === totalPages
-                  ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed'
+              onClick={() => setCurrentPage(page as number)}
+              className={`min-w-[40px] h-10 flex items-center justify-center rounded-lg text-sm font-bold transition-all ${
+                page === currentPage
+                  ? 'bg-indigo-500 text-white shadow-md shadow-indigo-200 dark:shadow-none'
                   : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
               }`}
             >
-              Next
+              {page}
             </button>
-          </nav>
-        </div>
-      )}
+          );
+        })}
+      </div>
+
+      {/* Next Button */}
+      <button
+        type="button"
+        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+        disabled={currentPage === totalPages}
+        className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+          currentPage === totalPages
+            ? 'text-slate-300 dark:text-slate-700 cursor-not-allowed'
+            : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+        }`}
+      >
+        Next
+      </button>
+    </nav>
+  </div>
+)}
     </div>
   );
 };

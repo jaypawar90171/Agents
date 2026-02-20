@@ -19,7 +19,7 @@ const Home: React.FC = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           <Sidebar />
 
-          <div className="flex-grow">
+          <div className="flex-grow min-w-0">
             <div className="flex flex-col sm:flex-row justify-between items-end mb-6 gap-2">
               <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Top Companies for You</h2>
               <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">
@@ -38,7 +38,7 @@ const Home: React.FC = () => {
       <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 mt-auto py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-sm text-slate-500 dark:text-slate-400 text-center md:text-left font-medium">
-            © 2024 LearnLaunch. All rights reserved. <br className="md:hidden" /> Designed for future leaders.
+            © 2026 LearnLaunch. All rights reserved. <br className="md:hidden" /> Designed for future leaders.
           </p>
           <div className="flex gap-8">
             <a href="#" className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-500 font-medium transition-colors">Privacy</a>
