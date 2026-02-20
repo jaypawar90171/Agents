@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { SignedIn, SignedOut } from '@clerk/clerk-react';
+import { SignedIn, SignedOut, useUser } from '@clerk/clerk-react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
 import Header from '../components/Header';
@@ -10,6 +10,7 @@ import { Map } from 'lucide-react';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const {
     userRoadmaps,
     loading,
@@ -25,11 +26,10 @@ const Profile: React.FC = () => {
   } = useProfile();
 
   useEffect(() => {
-    const userId = localStorage.getItem('clerk_user_id');
-    if (userId) {
-      fetchUserRoadmaps(userId);
+    if (user?.id) {
+      fetchUserRoadmaps(user.id);
     }
-  }, [fetchUserRoadmaps]);
+  }, [user?.id, fetchUserRoadmaps]);
 
   const handleViewDetails = (userRoadmap: any) => {
     openRoadmapDetail(userRoadmap);

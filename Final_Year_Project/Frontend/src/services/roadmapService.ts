@@ -103,25 +103,25 @@ class RoadmapService {
   }
 
   async getUserRoadmaps(userId: string): Promise<UserRoadmap[]> {
-    const response = await axios.get<UserRoadmap[]>(
+    const response = await axios.get<{ success: boolean; roadmaps: UserRoadmap[] }>(
       `${API_BASE_URL}/api/roadmaps/user/${userId}`,
       {
         headers: { 'Content-Type': 'application/json' },
         timeout: 15000,
       }
     );
-    return response.data;
+    return response.data.roadmaps;
   }
 
   async getRoadmapById(roadmapId: string): Promise<RoadmapDetail> {
-    const response = await axios.get<RoadmapDetail>(
+    const response = await axios.get<{ success: boolean; roadmap: RoadmapDetail }>(
       `${API_BASE_URL}/api/roadmaps/${roadmapId}`,
       {
         headers: { 'Content-Type': 'application/json' },
         timeout: 15000,
       }
     );
-    return response.data;
+    return response.data.roadmap;
   }
 
   async updateProgress(payload: {
@@ -130,7 +130,7 @@ class RoadmapService {
     isCompleted: boolean;
     notes?: string;
   }): Promise<UserRoadmap> {
-    const response = await axios.put<UserRoadmap>(
+    const response = await axios.put<{ message: string; userRoadmap: UserRoadmap }>(
       `${API_BASE_URL}/api/roadmaps/progress`,
       payload,
       {
@@ -138,7 +138,7 @@ class RoadmapService {
         timeout: 15000,
       }
     );
-    return response.data;
+    return response.data.userRoadmap;
   }
 
   async deleteUserRoadmap(userRoadmapId: string): Promise<{ message: string }> {

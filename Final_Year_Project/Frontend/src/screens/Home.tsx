@@ -28,7 +28,7 @@ const Home: React.FC = () => {
             </div>
 
             
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-900/40 rounded-2xl">
+            <div className="bg-slate-50 dark:bg-slate-900/40 rounded-2xl">
               <JobList />
             </div>
           </div>
