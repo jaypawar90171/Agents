@@ -4,4 +4,7 @@ pymongo
 python-dotenv
 ollama
 langchain-core
-langchain-groqsvix
+langchain-groq
+tavily-python
+langchain-community
+langgraph

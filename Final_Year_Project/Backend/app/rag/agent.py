@@ -1,15 +1,18 @@
 """
-LangGraph Job RAG Agent — exact logic from query.py.
-Sync API: run_agent(thread_id, user_message) -> { reply, sources }.
+LangGraph Job RAG Agent — with LLM-based intent classification and Tavily web search.
+Sync API: run_agent(thread_id, user_message) -> { reply, sources, web_sources }.
 """
+
 import os
 import uuid
 from typing import TypedDict, Annotated, List, Dict
 from dotenv import load_dotenv
 import ollama
 import pymongo
+from tavily import TavilyClient
 from langchain_groq import ChatGroq
 from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage, AIMessage
+from langchain_core.output_parsers import StrOutputParser
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 from operator import add
@@ -19,18 +22,21 @@ load_dotenv()
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("DB_NAME", "job_records")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME", "jobs")
+TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 EMBED_MODEL = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
 CHAT_MODEL = "llama-3.3-70b-versatile"
 
-TOP_K = 5
+TOP_K = 2
 MIN_SCORE = 0.6
 MAX_CONTEXT_CHARS = 3500
 
 llm = ChatGroq(model=CHAT_MODEL, temperature=0)
 
-# Lazy DB connection (for API: no exit on failure)
+tavily_client = TavilyClient(api_key=TAVILY_API_KEY) if TAVILY_API_KEY else None
+
 _collection = None
+
 
 def _get_collection():
     global _collection
@@ -40,14 +46,14 @@ def _get_collection():
         _collection = client[DB_NAME][COLLECTION_NAME]
     return _collection
 
-# --------------------------------------------------
-# RAG Components
-# --------------------------------------------------
+
 def validate_query(query: str) -> bool:
     return bool(query and len(query.strip()) >= 3)
 
+
 def embed_query(query: str):
     return ollama.embeddings(model=EMBED_MODEL, prompt=query)["embedding"]
+
 
 def retrieve_documents(query_embedding):
     collection = _get_collection()
@@ -70,6 +76,11 @@ def retrieve_documents(query_embedding):
                 "skills_required": 1,
                 "job_description_summary": 1,
                 "job_url": 1,
+                "role": 1,
+                "experience": 1,
+                "salary": 1,
+                "employment_type": 1,
+                "posted_date": 1,
                 "score": {"$meta": "vectorSearchScore"},
             }
         },
@@ -77,41 +88,145 @@ def retrieve_documents(query_embedding):
     ]
     return list(collection.aggregate(pipeline))
 
+
 def build_context(docs):
     context = ""
     for i, doc in enumerate(docs, start=1):
         context += f"""
 --- Job {i} ---
-Company: {doc.get('company', 'N/A')}
-Job URL: {doc.get('job_url', 'N/A')}
-Job Title: {doc.get('job_title', 'N/A')}
-Location: {doc.get('location', 'N/A')}
-Skills Required: {', '.join(doc.get('skills_required', []))}
-Summary: {doc.get('job_description_summary', 'N/A')}
+Company: {doc.get("company", "N/A")}
+Job Title: {doc.get("job_title", "N/A")}
+Location: {doc.get("location", "N/A")}
+Skills Required: {", ".join(doc.get("skills_required", []))}
+Role: {doc.get("role", "N/A")}
+Experience: {doc.get("experience", "N/A")}
+Salary: {doc.get("salary", "N/A")}
+Employment Type: {doc.get("employment_type", "N/A")}
+Posted Date: {doc.get("posted_date", "N/A")}
+Job URL: {doc.get("job_url", "N/A")}
+Summary: {doc.get("job_description_summary", "N/A")}
 """
     return context.strip()
+
 
 def trim_context(context: str):
     return context[:MAX_CONTEXT_CHARS]
 
-def generate_answer(question: str, context: str, history: List[BaseMessage]):
-    system_prompt = (
-        "You are a professional Job & Career Assistant.\n"
-        "Answer ONLY using the provided job context.\n"
-        "If the answer is not present in the context, say so clearly.\n"
-        "Be concise, factual, and professional.\n"
-        "Use the conversation history to provide context-aware responses."
+
+def classify_intent(query: str) -> str:
+    """
+    LLM-based intent classification.
+    Returns 'rag' for job-related queries, 'web' for general questions.
+    """
+    classification_prompt = f"""Classify the following user query into one of two categories:
+- 'rag': The user is asking about jobs, roles, skills, careers, companies, salaries, locations, or wants job recommendations
+- 'web': The user is asking general knowledge questions, how-to questions, definitions, explanations, or career advice that doesn't require specific job database information
+
+User Query: {query}
+
+Respond with ONLY 'rag' or 'web', no other text."""
+
+    response = llm.invoke([HumanMessage(content=classification_prompt)])
+    intent = str(response.content).strip().lower()
+
+    if intent in ["rag", "web"]:
+        return intent
+    return "web"
+
+
+def tavily_search(query: str) -> List[Dict]:
+    """Perform web search using Tavily API."""
+    if not tavily_client:
+        return []
+
+    try:
+        results = tavily_client.search(
+            query=query, max_results=5, include_answer=True, include_raw_content=False
+        )
+
+        web_results = []
+        for result in results.get("results", []):
+            web_results.append(
+                {
+                    "title": result.get("title", "No title"),
+                    "url": result.get("url", ""),
+                    "content": result.get("content", "")[:500]
+                    if result.get("content")
+                    else "",
+                }
+            )
+        return web_results
+    except Exception as e:
+        print(f"Tavily search error: {e}")
+        return []
+
+
+def build_web_context(web_results: List[Dict]) -> str:
+    """Build context string from Tavily web results."""
+    if not web_results:
+        return ""
+
+    context = "Web Search Results:\n"
+    for i, result in enumerate(web_results, start=1):
+        context += f"""
+--- Result {i} ---
+Title: {result.get("title", "N/A")}
+URL: {result.get("url", "N/A")}
+Content: {result.get("content", "N/A")}
+"""
+    return context.strip()
+
+
+def generate_answer(
+    question: str, context: str, history: List[BaseMessage], is_rag: bool = True
+):
+    if is_rag:
+        system_prompt = """You are a professional Job & Career Assistant.
+Your goal is to help users find relevant job opportunities and provide career guidance.
+
+**Formatting Requirements:**
+- Use **bold** for important terms, job titles, company names, and key information
+- Use bullet points (•) or numbered lists (1., 2., 3.) for multiple items
+- Add proper spacing between sections for readability
+- Use headings (##) for different sections if needed
+- Structure your response like a professional document
+
+**Content Guidelines:**
+1. Use ONLY the provided job context from the database
+2. Cite specific job titles, companies, locations, and skills when available
+3. Mention the top relevant jobs by their number (e.g., "Based on **Job 1** and **Job 2**...")
+4. Include salary, experience requirements, and employment type when available
+5. Be concise, factual, and professional
+
+If the answer cannot be determined from the context, clearly state that and suggest refining the search."""
+    else:
+        system_prompt = """You are a professional Career Assistant providing helpful guidance.
+
+**Formatting Requirements:**
+- Use **bold** for important terms and key information
+- Use bullet points (•) or numbered lists (1., 2., 3.) for multiple items
+- Add proper spacing between sections for readability
+- Structure your response like a professional document
+
+**Content Guidelines:**
+1. Provide accurate, helpful information based on web search results
+2. Cite your sources by mentioning the **title** and **URL**
+3. Be clear and structured in your response
+4. If uncertain, acknowledge limitations"""
+
+    history_str = "\n".join(
+        [f"{msg.type.upper()}: {msg.content}" for msg in history[-6:]]
     )
-    history_str = "\n".join([f"{msg.type.upper()}: {msg.content}" for msg in history[-6:]])
-    user_prompt = f"""
-User Question: {question}
+    user_prompt = f"""User Question: {question}
 
 Conversation History:
 {history_str}
 
-Relevant Job Context:
+Relevant Context:
 {context}
-"""
+
+Provide a helpful, well-structured answer with proper formatting, bold text for important info, and citations where applicable."""
+
     messages = [
         SystemMessage(content=system_prompt),
         HumanMessage(content=user_prompt),
@@ -119,46 +234,41 @@ Relevant Job Context:
     response = llm.invoke(messages)
     return response.content
 
-# --------------------------------------------------
-# LangGraph Agent State
-# --------------------------------------------------
+
 class AgentState(TypedDict):
     messages: Annotated[List[BaseMessage], add]
     context: str
     sources: List[Dict]
+    web_sources: List[Dict]
     query: str
+    intent: str
 
-# --------------------------------------------------
-# Agent Nodes
-# --------------------------------------------------
-def route_query(state: AgentState):
-    """Router: RAG or general chat"""
-    last_msg = state["messages"][-1].content.lower()
-    if any(
-        word in last_msg
-        for word in [
-            "job",
-            "position",
-            "role",
-            "career",
-            "apply",
-            "foundit",
-            "skills",
-            "location",
-            "apply link",
-            "url",
-        ]
-    ):
-        return "rag"
-    return "chat"
+
+def classify_intent_node(state: AgentState) -> Dict:
+    """Node that classifies user intent using LLM."""
+    last_msg = state["messages"][-1]
+    query = (
+        last_msg.content if isinstance(last_msg.content, str) else str(last_msg.content)
+    )
+    intent = classify_intent(query)
+    return {"intent": intent, "query": query}
+
 
 def rag_node(state: AgentState):
-    query = state["messages"][-1].content
+    """RAG node for job-related queries."""
+    last_msg = state["messages"][-1]
+    query = (
+        last_msg.content if isinstance(last_msg.content, str) else str(last_msg.content)
+    )
     if not validate_query(query):
         return {
-            "messages": [AIMessage(content="Please ask a meaningful job-related question.")],
+            "messages": [
+                AIMessage(content="Please ask a meaningful job-related question.")
+            ],
             "context": "",
             "sources": [],
+            "web_sources": [],
+            "intent": "rag",
         }
     query_embedding = embed_query(query)
     docs = retrieve_documents(query_embedding)
@@ -167,44 +277,102 @@ def rag_node(state: AgentState):
             "messages": [AIMessage(content="No relevant Foundit jobs found.")],
             "context": "",
             "sources": [],
+            "web_sources": [],
+            "intent": "rag",
         }
     context = trim_context(build_context(docs))
-    answer = generate_answer(query, context, state["messages"])
+    answer = generate_answer(query, context, state["messages"], is_rag=True)
     return {
         "messages": [AIMessage(content=answer)],
         "context": context,
-        "sources": docs,
+        "sources": docs[:2],
+        "web_sources": [],
         "query": query,
+        "intent": "rag",
     }
 
-def chat_node(state: AgentState):
-    """Direct chat without RAG"""
-    prompt = (
-        "You are a helpful Job & Career Assistant.\n"
-        "Help with career advice, resume tips, interview prep, or job search strategies.\n"
-        "If they ask about specific jobs, suggest using job search commands."
-    )
-    messages = [SystemMessage(content=prompt)] + state["messages"][-6:]
-    response = llm.invoke(messages)
-    return {"messages": [response]}
 
-# --------------------------------------------------
-# LangGraph Workflow
-# --------------------------------------------------
+def chat_node(state: AgentState):
+    """Plain LLM chat without RAG or web search."""
+    last_msg = state["messages"][-1]
+    query = (
+        last_msg.content if isinstance(last_msg.content, str) else str(last_msg.content)
+    )
+
+    system_prompt = """You are a professional Career Assistant.
+
+**Formatting Requirements:**
+- Use **bold** for important terms and key information
+- Use bullet points (•) or numbered lists (1., 2., 3.) for multiple items
+- Add proper spacing between sections for readability
+- Structure your response like a professional document
+
+Provide helpful, well-structured responses. If you don't know something, say so honestly."""
+
+    messages = [SystemMessage(content=system_prompt)] + state["messages"][-6:]
+    response = llm.invoke(messages)
+    return {
+        "messages": [response],
+        "context": "",
+        "sources": [],
+        "web_sources": [],
+        "query": query,
+        "intent": "web",
+    }
+
+
+def tavily_node(state: AgentState):
+    """Web search node for general questions."""
+    last_msg = state["messages"][-1]
+    query = (
+        last_msg.content if isinstance(last_msg.content, str) else str(last_msg.content)
+    )
+
+    web_results = tavily_search(query)
+    web_context = build_web_context(web_results)
+
+    if not web_results:
+        prompt = """You are a helpful Career Assistant. 
+Provide helpful information based on your knowledge. 
+If you don't know something, say so honestly."""
+        messages = [SystemMessage(content=prompt)] + state["messages"][-6:]
+        response = llm.invoke(messages)
+        return {
+            "messages": [response],
+            "context": "",
+            "sources": [],
+            "web_sources": [],
+            "query": query,
+            "intent": "web",
+        }
+
+    answer = generate_answer(query, web_context, state["messages"], is_rag=False)
+    return {
+        "messages": [AIMessage(content=answer)],
+        "context": web_context,
+        "sources": [],
+        "web_sources": web_results,
+        "query": query,
+        "intent": "web",
+    }
+
+
 workflow = StateGraph(AgentState)
+workflow.add_node("classify", classify_intent_node)
 workflow.add_node("rag", rag_node)
 workflow.add_node("chat", chat_node)
-workflow.add_conditional_edges(START, route_query, {"rag": "rag", "chat": "chat"})
+workflow.add_edge(START, "classify")
+workflow.add_conditional_edges(
+    "classify", lambda state: state["intent"], {"rag": "rag", "web": "chat"}
+)
 workflow.add_edge("rag", END)
 workflow.add_edge("chat", END)
 
 memory = MemorySaver()
 rag_agent = workflow.compile(checkpointer=memory)
 
-# --------------------------------------------------
-# Session Management (thread_id = session_id for API)
-# --------------------------------------------------
-sessions: Dict[str, str] = {}  # session_id -> thread_id (same value, for naming)
+sessions: Dict[str, str] = {}
+
 
 def get_or_create_thread(session_id: str) -> str:
     if not session_id or session_id not in sessions:
@@ -213,26 +381,27 @@ def get_or_create_thread(session_id: str) -> str:
         return new_id
     return sessions[session_id]
 
+
 def create_session() -> tuple[str, str]:
-    """Returns (session_id, thread_id)."""
     session_id = str(uuid.uuid4())
     sessions[session_id] = session_id
     return session_id, session_id
 
+
 def list_sessions() -> List[str]:
     return list(sessions.keys())
 
-# --------------------------------------------------
-# Sync run for one turn (used by FastAPI in thread pool)
-# --------------------------------------------------
+
 def run_agent(thread_id: str, user_message: str) -> Dict:
     """
-    Run one agent turn. Returns { "reply": str, "sources": list }.
+    Run one agent turn. Returns { "reply": str, "sources": list, "web_sources": list }.
     """
     config = {"configurable": {"thread_id": thread_id}}
     initial = {"messages": [HumanMessage(content=user_message)]}
     reply = ""
     sources: List[Dict] = []
+    web_sources: List[Dict] = []
+
     for event in rag_agent.stream(initial, config, stream_mode="values"):
         if "messages" in event:
             last = event["messages"][-1]
@@ -240,4 +409,7 @@ def run_agent(thread_id: str, user_message: str) -> Dict:
                 reply = last.content or ""
         if "sources" in event and event["sources"]:
             sources = event["sources"]
-    return {"reply": reply, "sources": sources}
+        if "web_sources" in event and event["web_sources"]:
+            web_sources = event["web_sources"]
+
+    return {"reply": reply, "sources": sources, "web_sources": web_sources}

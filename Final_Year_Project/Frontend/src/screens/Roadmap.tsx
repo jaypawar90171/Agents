@@ -56,18 +56,13 @@ const Roadmap: React.FC = () => {
         {/* Hero Section */}
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <Zap className="w-8 h-8 text-indigo-500" />
-            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wide">
+            <span className="text-xl font-semibold text-indigo-600 uppercase tracking-wide">
               Career Roadmap Generator
             </span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-4xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent mb-4">
             Your Path to Success
           </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl">
-            Enter a company name to get a personalized, skill-based learning
-            roadmap tailored to their hiring requirements.
-          </p>
         </div>
 
         {/* Search Form */}
@@ -77,7 +72,7 @@ const Roadmap: React.FC = () => {
               type="text"
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="e.g. Google, Amazon, Microsoft, Tesla"
+              placeholder="Enter Company Name e.g. Google, Amazon, Microsoft, Tesla"
               className="flex-1 px-6 py-4 rounded-xl border-0 outline-none text-lg placeholder-slate-400 dark:placeholder-slate-500 focus:ring-0 bg-transparent text-slate-900 dark:text-slate-100"
               minLength={MIN_COMPANY_LENGTH}
               disabled={loading}
@@ -177,7 +172,7 @@ const Roadmap: React.FC = () => {
       <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 mt-auto py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
           <p className="text-sm text-slate-500 dark:text-slate-400 text-center md:text-left font-medium">
-            © 2024 LearnLaunch. All rights reserved.{" "}
+            © 2026 LearnLaunch. All rights reserved.{" "}
             <br className="md:hidden" /> Designed for future leaders.
           </p>
           <div className="flex gap-8">

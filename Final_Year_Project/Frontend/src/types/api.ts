@@ -52,6 +52,17 @@ export interface ChatSource {
   job_description_summary?: string;
   job_url?: string;
   score?: number;
+  role?: string;
+  experience?: string;
+  salary?: string;
+  employment_type?: string;
+  posted_date?: string;
+}
+
+export interface WebSource {
+  title: string;
+  url: string;
+  content?: string;
 }
 
 export interface SendMessageRequest {
@@ -62,6 +73,7 @@ export interface SendMessageRequest {
 export interface SendMessageResponse {
   reply: string;
   sources: ChatSource[];
+  web_sources: WebSource[];
   session_id: string;
 }
 
@@ -70,6 +82,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   sources?: ChatSource[];
+  web_sources?: WebSource[];
   createdAt: number;
 }
 

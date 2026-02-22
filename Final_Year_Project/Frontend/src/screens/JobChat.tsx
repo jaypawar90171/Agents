@@ -61,7 +61,8 @@ export default function JobChat() {
         id: generateId(),
         role: 'assistant',
         content: res.reply,
-        sources: res.sources?.length ? res.sources : undefined,
+        sources: res.sources?.length ? res.sources.slice(0, 2) : undefined,
+        web_sources: res.web_sources?.length ? res.web_sources : undefined,
         createdAt: Date.now(),
       };
       setMessages((prev) => [...prev, assistantMsg]);
@@ -104,7 +105,7 @@ export default function JobChat() {
             <div>
               <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Job RAG Assistant</h1>
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                Ask about roles, skills, or search Foundit jobs
+                Ask about roles, skills, jobs, or get career advice
               </p>
             </div>
           </div>
@@ -131,14 +132,16 @@ export default function JobChat() {
                 Start a conversation
               </h2>
               <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm mb-6">
-                Ask for job recommendations, skills for a role, or career advice.
-                Use keywords like job, role, skills, or location for RAG search.
+                Ask for job recommendations, skills for a role, or get career advice.
+                Try questions like "What is LangGraph?" for web search results.
               </p>
               <div className="flex flex-wrap justify-center gap-2">
                 {[
                   'Backend jobs in Bangalore',
                   'Skills needed for data scientist',
-                  'Career advice for freshers',
+                  'What is LangGraph?',
+                  'Jobs for Python developers in Pune',
+                  'How do I write a resume?',
                 ].map((s) => (
                   <button
                     key={s}

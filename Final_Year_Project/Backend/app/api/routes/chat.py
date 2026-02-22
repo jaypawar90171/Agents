@@ -14,12 +14,15 @@ router = APIRouter(prefix="/api/chat", tags=["chat"])
 
 class SendMessageRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=10000)
-    session_id: str | None = Field(None, description="Existing session; omit to create new.")
+    session_id: str | None = Field(
+        None, description="Existing session; omit to create new."
+    )
 
 
 class SendMessageResponse(BaseModel):
     reply: str
     sources: list[dict]
+    web_sources: list[dict]
     session_id: str
 
 
@@ -48,6 +51,7 @@ async def send_message(body: SendMessageRequest = Body(...)):
     return SendMessageResponse(
         reply=result["reply"],
         sources=result.get("sources", []) or [],
+        web_sources=result.get("web_sources", []) or [],
         session_id=thread_id,
     )
 

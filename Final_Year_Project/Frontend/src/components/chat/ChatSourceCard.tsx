@@ -1,6 +1,6 @@
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
-import type { ChatSource } from '../../types/api';
+import { ExternalLink, Globe } from 'lucide-react';
+import type { ChatSource, WebSource } from '../../types/api';
 
 interface ChatSourceCardProps {
   source: ChatSource;
@@ -14,18 +14,23 @@ export const ChatSourceCard: React.FC<ChatSourceCardProps> = ({ source, index })
   const url = source.job_url;
   const skills = source.skills_required ?? [];
   const summary = source.job_description_summary;
+  const experience = source.experience;
+  const salary = source.salary;
+  const employmentType = source.employment_type;
 
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 shadow-sm hover:border-indigo-200 dark:hover:border-indigo-500/60 transition-colors">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm hover:shadow-md hover:border-indigo-300 dark:hover:border-indigo-500/60 transition-all duration-200">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <span className="inline-flex items-center justify-center w-5 h-5 rounded bg-indigo-100 dark:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 text-xs font-bold mr-2">
-            {index}
-          </span>
-          <span className="font-semibold text-slate-900 dark:text-slate-100">{title}</span>
-          <span className="text-slate-500 dark:text-slate-400"> at {company}</span>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-xs font-bold">
+              {index}
+            </span>
+            <span className="font-bold text-slate-900 dark:text-slate-100">{title}</span>
+          </div>
+          <p className="text-sm text-indigo-600 dark:text-indigo-400 mt-1 ml-8 font-medium">{company}</p>
           {location && (
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{location}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 ml-8">📍 {location}</p>
           )}
         </div>
         {url && (
@@ -33,30 +38,97 @@ export const ChatSourceCard: React.FC<ChatSourceCardProps> = ({ source, index })
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-shrink-0 p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors"
+            className="flex-shrink-0 p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 transition-colors"
             aria-label={`Open job: ${title}`}
           >
             <ExternalLink className="w-4 h-4" />
           </a>
         )}
       </div>
+      
+      {(experience || salary || employmentType) && (
+        <div className="flex flex-wrap gap-2 mt-3 ml-8">
+          {experience && (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 text-xs font-medium">
+              💼 {experience}
+            </span>
+          )}
+          {salary && (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-300 text-xs font-medium">
+              💰 {salary}
+            </span>
+          )}
+          {employmentType && (
+            <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-950/50 text-purple-700 dark:text-purple-300 text-xs font-medium">
+              ⏰ {employmentType}
+            </span>
+          )}
+        </div>
+      )}
+      
       {skills.length > 0 && (
-        <div className="flex flex-wrap gap-1 mt-2">
-          {skills.slice(0, 5).map((s, i) => (
+        <div className="flex flex-wrap gap-1.5 mt-3 ml-8">
+          {skills.slice(0, 6).map((s, i) => (
             <span
               key={i}
-              className="inline-block px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-200 text-xs"
+              className="inline-block px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-medium"
             >
               {s}
             </span>
           ))}
-          {skills.length > 5 && (
-            <span className="text-xs text-slate-400 dark:text-slate-500">+{skills.length - 5}</span>
+          {skills.length > 6 && (
+            <span className="text-xs text-slate-400 dark:text-slate-500 self-center">+{skills.length - 6} more</span>
           )}
         </div>
       )}
       {summary && (
-        <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 line-clamp-2">{summary}</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 ml-8 line-clamp-2 leading-relaxed">{summary}</p>
+      )}
+    </div>
+  );
+};
+
+interface WebSourceCardProps {
+  source: WebSource;
+  index: number;
+}
+
+export const WebSourceCard: React.FC<WebSourceCardProps> = ({ source, index }) => {
+  const title = source.title || 'Web Result';
+  const url = source.url;
+  const content = source.content;
+
+  return (
+    <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 shadow-sm hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-500/60 transition-all duration-200">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-xs font-bold">
+              {index}
+            </span>
+            <div className="flex items-center gap-1.5">
+              <Globe className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <span className="font-semibold text-slate-900 dark:text-slate-100 text-sm line-clamp-1">{title}</span>
+            </div>
+          </div>
+          {url && (
+            <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 ml-8 truncate">{url}</p>
+          )}
+        </div>
+        {url && (
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-shrink-0 p-2 rounded-lg text-slate-400 dark:text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors"
+            aria-label={`Open: ${title}`}
+          >
+            <ExternalLink className="w-4 h-4" />
+          </a>
+        )}
+      </div>
+      {content && (
+        <p className="text-sm text-slate-600 dark:text-slate-300 mt-3 ml-8 line-clamp-3 leading-relaxed">{content}</p>
       )}
     </div>
   );
