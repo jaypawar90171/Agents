@@ -5,7 +5,7 @@ Sync API: run_agent(thread_id, user_message) -> { reply, sources, web_sources }.
 
 import os
 import uuid
-from typing import TypedDict, Annotated, List, Dict
+from typing import TypedDict, Annotated, List, Dict, Optional
 from dotenv import load_dotenv
 import ollama
 import pymongo
@@ -27,9 +27,9 @@ TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 EMBED_MODEL = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
 CHAT_MODEL = "llama-3.3-70b-versatile"
 
-TOP_K = 2
-MIN_SCORE = 0.6
-MAX_CONTEXT_CHARS = 3500
+TOP_K = 10
+MIN_SCORE = 0.3
+MAX_CONTEXT_CHARS = 5000
 
 llm = ChatGroq(model=CHAT_MODEL, temperature=0)
 
@@ -55,38 +55,98 @@ def embed_query(query: str):
     return ollama.embeddings(model=EMBED_MODEL, prompt=query)["embedding"]
 
 
-def retrieve_documents(query_embedding):
+def cosine_similarity(vec1, vec2):
+    """Calculate cosine similarity between two vectors."""
+    dot_product = sum(a * b for a, b in zip(vec1, vec2))
+    magnitude1 = sum(a * a for a in vec1) ** 0.5
+    magnitude2 = sum(b * b for b in vec2) ** 0.5
+
+    if magnitude1 == 0 or magnitude2 == 0:
+        return 0
+
+    return dot_product / (magnitude1 * magnitude2)
+
+
+def retrieve_documents(query_embedding, company_filter: Optional[str] = None):
     collection = _get_collection()
-    pipeline = [
-        {
-            "$vectorSearch": {
-                "index": "vector_index",
-                "path": "job_embedding",
-                "queryVector": query_embedding,
-                "numCandidates": 20,
-                "limit": TOP_K,
-            }
-        },
-        {
-            "$project": {
-                "_id": 0,
-                "company": 1,
-                "job_title": 1,
-                "location": 1,
-                "skills_required": 1,
-                "job_description_summary": 1,
-                "job_url": 1,
-                "role": 1,
-                "experience": 1,
-                "salary": 1,
-                "employment_type": 1,
-                "posted_date": 1,
-                "score": {"$meta": "vectorSearchScore"},
-            }
-        },
-        {"$match": {"score": {"$gte": MIN_SCORE}}},
-    ]
-    return list(collection.aggregate(pipeline))
+
+    # Build match condition for company filter
+    match_condition = {}
+    if company_filter:
+        match_condition["company"] = {"$regex": company_filter, "$options": "i"}
+
+    # First get jobs (optionally filtered by company)
+    if match_condition:
+        pipeline = [
+            {"$match": match_condition},
+            {
+                "$project": {
+                    "_id": 0,
+                    "company": 1,
+                    "job_title": 1,
+                    "location": 1,
+                    "skills_required": 1,
+                    "job_description_summary": 1,
+                    "job_url": 1,
+                    "role": 1,
+                    "experience": 1,
+                    "salary": 1,
+                    "employment_type": 1,
+                    "posted_date": 1,
+                    "job_embedding": 1,
+                }
+            },
+        ]
+    else:
+        pipeline = [
+            {
+                "$vectorSearch": {
+                    "index": "vector_index",
+                    "path": "job_embedding",
+                    "queryVector": query_embedding,
+                    "numCandidates": 50,
+                    "limit": TOP_K,
+                }
+            },
+            {
+                "$project": {
+                    "_id": 0,
+                    "company": 1,
+                    "job_title": 1,
+                    "location": 1,
+                    "skills_required": 1,
+                    "job_description_summary": 1,
+                    "job_url": 1,
+                    "role": 1,
+                    "experience": 1,
+                    "salary": 1,
+                    "employment_type": 1,
+                    "posted_date": 1,
+                    "score": {"$meta": "vectorSearchScore"},
+                }
+            },
+        ]
+
+    results = list(collection.aggregate(pipeline))
+
+    # If company filter was used, calculate similarity scores manually
+    if company_filter and results and "job_embedding" in results[0]:
+        for job in results:
+            if "job_embedding" in job:
+                job["score"] = cosine_similarity(
+                    query_embedding, job.get("job_embedding", [])
+                )
+            else:
+                job["score"] = 0
+
+        # Remove jobs without embeddings or with very low scores
+        results = [r for r in results if r.get("score", 0) > 0.1]
+        results.sort(key=lambda x: x.get("score", 0), reverse=True)
+    elif not company_filter:
+        # Apply score filter for non-company searches
+        results = [r for r in results if r.get("score", 0) >= MIN_SCORE]
+
+    return results
 
 
 def build_context(docs):
@@ -132,6 +192,27 @@ Respond with ONLY 'rag' or 'web', no other text."""
     if intent in ["rag", "web"]:
         return intent
     return "web"
+
+
+def extract_company_from_query(query: str) -> str | None:
+    """
+    Use LLM to extract company name from user query if present.
+    Returns the company name or None if not found.
+    """
+    extraction_prompt = f"""Extract the company name from the following user query if present.
+Look for company names like "BNP Paribas", "Google", "Microsoft", "Amazon", etc.
+If a company name is found, return ONLY the company name. If not found, return "NONE".
+
+User Query: {query}
+
+Respond with ONLY the company name or "NONE"."""
+
+    response = llm.invoke([HumanMessage(content=extraction_prompt)])
+    result = str(response.content).strip()
+
+    if result.upper() == "NONE":
+        return None
+    return result
 
 
 def tavily_search(query: str) -> List[Dict]:
@@ -270,8 +351,24 @@ def rag_node(state: AgentState):
             "web_sources": [],
             "intent": "rag",
         }
-    query_embedding = embed_query(query)
-    docs = retrieve_documents(query_embedding)
+
+    company_filter = extract_company_from_query(query)
+    print(f"Query: {query}")
+    print(f"Company filter: {company_filter}")
+
+    # If company is found, add it to the search query for better vector matching
+    search_query = query
+    if company_filter:
+        # Modify query to include company name for better vector matching
+        search_query = f"{company_filter} {query}"
+
+    query_embedding = embed_query(search_query)
+    docs = retrieve_documents(query_embedding, company_filter=company_filter)
+
+    if not docs and company_filter:
+        docs = retrieve_documents(query_embedding, company_filter=None)
+        print(f"No results with company filter, trying without...")
+
     if not docs:
         return {
             "messages": [AIMessage(content="No relevant Foundit jobs found.")],
