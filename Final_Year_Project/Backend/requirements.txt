@@ -8,3 +8,4 @@ langchain-groq
 tavily-python
 langchain-community
 langgraph
+langchain-mongodb

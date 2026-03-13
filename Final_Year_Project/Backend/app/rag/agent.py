@@ -1,512 +1,591 @@
-"""
-LangGraph Job RAG Agent — with LLM-based intent classification and Tavily web search.
-Sync API: run_agent(thread_id, user_message) -> { reply, sources, web_sources }.
-"""
-
 import os
 import uuid
-from typing import TypedDict, Annotated, List, Dict, Optional
+from typing import TypedDict, Annotated, List, Dict, Optional, Literal
 from dotenv import load_dotenv
-import ollama
 import pymongo
-from tavily import TavilyClient
 from langchain_groq import ChatGroq
 from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage, AIMessage
 from langchain_core.output_parsers import StrOutputParser
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 from operator import add
+# from langchain_mongodb import MongoDBAtlasVectorSearch 
+from pymongo import MongoClient
+from pydantic import BaseModel, Field
+from langchain_core.prompts import ChatPromptTemplate
+from IPython.display import Image, display
+from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_core.documents import Document
+from langchain_community.embeddings import OllamaEmbeddings
+from langchain_mongodb import MongoDBAtlasVectorSearch
+from pymongo import MongoClient
 
 load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("DB_NAME", "job_records")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME", "jobs")
-TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 EMBED_MODEL = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
 CHAT_MODEL = "llama-3.3-70b-versatile"
 
 TOP_K = 10
-MIN_SCORE = 0.3
+MIN_SCORE = 0.6
 MAX_CONTEXT_CHARS = 5000
 
+print(f"Using embedding model: {EMBED_MODEL}")
+
+# Then your initialization code:
+embeddings = OllamaEmbeddings(model=EMBED_MODEL)
+client = MongoClient(MONGO_URI)
+collection = client[DB_NAME][COLLECTION_NAME]
+
+vector_store = MongoDBAtlasVectorSearch(
+    collection=collection,  
+    embedding=embeddings,
+    index_name="vector_index",
+    text_key="job_description_summary",
+    embedding_key="job_embedding"
+)
+
+retriever = vector_store.as_retriever(
+    search_type="similarity",
+    search_kwargs={"k": 5}
+)
+
+class RouteQuery(BaseModel):
+    """Route the user query to the most relevant datasource based on topic."""
+
+    datasource: Literal["vectorstore", "web_search"] = Field(
+        ..., 
+        description="Choose 'vectorstore' for questions about companies, job roles, skills, or placements. Choose 'web_search' for general knowledge or current events."
+    )
 llm = ChatGroq(model=CHAT_MODEL, temperature=0)
+# LLM with function call
+structured_llm_router = llm.with_structured_output(RouteQuery)
 
-tavily_client = TavilyClient(api_key=TAVILY_API_KEY) if TAVILY_API_KEY else None
+#prompt
+system = """You are an expert recruitment and career-path router. 
+Your job is to direct user inquiries to the correct data source.
 
-_collection = None
+VECTORSTORE CRITERIA:
+- Questions about specific companies (e.g., 'What is Morgan Stanley looking for?').
+- Inquiries regarding placements, internships, or hiring processes.
+- Requests for skills required for specific roles (e.g., 'Java skills for Accenture').
+- Career advice related to corporate job markets.
 
+WEB_SEARCH CRITERIA:
+- Greetings, chitchat, or conversational messages (e.g., 'hello', 'hi', 'how are you', 'thanks').
+- General knowledge questions not related to specific companies or jobs.
+- Current news, weather, or non-career topics.
+- Topics clearly outside professional recruitment and placements.
 
-def _get_collection():
-    global _collection
-    if _collection is None:
-        client = pymongo.MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
-        client.admin.command("ping")
-        _collection = client[DB_NAME][COLLECTION_NAME]
-    return _collection
+IMPORTANT: Greetings and casual messages must ALWAYS go to 'web_search'.
+Only route to 'vectorstore' if the question explicitly asks about companies, job roles, skills, or placements."""
 
+route_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", system),
+        ("human", "{question}")
+    ]
+)
 
-def validate_query(query: str) -> bool:
-    return bool(query and len(query.strip()) >= 3)
+question_router = route_prompt | structured_llm_router
 
+class GradeDocuments(BaseModel):
+    """
+    Binary score for relevance check on retrieved documents..
+    """
 
-def embed_query(query: str):
-    return ollama.embeddings(model=EMBED_MODEL, prompt=query)["embedding"]
+    binary_score: str = Field(
+        description="Relevance score: 'yes' if the document is useful for answering the question, 'no' if it is not."
+    )
 
+structured_llm_grader = llm.with_structured_output(GradeDocuments)
 
-def cosine_similarity(vec1, vec2):
-    """Calculate cosine similarity between two vectors."""
-    dot_product = sum(a * b for a, b in zip(vec1, vec2))
-    magnitude1 = sum(a * a for a in vec1) ** 0.5
-    magnitude2 = sum(b * b for b in vec2) ** 0.5
-
-    if magnitude1 == 0 or magnitude2 == 0:
-        return 0
-
-    return dot_product / (magnitude1 * magnitude2)
-
-
-def retrieve_documents(query_embedding, company_filter: Optional[str] = None):
-    collection = _get_collection()
-
-    # Build match condition for company filter
-    match_condition = {}
-    if company_filter:
-        match_condition["company"] = {"$regex": company_filter, "$options": "i"}
-
-    # First get jobs (optionally filtered by company)
-    if match_condition:
-        pipeline = [
-            {"$match": match_condition},
-            {
-                "$project": {
-                    "_id": 0,
-                    "company": 1,
-                    "job_title": 1,
-                    "location": 1,
-                    "skills_required": 1,
-                    "job_description_summary": 1,
-                    "job_url": 1,
-                    "role": 1,
-                    "experience": 1,
-                    "salary": 1,
-                    "employment_type": 1,
-                    "posted_date": 1,
-                    "job_embedding": 1,
-                }
-            },
-        ]
-    else:
-        pipeline = [
-            {
-                "$vectorSearch": {
-                    "index": "vector_index",
-                    "path": "job_embedding",
-                    "queryVector": query_embedding,
-                    "numCandidates": 50,
-                    "limit": TOP_K,
-                }
-            },
-            {
-                "$project": {
-                    "_id": 0,
-                    "company": 1,
-                    "job_title": 1,
-                    "location": 1,
-                    "skills_required": 1,
-                    "job_description_summary": 1,
-                    "job_url": 1,
-                    "role": 1,
-                    "experience": 1,
-                    "salary": 1,
-                    "employment_type": 1,
-                    "posted_date": 1,
-                    "score": {"$meta": "vectorSearchScore"},
-                }
-            },
-        ]
-
-    results = list(collection.aggregate(pipeline))
-
-    # If company filter was used, calculate similarity scores manually
-    if company_filter and results and "job_embedding" in results[0]:
-        for job in results:
-            if "job_embedding" in job:
-                job["score"] = cosine_similarity(
-                    query_embedding, job.get("job_embedding", [])
-                )
-            else:
-                job["score"] = 0
-
-        # Remove jobs without embeddings or with very low scores
-        results = [r for r in results if r.get("score", 0) > 0.1]
-        results.sort(key=lambda x: x.get("score", 0), reverse=True)
-    elif not company_filter:
-        # Apply score filter for non-company searches
-        results = [r for r in results if r.get("score", 0) >= MIN_SCORE]
-
-    return results
-
-
-def build_context(docs):
-    context = ""
-    for i, doc in enumerate(docs, start=1):
-        context += f"""
---- Job {i} ---
-Company: {doc.get("company", "N/A")}
-Job Title: {doc.get("job_title", "N/A")}
-Location: {doc.get("location", "N/A")}
-Skills Required: {", ".join(doc.get("skills_required", []))}
-Role: {doc.get("role", "N/A")}
-Experience: {doc.get("experience", "N/A")}
-Salary: {doc.get("salary", "N/A")}
-Employment Type: {doc.get("employment_type", "N/A")}
-Posted Date: {doc.get("posted_date", "N/A")}
-Job URL: {doc.get("job_url", "N/A")}
-Summary: {doc.get("job_description_summary", "N/A")}
+system = """
+You are a grader assessing relevance of a retrieved document to a user question.\n
+Determines if a retrieved document is relevant to the user's question.\n
+    
+Relevance Criteria:
+- The document contains keywords or semantic concepts related to the question.
+- The document provides information that could help formulate an answer.
+- It does NOT need to be a complete answer to be considered 'yes'.
+- If the document is completely unrelated, score it as 'no'.
 """
-    return context.strip()
+
+grade_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", system),
+        ("human", "Retrieved document: \n\n {document} \n\n User question: {question}"),
+    ]
+)
+
+retrieval_grader = grade_prompt | structured_llm_grader
+
+from langchain_core.output_parsers import StrOutputParser
+
+# A more robust, professional RAG prompt
+template = """You are an expert assistant for question-answering tasks. 
+Use the following pieces of retrieved context to answer the question. 
+
+---
+CONTEXT:
+{context}
+---
+
+INSTRUCTIONS:
+1. If the answer is not contained within the context, clearly state that you do not know. 
+2. Do not attempt to make up an answer or use outside knowledge. 
+3. Keep the answer concise (3-5 sentences) and professional.
+4. Use bullet points if the information is a list.
+
+QUESTION: 
+{question}
+
+HELPFUL ANSWER:"""
+
+prompt = ChatPromptTemplate.from_template(template)
+
+rag_chain = prompt | llm | StrOutputParser()
+
+system = """You are an expert Search Query Optimizer. Your goal is to take a vague user 
+question and transform it into a high-precision search query for a web engine.
+
+CRITERIA FOR A GOOD QUERY:
+1. **Semantic Expansion**: Identify the likely industry (e.g., IT Consulting) and role levels.
+2. **Remove Ambiguity**: Replace 'Skills for [Company]' with specific categories like 'Technical Stack', 'Soft Skills', or 'Certification requirements'.
+3. **Recency**: Include keywords for the current year (2024-2026) to ensure the search results aren't outdated.
+4. **Intent-Based**: If the intent is job-seeking, include terms like 'hiring process', 'interview preparation', or 'job requirements'.
+
+Output ONLY the improved query string. No conversational filler."""
+
+re_write_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", system),
+        ("human", "Initial Question: {question}\n\nOptimized Search Query:"),
+    ]
+)
+
+question_rewriter = re_write_prompt | llm | StrOutputParser()
+
+class GradeHallucination(BaseModel):
+    """Binary score for hallucination check."""
+    binary_score: str = Field(description="Answer is grounded in the facts, 'yes' or 'no'")
+
+structured_llm_grader = llm.with_structured_output(GradeHallucination)
+
+system = """You are a grader assessing whether an LLM generation is grounded in / supported by a set of retrieved facts. 
+Give a binary score 'yes' or 'no'. 'yes' means the generation is supported by the facts. 
+Be lenient with phrasing; as long as the factual claim exists in the source, it is 'yes'."""
+
+hallucination_prompt = ChatPromptTemplate.from_messages([
+    ("system", system),
+    ("human", "Set of facts: \n\n {documents} \n\n LLM Generation: {generation}"),
+])
+
+hallucination_grader = hallucination_prompt | structured_llm_grader
+
+class GradeAnswer(BaseModel):
+    """Binary score to assess answer address question."""
+    binary_score: str = Field(description="Answer address the question, 'yes' or 'no'")
+
+structured_llm_grader = llm.with_structured_output(GradeAnswer)
+
+system = """You are a grader assisting whether an answer address / resolves question. 
+Give a binary score 'yes' or 'no'. 'yes' means answers resolves the question. 
+Be lenient with phrasing; as long as the factual claim exists in the source, it is 'yes'."""
+
+answer_prompt = ChatPromptTemplate.from_messages([
+    ("system", system),
+    ("human", "User Question: \n\n {question} \n\n LLM Generation: {generation}"),
+])
+
+answer_grader = answer_prompt | structured_llm_grader
 
 
-def trim_context(context: str):
-    return context[:MAX_CONTEXT_CHARS]
+web_search_tool = TavilySearchResults(k=3)
 
 
-def classify_intent(query: str) -> str:
+from typing import List
+
+class GraphState(TypedDict):
     """
-    LLM-based intent classification.
-    Returns 'rag' for job-related queries, 'web' for general questions.
+    Represents the state of our graph.
+
+    Attributes:
+        question: question
+        generation: LLM generation
+        web_search: whether to add search
+        documents: list of documents (flat text context string)
+        source_docs: raw Document objects from retriever (for structured source metadata)
+        retries: number of transform_query retries (prevents infinite loops)
     """
-    classification_prompt = f"""Classify the following user query into one of two categories:
-- 'rag': The user is asking about jobs, roles, skills, careers, companies, salaries, locations, or wants job recommendations
-- 'web': The user is asking general knowledge questions, how-to questions, definitions, explanations, or career advice that doesn't require specific job database information
 
-User Query: {query}
+    question: str
+    generation: str
+    web_search: str
+    documents: List[str]
+    source_docs: List   # List[Document]
+    retries: int
 
-Respond with ONLY 'rag' or 'web', no other text."""
-
-    response = llm.invoke([HumanMessage(content=classification_prompt)])
-    intent = str(response.content).strip().lower()
-
-    if intent in ["rag", "web"]:
-        return intent
-    return "web"
-
-
-def extract_company_from_query(query: str) -> str | None:
+def retrieve(state):
     """
-    Use LLM to extract company name from user query if present.
-    Returns the company name or None if not found.
+    Retrieves relevant documents from the vector database based on the user's question.
+
+    This function acts as a retrieval node in the RAG graph. It takes the current 
+    'question' from the state, converts it into a search query (embedding), 
+    and fetches the top-k most semantically similar document chunks from the 
+    ChromaDB/Pinecone vector store.
+
+    Args:
+        state (dict): The current graph state containing:
+            - "question": The string query to search for.
+
+    Returns:
+        dict: An updated state dictionary with:
+            - "documents": A list of retrieved Document objects.
+            - "question": The original question.
     """
-    extraction_prompt = f"""Extract the company name from the following user query if present.
-Look for company names like "BNP Paribas", "Google", "Microsoft", "Amazon", etc.
-If a company name is found, return ONLY the company name. If not found, return "NONE".
 
-User Query: {query}
+    print("---RETRIEVE NODE---")
+    question = state["question"]
 
-Respond with ONLY the company name or "NONE"."""
+    docs = retriever.invoke(question)
 
-    response = llm.invoke([HumanMessage(content=extraction_prompt)])
-    result = str(response.content).strip()
+    # Build flat text context for LLM prompts
+    context = "\n\n".join([
+    f"""
+    Company: {doc.metadata.get('company')}
+    Title: {doc.metadata.get('job_title')}
+    Skills: {doc.metadata.get('skills_required')}
+    Location: {doc.metadata.get('location')}
+    Job URL: {doc.metadata.get('job_url')}
+    Description: {doc.page_content}
+    """
+    for doc in docs
+])
+    # Also store raw docs for structured source metadata in the API response
+    return {"documents": context, "source_docs": docs, "question": question}
 
-    if result.upper() == "NONE":
-        return None
-    return result
+def generate(state):
+    """
+    Synthesizes a final answer by grounding the LLM's response in retrieved context.
 
+    This node performs the 'R' (Retrieval) and 'G' (Generation) alignment. It 
+    constructs a prompt using the 'documents' list and the 'question' stored 
+    in the state, then invokes the LLM to generate a concise, fact-based response.
 
-def tavily_search(query: str) -> List[Dict]:
-    """Perform web search using Tavily API."""
-    if not tavily_client:
-        return []
+    Args:
+        state (dict): The current graph state containing:
+            - "question" (str): The user's original or rewritten query.
+            - "documents" (List[Document]): A list of filtered, relevant document 
+              chunks to be used as context.
 
-    try:
-        results = tavily_client.search(
-            query=query, max_results=5, include_answer=True, include_raw_content=False
+    Returns:
+        dict: The updated state dictionary with:
+            - "generation" (str): The final natural language response from the LLM.
+            - "documents" (List[Document]): Passes through the context used for 
+              potential citation or source-tracking.
+    """
+
+    print("---GENERATE NODE---")
+    question = state["question"]
+    context = state["documents"]
+
+    # RAG generation
+    generation = rag_chain.invoke({"context": context, "question": question})
+    return {"documents": context, "question": question, "generation": generation}
+
+def grade_documents(state):
+    """
+    Determines whether the retrieved documents are relevant to the question.
+
+    Args:
+        state (dict): The current graph state
+
+    Returns:
+        state (dict): Updates documents key with only filtered relevant documents
+    """
+
+    print("---GRADE DOCUEMENT NODE---")
+    question = state["question"]
+    documents = state["documents"]
+
+    # Score each doc
+    filtered_docs = []
+    for c in documents.split("\n\n"):
+        if not c.strip():
+            continue
+        score = retrieval_grader.invoke(
+            {"question": question, "document": c}
         )
 
-        web_results = []
-        for result in results.get("results", []):
-            web_results.append(
-                {
-                    "title": result.get("title", "No title"),
-                    "url": result.get("url", ""),
-                    "content": result.get("content", "")[:500]
-                    if result.get("content")
-                    else "",
-                }
-            )
-        return web_results
-    except Exception as e:
-        print(f"Tavily search error: {e}")
-        return []
+        grade = score.binary_score
+        if grade == "yes":
+            print("---GRADE: DOCUMENT RELEVANT---")
+            filtered_docs.append(c)
+        else:
+            print("---GRADE: DOCUMENT NOT RELEVANT---")
+            continue
+
+    return {"documents": "\n\n".join(filtered_docs), "question": question}
 
 
-def build_web_context(web_results: List[Dict]) -> str:
-    """Build context string from Tavily web results."""
-    if not web_results:
-        return ""
+def transform_query(state):
+    """
+    Transform the query to produce a better question.
 
-    context = "Web Search Results:\n"
-    for i, result in enumerate(web_results, start=1):
-        context += f"""
---- Result {i} ---
-Title: {result.get("title", "N/A")}
-URL: {result.get("url", "N/A")}
-Content: {result.get("content", "N/A")}
-"""
-    return context.strip()
+    Args:
+        state (dict): The current graph state
 
+    Returns:
+        state (dict): Updates question key with a re-phrased question
+    """
 
-def generate_answer(
-    question: str, context: str, history: List[BaseMessage], is_rag: bool = True
-):
-    if is_rag:
-        system_prompt = """You are a professional Job & Career Assistant.
-Your goal is to help users find relevant job opportunities and provide career guidance.
+    print("---TRANSFORM QUERY---")
+    question = state["question"]
+    documents = state["documents"]
+    retries = state.get("retries", 0) + 1
 
-**Formatting Requirements:**
-- Use **bold** for important terms, job titles, company names, and key information
-- Use bullet points (•) or numbered lists (1., 2., 3.) for multiple items
-- Add proper spacing between sections for readability
-- Use headings (##) for different sections if needed
-- Structure your response like a professional document
+    # Re-write question
+    better_question = question_rewriter.invoke({"question": question})
+    return {"documents": documents, "question": better_question, "retries": retries}
 
-**Content Guidelines:**
-1. Use ONLY the provided job context from the database
-2. Cite specific job titles, companies, locations, and skills when available
-3. Mention the top relevant jobs by their number (e.g., "Based on **Job 1** and **Job 2**...")
-4. Include salary, experience requirements, and employment type when available
-5. Be concise, factual, and professional
+def web_search(state):
+    """
+    Web search based on the re-phrased question.
 
-If the answer cannot be determined from the context, clearly state that and suggest refining the search."""
+    Args:
+        state (dict): The current graph state
+
+    Returns:
+        state (dict): Updates documents key with appended web results
+    """
+
+    print("---WEB SEARCH---")
+    question = state["question"]
+
+    # Web search
+    docs = web_search_tool.invoke({"query": question})
+    web_results = "\n".join([d["content"] for d in docs])
+
+    return {"documents": web_results, "question": question}
+
+def route_question(state):
+    """
+    Route the question to web search or RAG.
+    
+    Args:
+        state (dict): The current graph state
+        
+    Returns:
+        str: Next node to call (the router result)
+    """
+
+    print("---ROUTING QUESTION---")
+    question = state["question"]
+    source = question_router.invoke({"question": question})
+
+    if source.datasource == 'web_search':
+        print("---ROUTE TO WEB SEARCH---")
+        return "web_search"
+    elif source.datasource == 'vectorstore':
+        print("---ROUTE TO RETRIEVAL---")
+        return "vectorstore"
+
+def decide_to_generate(state):
+    """
+    Determines whether to generate an answer, or re-generate a question.
+
+    Args:
+        state (dict): The current graph state
+
+    Returns:
+        str: Binary decision for next node to call
+    """
+
+    print("---ASSESS GRADED DOCUMENTS---")
+    filtered_documents = state["documents"]
+    retries = state.get("retries", 0)
+
+    if not filtered_documents:
+        if retries >= 2:
+            # Loop guard: too many retries, fall through to generate
+            # The generate node will respond that it lacks info
+            print("---DECISION: MAX RETRIES REACHED, FORCING GENERATE---")
+            return "generate"
+        # All documents have been filtered — re-generate a new query
+        print(
+            "---DECISION: ALL DOCUMENTS ARE NOT RELEVANT TO QUESTION, TRANSFORM QUERY---"
+        )
+        return "transform_query"
     else:
-        system_prompt = """You are a professional Career Assistant providing helpful guidance.
+        # We have relevant documents, so generate answer
+        print("---DECISION: GENERATE---")
+        return "generate"
 
-**Formatting Requirements:**
-- Use **bold** for important terms and key information
-- Use bullet points (•) or numbered lists (1., 2., 3.) for multiple items
-- Add proper spacing between sections for readability
-- Structure your response like a professional document
 
-**Content Guidelines:**
-1. Provide accurate, helpful information based on web search results
-2. Cite your sources by mentioning the **title** and **URL**
-3. Be clear and structured in your response
-4. If uncertain, acknowledge limitations"""
+def grade_generation_v_documents_and_question(state):
+    """
+    Determines whether the generation is grounded in the document and answers question.
 
-    history_str = "\n".join(
-        [f"{msg.type.upper()}: {msg.content}" for msg in history[-6:]]
+    Args:
+        state (dict): The current graph state
+
+    Returns:
+        str: Decision for next node to call
+    """
+
+    print("---CHECK HALLUCINATIONS---")
+    question = state["question"]
+    documents = state["documents"]
+    generation = state["generation"]
+
+    score = hallucination_grader.invoke(
+        {"documents": documents, "generation": generation}
     )
-    user_prompt = f"""User Question: {question}
+    grade = score.binary_score
 
-Conversation History:
-{history_str}
-
-Relevant Context:
-{context}
-
-Provide a helpful, well-structured answer with proper formatting, bold text for important info, and citations where applicable."""
-
-    messages = [
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=user_prompt),
-    ]
-    response = llm.invoke(messages)
-    return response.content
-
-
-class AgentState(TypedDict):
-    messages: Annotated[List[BaseMessage], add]
-    context: str
-    sources: List[Dict]
-    web_sources: List[Dict]
-    query: str
-    intent: str
+    # Check hallucination
+    if grade == "yes":
+        print("---DECISION: GENERATION IS GROUNDED IN DOCUMENTS---")
+        # Check question-answering
+        print("---GRADE GENERATION vs QUESTION---")
+        score = answer_grader.invoke({"question": question, "generation": generation})
+        grade = score.binary_score
+        if grade == "yes":
+            print("---DECISION: GENERATION ADDRESSES QUESTION---")
+            return "useful"
+        else:
+            print("---DECISION: GENERATION DOES NOT ADDRESS QUESTION---")
+            return "not useful"
+    else:
+        print("---DECISION: GENERATION IS NOT GROUNDED IN DOCUMENTS, TRANSFORM QUERY---")
+        return "transform_query"
 
 
-def classify_intent_node(state: AgentState) -> Dict:
-    """Node that classifies user intent using LLM."""
-    last_msg = state["messages"][-1]
-    query = (
-        last_msg.content if isinstance(last_msg.content, str) else str(last_msg.content)
-    )
-    intent = classify_intent(query)
-    return {"intent": intent, "query": query}
+workflow = StateGraph(GraphState)
 
+# Define the nodes
+workflow.add_node("web_search", web_search)  # web search
+workflow.add_node("retrieve", retrieve)  # retrieve
+workflow.add_node("grade_documents", grade_documents)  # grade documents
+workflow.add_node("generate", generate)  # generate
+workflow.add_node("transform_query", transform_query)  # transform_query
 
-def rag_node(state: AgentState):
-    """RAG node for job-related queries."""
-    last_msg = state["messages"][-1]
-    query = (
-        last_msg.content if isinstance(last_msg.content, str) else str(last_msg.content)
-    )
-    if not validate_query(query):
-        return {
-            "messages": [
-                AIMessage(content="Please ask a meaningful job-related question.")
-            ],
-            "context": "",
-            "sources": [],
-            "web_sources": [],
-            "intent": "rag",
-        }
-
-    company_filter = extract_company_from_query(query)
-    print(f"Query: {query}")
-    print(f"Company filter: {company_filter}")
-
-    # If company is found, add it to the search query for better vector matching
-    search_query = query
-    if company_filter:
-        # Modify query to include company name for better vector matching
-        search_query = f"{company_filter} {query}"
-
-    query_embedding = embed_query(search_query)
-    docs = retrieve_documents(query_embedding, company_filter=company_filter)
-
-    if not docs and company_filter:
-        docs = retrieve_documents(query_embedding, company_filter=None)
-        print(f"No results with company filter, trying without...")
-
-    if not docs:
-        return {
-            "messages": [AIMessage(content="No relevant Foundit jobs found.")],
-            "context": "",
-            "sources": [],
-            "web_sources": [],
-            "intent": "rag",
-        }
-    context = trim_context(build_context(docs))
-    answer = generate_answer(query, context, state["messages"], is_rag=True)
-    return {
-        "messages": [AIMessage(content=answer)],
-        "context": context,
-        "sources": docs[:2],
-        "web_sources": [],
-        "query": query,
-        "intent": "rag",
-    }
-
-
-def chat_node(state: AgentState):
-    """Plain LLM chat without RAG or web search."""
-    last_msg = state["messages"][-1]
-    query = (
-        last_msg.content if isinstance(last_msg.content, str) else str(last_msg.content)
-    )
-
-    system_prompt = """You are a professional Career Assistant.
-
-**Formatting Requirements:**
-- Use **bold** for important terms and key information
-- Use bullet points (•) or numbered lists (1., 2., 3.) for multiple items
-- Add proper spacing between sections for readability
-- Structure your response like a professional document
-
-Provide helpful, well-structured responses. If you don't know something, say so honestly."""
-
-    messages = [SystemMessage(content=system_prompt)] + state["messages"][-6:]
-    response = llm.invoke(messages)
-    return {
-        "messages": [response],
-        "context": "",
-        "sources": [],
-        "web_sources": [],
-        "query": query,
-        "intent": "web",
-    }
-
-
-def tavily_node(state: AgentState):
-    """Web search node for general questions."""
-    last_msg = state["messages"][-1]
-    query = (
-        last_msg.content if isinstance(last_msg.content, str) else str(last_msg.content)
-    )
-
-    web_results = tavily_search(query)
-    web_context = build_web_context(web_results)
-
-    if not web_results:
-        prompt = """You are a helpful Career Assistant. 
-Provide helpful information based on your knowledge. 
-If you don't know something, say so honestly."""
-        messages = [SystemMessage(content=prompt)] + state["messages"][-6:]
-        response = llm.invoke(messages)
-        return {
-            "messages": [response],
-            "context": "",
-            "sources": [],
-            "web_sources": [],
-            "query": query,
-            "intent": "web",
-        }
-
-    answer = generate_answer(query, web_context, state["messages"], is_rag=False)
-    return {
-        "messages": [AIMessage(content=answer)],
-        "context": web_context,
-        "sources": [],
-        "web_sources": web_results,
-        "query": query,
-        "intent": "web",
-    }
-
-
-workflow = StateGraph(AgentState)
-workflow.add_node("classify", classify_intent_node)
-workflow.add_node("rag", rag_node)
-workflow.add_node("chat", chat_node)
-workflow.add_edge(START, "classify")
+# Build graph
 workflow.add_conditional_edges(
-    "classify", lambda state: state["intent"], {"rag": "rag", "web": "chat"}
+    START,
+    route_question,
+    {
+        "web_search": "web_search",
+        "vectorstore": "retrieve",
+    },
 )
-workflow.add_edge("rag", END)
-workflow.add_edge("chat", END)
+workflow.add_edge("web_search", "generate")
+workflow.add_edge("retrieve", "grade_documents")
+workflow.add_conditional_edges(
+    "grade_documents",
+    decide_to_generate,
+    {
+        "transform_query": "transform_query",
+        "generate": "generate",
+    },
+)
+workflow.add_edge("transform_query", "retrieve")
+workflow.add_conditional_edges(
+    "generate",
+    grade_generation_v_documents_and_question,
+    {
+        "transform_query": "transform_query",
+        "useful": END,
+        "not useful": "transform_query",
+    },
+)
 
-memory = MemorySaver()
-rag_agent = workflow.compile(checkpointer=memory)
 
-sessions: Dict[str, str] = {}
+# Compile
+app = workflow.compile()
 
 
-def get_or_create_thread(session_id: str) -> str:
-    if not session_id or session_id not in sessions:
-        new_id = str(uuid.uuid4())
-        sessions[new_id] = new_id
-        return new_id
-    return sessions[session_id]
+# ---------------------------------------------------------------------------
+# Session management & public API used by chat.py
+# ---------------------------------------------------------------------------
+
+_sessions: dict[str, str] = {}   # session_id -> thread_id (same value here)
 
 
 def create_session() -> tuple[str, str]:
+    """Create a new session and return (session_id, thread_id)."""
     session_id = str(uuid.uuid4())
-    sessions[session_id] = session_id
+    _sessions[session_id] = session_id   # thread_id == session_id for this graph
     return session_id, session_id
 
 
-def list_sessions() -> List[str]:
-    return list(sessions.keys())
+def get_or_create_thread(session_id: str) -> str:
+    """Return thread_id for an existing session, or create one if missing."""
+    if session_id not in _sessions:
+        _sessions[session_id] = session_id
+    return _sessions[session_id]
 
 
-def run_agent(thread_id: str, user_message: str) -> Dict:
+def list_sessions() -> list[str]:
+    """Return all known session IDs."""
+    return list(_sessions.keys())
+
+
+def run_agent(thread_id: str, message: str) -> dict:
     """
-    Run one agent turn. Returns { "reply": str, "sources": list, "web_sources": list }.
+    Invoke the RAG graph for a single question and return a dict that
+    matches the shape expected by chat.py:
+        {
+            "reply":       str,          # the generated answer
+            "sources":     list[dict],   # structured vector-store source objects
+            "web_sources": list[dict],   # web-search results (if used)
+        }
     """
-    config = {"configurable": {"thread_id": thread_id}}
-    initial = {"messages": [HumanMessage(content=user_message)]}
-    reply = ""
-    sources: List[Dict] = []
-    web_sources: List[Dict] = []
+    inputs = {"question": message, "source_docs": [], "retries": 0}
+    result = app.invoke(inputs)
 
-    for event in rag_agent.stream(initial, config, stream_mode="values"):
-        if "messages" in event:
-            last = event["messages"][-1]
-            if isinstance(last, AIMessage):
-                reply = last.content or ""
-        if "sources" in event and event["sources"]:
-            sources = event["sources"]
-        if "web_sources" in event and event["web_sources"]:
-            web_sources = event["web_sources"]
+    generation = result.get("generation", "")
+    raw_source_docs = result.get("source_docs", [])   # List[Document]
+    raw_docs_text   = result.get("documents", "")      # flat text (web search)
+    web_search_was_used = bool(raw_docs_text) and not bool(raw_source_docs)
 
-    return {"reply": reply, "sources": sources, "web_sources": web_sources}
+    # --- Vector-store sources: build structured objects from Document metadata ---
+    sources: list[dict] = []
+    for doc in raw_source_docs:
+        m = doc.metadata
+        skills_raw = m.get("skills_required", [])
+        # skills may be stored as a comma-separated string or already a list
+        if isinstance(skills_raw, str):
+            skills_list = [s.strip() for s in skills_raw.split(",") if s.strip()]
+        else:
+            skills_list = list(skills_raw) if skills_raw else []
+
+        sources.append({
+            "job_title":               m.get("job_title"),
+            "company":                 m.get("company"),
+            "location":                m.get("location"),
+            "job_url":                 m.get("job_url"),
+            "skills_required":         skills_list,
+            "job_description_summary": doc.page_content[:300] if doc.page_content else None,
+            "experience":              m.get("experience"),
+            "salary":                  m.get("salary"),
+            "employment_type":         m.get("employment_type"),
+        })
+
+    # --- Web sources: build from flat text chunks ---
+    web_sources: list[dict] = []
+    if web_search_was_used and raw_docs_text:
+        for chunk in raw_docs_text.split("\n\n"):
+            chunk = chunk.strip()
+            if chunk:
+                web_sources.append({"content": chunk})
+
+    return {
+        "reply":       generation,
+        "sources":     sources,
+        "web_sources": web_sources,
+    }
