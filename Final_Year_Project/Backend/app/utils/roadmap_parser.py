@@ -126,16 +126,17 @@ def parse_roadmap_content(
 
     lines = content.split("\n")
 
-    # Extract title
-    for line in lines:
-        if line.startswith("# ") or line.startswith("## "):
-            result["title"] = re.sub(r"^#{1,2}\s+", "", line).strip()
-            break
-
-    if not result["title"] and job_details.get("company") and job_details.get("role"):
+    # Title: prefer explicit job_details (company - role) over LLM-generated heading
+    if job_details.get("company") and job_details.get("role"):
         result["title"] = f"{job_details['company']} - {job_details['role']}"
-    elif not result["title"]:
-        result["title"] = "Learning Roadmap"
+    else:
+        # Fall back to extracting from markdown heading
+        for line in lines:
+            if line.startswith("# ") or line.startswith("## "):
+                result["title"] = re.sub(r"^#{1,2}\s+", "", line).strip()
+                break
+        if not result["title"]:
+            result["title"] = "Learning Roadmap"
 
     # Extract skills
     skills_match = re.search(

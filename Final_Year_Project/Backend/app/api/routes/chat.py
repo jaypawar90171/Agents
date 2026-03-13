@@ -1,12 +1,16 @@
 import asyncio
-from fastapi import APIRouter, HTTPException, Body
+from fastapi import APIRouter, HTTPException, Body, Path
 from pydantic import BaseModel, Field
+from typing import Any
 
 from app.rag.agent import (
     run_agent,
     get_or_create_thread,
     create_session,
     list_sessions,
+    get_session,
+    update_session_title,
+    delete_session,
 )
 
 router = APIRouter(prefix="/api/chat", tags=["chat"])
@@ -30,8 +34,26 @@ class NewSessionResponse(BaseModel):
     session_id: str
 
 
+class SessionMeta(BaseModel):
+    session_id: str
+    title: str
+    created_at: Any
+    message_count: int
+
+
 class SessionsListResponse(BaseModel):
-    sessions: list[str]
+    sessions: list[SessionMeta]
+
+
+class SessionDetail(BaseModel):
+    session_id: str
+    title: str
+    created_at: Any
+    messages: list[dict]
+
+
+class RenameSessionRequest(BaseModel):
+    title: str
 
 
 @router.post("/send", response_model=SendMessageResponse)
@@ -45,7 +67,7 @@ async def send_message(body: SendMessageRequest = Body(...)):
     else:
         thread_id, _ = create_session()
     try:
-        result = await asyncio.to_thread(run_agent, thread_id, msg)
+        result = await asyncio.to_thread(run_agent, thread_id, msg, thread_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Agent error: {str(e)}")
     return SendMessageResponse(
@@ -65,5 +87,51 @@ def new_session():
 
 @router.get("/sessions", response_model=SessionsListResponse)
 def get_sessions():
-    """List all session IDs."""
-    return SessionsListResponse(sessions=list_sessions())
+    """List all sessions with metadata."""
+    sessions = list_sessions()
+    return SessionsListResponse(
+        sessions=[
+            SessionMeta(
+                session_id=s["session_id"],
+                title=s.get("title", "New Chat"),
+                created_at=s.get("created_at"),
+                message_count=s.get("message_count", 0),
+            )
+            for s in sessions
+        ]
+    )
+
+
+@router.get("/sessions/{session_id}", response_model=SessionDetail)
+def get_session_detail(session_id: str = Path(..., description="Session ID")):
+    """Get full message history for a session."""
+    session = get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return SessionDetail(
+        session_id=session["session_id"],
+        title=session.get("title", "New Chat"),
+        created_at=session.get("created_at"),
+        messages=session.get("messages", []),
+    )
+
+
+@router.patch("/sessions/{session_id}")
+def rename_session(
+    session_id: str = Path(..., description="Session ID"),
+    body: RenameSessionRequest = Body(...),
+):
+    """Rename a session."""
+    success = update_session_title(session_id, body.title)
+    if not success:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return {"success": True}
+
+
+@router.delete("/sessions/{session_id}")
+def delete_session_endpoint(session_id: str = Path(..., description="Session ID")):
+    """Delete a session."""
+    success = delete_session(session_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return {"success": True}

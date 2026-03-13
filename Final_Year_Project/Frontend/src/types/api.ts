@@ -86,6 +86,24 @@ export interface ChatMessage {
   createdAt: number;
 }
 
+export interface ChatSession {
+  session_id: string;
+  title: string;
+  created_at: string;
+  message_count: number;
+}
+
+export interface ChatSessionDetail {
+  session_id: string;
+  title: string;
+  created_at: string;
+  messages: {
+    role: 'user' | 'assistant';
+    content: string;
+    created_at: string;
+  }[];
+}
+
 export interface WeeklyProgress {
   weekNumber: number;
   isCompleted: boolean;

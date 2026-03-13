@@ -9,7 +9,8 @@ from langchain_core.output_parsers import StrOutputParser
 from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.memory import MemorySaver
 from operator import add
-# from langchain_mongodb import MongoDBAtlasVectorSearch 
+
+# from langchain_mongodb import MongoDBAtlasVectorSearch
 from pymongo import MongoClient
 from pydantic import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
@@ -41,30 +42,30 @@ client = MongoClient(MONGO_URI)
 collection = client[DB_NAME][COLLECTION_NAME]
 
 vector_store = MongoDBAtlasVectorSearch(
-    collection=collection,  
+    collection=collection,
     embedding=embeddings,
     index_name="vector_index",
     text_key="job_description_summary",
-    embedding_key="job_embedding"
+    embedding_key="job_embedding",
 )
 
-retriever = vector_store.as_retriever(
-    search_type="similarity",
-    search_kwargs={"k": 5}
-)
+retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 5})
+
 
 class RouteQuery(BaseModel):
     """Route the user query to the most relevant datasource based on topic."""
 
     datasource: Literal["vectorstore", "web_search"] = Field(
-        ..., 
-        description="Choose 'vectorstore' for questions about companies, job roles, skills, or placements. Choose 'web_search' for general knowledge or current events."
+        ...,
+        description="Choose 'vectorstore' for questions about companies, job roles, skills, or placements. Choose 'web_search' for general knowledge or current events.",
     )
+
+
 llm = ChatGroq(model=CHAT_MODEL, temperature=0)
 # LLM with function call
 structured_llm_router = llm.with_structured_output(RouteQuery)
 
-#prompt
+# prompt
 system = """You are an expert recruitment and career-path router. 
 Your job is to direct user inquiries to the correct data source.
 
@@ -84,13 +85,11 @@ IMPORTANT: Greetings and casual messages must ALWAYS go to 'web_search'.
 Only route to 'vectorstore' if the question explicitly asks about companies, job roles, skills, or placements."""
 
 route_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", system),
-        ("human", "{question}")
-    ]
+    [("system", system), ("human", "{question}")]
 )
 
 question_router = route_prompt | structured_llm_router
+
 
 class GradeDocuments(BaseModel):
     """
@@ -100,6 +99,7 @@ class GradeDocuments(BaseModel):
     binary_score: str = Field(
         description="Relevance score: 'yes' if the document is useful for answering the question, 'no' if it is not."
     )
+
 
 structured_llm_grader = llm.with_structured_output(GradeDocuments)
 
@@ -169,9 +169,14 @@ re_write_prompt = ChatPromptTemplate.from_messages(
 
 question_rewriter = re_write_prompt | llm | StrOutputParser()
 
+
 class GradeHallucination(BaseModel):
     """Binary score for hallucination check."""
-    binary_score: str = Field(description="Answer is grounded in the facts, 'yes' or 'no'")
+
+    binary_score: str = Field(
+        description="Answer is grounded in the facts, 'yes' or 'no'"
+    )
+
 
 structured_llm_grader = llm.with_structured_output(GradeHallucination)
 
@@ -179,16 +184,21 @@ system = """You are a grader assessing whether an LLM generation is grounded in 
 Give a binary score 'yes' or 'no'. 'yes' means the generation is supported by the facts. 
 Be lenient with phrasing; as long as the factual claim exists in the source, it is 'yes'."""
 
-hallucination_prompt = ChatPromptTemplate.from_messages([
-    ("system", system),
-    ("human", "Set of facts: \n\n {documents} \n\n LLM Generation: {generation}"),
-])
+hallucination_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", system),
+        ("human", "Set of facts: \n\n {documents} \n\n LLM Generation: {generation}"),
+    ]
+)
 
 hallucination_grader = hallucination_prompt | structured_llm_grader
 
+
 class GradeAnswer(BaseModel):
     """Binary score to assess answer address question."""
+
     binary_score: str = Field(description="Answer address the question, 'yes' or 'no'")
+
 
 structured_llm_grader = llm.with_structured_output(GradeAnswer)
 
@@ -196,10 +206,12 @@ system = """You are a grader assisting whether an answer address / resolves ques
 Give a binary score 'yes' or 'no'. 'yes' means answers resolves the question. 
 Be lenient with phrasing; as long as the factual claim exists in the source, it is 'yes'."""
 
-answer_prompt = ChatPromptTemplate.from_messages([
-    ("system", system),
-    ("human", "User Question: \n\n {question} \n\n LLM Generation: {generation}"),
-])
+answer_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", system),
+        ("human", "User Question: \n\n {question} \n\n LLM Generation: {generation}"),
+    ]
+)
 
 answer_grader = answer_prompt | structured_llm_grader
 
@@ -208,6 +220,7 @@ web_search_tool = TavilySearchResults(k=3)
 
 
 from typing import List
+
 
 class GraphState(TypedDict):
     """
@@ -219,6 +232,7 @@ class GraphState(TypedDict):
         web_search: whether to add search
         documents: list of documents (flat text context string)
         source_docs: raw Document objects from retriever (for structured source metadata)
+        web_docs: raw Tavily result dicts (for web source url/title)
         retries: number of transform_query retries (prevents infinite loops)
     """
 
@@ -226,16 +240,18 @@ class GraphState(TypedDict):
     generation: str
     web_search: str
     documents: List[str]
-    source_docs: List   # List[Document]
+    source_docs: List  # List[Document]
+    web_docs: List     # List[dict] from Tavily
     retries: int
+
 
 def retrieve(state):
     """
     Retrieves relevant documents from the vector database based on the user's question.
 
-    This function acts as a retrieval node in the RAG graph. It takes the current 
-    'question' from the state, converts it into a search query (embedding), 
-    and fetches the top-k most semantically similar document chunks from the 
+    This function acts as a retrieval node in the RAG graph. It takes the current
+    'question' from the state, converts it into a search query (embedding),
+    and fetches the top-k most semantically similar document chunks from the
     ChromaDB/Pinecone vector store.
 
     Args:
@@ -254,38 +270,41 @@ def retrieve(state):
     docs = retriever.invoke(question)
 
     # Build flat text context for LLM prompts
-    context = "\n\n".join([
-    f"""
-    Company: {doc.metadata.get('company')}
-    Title: {doc.metadata.get('job_title')}
-    Skills: {doc.metadata.get('skills_required')}
-    Location: {doc.metadata.get('location')}
-    Job URL: {doc.metadata.get('job_url')}
+    context = "\n\n".join(
+        [
+            f"""
+    Company: {doc.metadata.get("company")}
+    Title: {doc.metadata.get("job_title")}
+    Skills: {doc.metadata.get("skills_required")}
+    Location: {doc.metadata.get("location")}
+    Job URL: {doc.metadata.get("job_url")}
     Description: {doc.page_content}
     """
-    for doc in docs
-])
+            for doc in docs
+        ]
+    )
     # Also store raw docs for structured source metadata in the API response
     return {"documents": context, "source_docs": docs, "question": question}
+
 
 def generate(state):
     """
     Synthesizes a final answer by grounding the LLM's response in retrieved context.
 
-    This node performs the 'R' (Retrieval) and 'G' (Generation) alignment. It 
-    constructs a prompt using the 'documents' list and the 'question' stored 
+    This node performs the 'R' (Retrieval) and 'G' (Generation) alignment. It
+    constructs a prompt using the 'documents' list and the 'question' stored
     in the state, then invokes the LLM to generate a concise, fact-based response.
 
     Args:
         state (dict): The current graph state containing:
             - "question" (str): The user's original or rewritten query.
-            - "documents" (List[Document]): A list of filtered, relevant document 
+            - "documents" (List[Document]): A list of filtered, relevant document
               chunks to be used as context.
 
     Returns:
         dict: The updated state dictionary with:
             - "generation" (str): The final natural language response from the LLM.
-            - "documents" (List[Document]): Passes through the context used for 
+            - "documents" (List[Document]): Passes through the context used for
               potential citation or source-tracking.
     """
 
@@ -296,6 +315,7 @@ def generate(state):
     # RAG generation
     generation = rag_chain.invoke({"context": context, "question": question})
     return {"documents": context, "question": question, "generation": generation}
+
 
 def grade_documents(state):
     """
@@ -317,9 +337,7 @@ def grade_documents(state):
     for c in documents.split("\n\n"):
         if not c.strip():
             continue
-        score = retrieval_grader.invoke(
-            {"question": question, "document": c}
-        )
+        score = retrieval_grader.invoke({"question": question, "document": c})
 
         grade = score.binary_score
         if grade == "yes":
@@ -352,6 +370,7 @@ def transform_query(state):
     better_question = question_rewriter.invoke({"question": question})
     return {"documents": documents, "question": better_question, "retries": retries}
 
+
 def web_search(state):
     """
     Web search based on the re-phrased question.
@@ -366,19 +385,20 @@ def web_search(state):
     print("---WEB SEARCH---")
     question = state["question"]
 
-    # Web search
+    # Web search — keep raw docs so we can extract url/title for the frontend
     docs = web_search_tool.invoke({"query": question})
     web_results = "\n".join([d["content"] for d in docs])
 
-    return {"documents": web_results, "question": question}
+    return {"documents": web_results, "web_docs": docs, "question": question}
+
 
 def route_question(state):
     """
     Route the question to web search or RAG.
-    
+
     Args:
         state (dict): The current graph state
-        
+
     Returns:
         str: Next node to call (the router result)
     """
@@ -387,12 +407,13 @@ def route_question(state):
     question = state["question"]
     source = question_router.invoke({"question": question})
 
-    if source.datasource == 'web_search':
+    if source.datasource == "web_search":
         print("---ROUTE TO WEB SEARCH---")
         return "web_search"
-    elif source.datasource == 'vectorstore':
+    elif source.datasource == "vectorstore":
         print("---ROUTE TO RETRIEVAL---")
         return "vectorstore"
+
 
 def decide_to_generate(state):
     """
@@ -461,7 +482,9 @@ def grade_generation_v_documents_and_question(state):
             print("---DECISION: GENERATION DOES NOT ADDRESS QUESTION---")
             return "not useful"
     else:
-        print("---DECISION: GENERATION IS NOT GROUNDED IN DOCUMENTS, TRANSFORM QUERY---")
+        print(
+            "---DECISION: GENERATION IS NOT GROUNDED IN DOCUMENTS, TRANSFORM QUERY---"
+        )
         return "transform_query"
 
 
@@ -513,29 +536,135 @@ app = workflow.compile()
 # Session management & public API used by chat.py
 # ---------------------------------------------------------------------------
 
-_sessions: dict[str, str] = {}   # session_id -> thread_id (same value here)
+CHAT_SESSIONS_COLLECTION = "chat_sessions"
+
+
+def _get_sessions_collection():
+    """Get the chat_sessions collection from MongoDB."""
+    return client[DB_NAME][CHAT_SESSIONS_COLLECTION]
 
 
 def create_session() -> tuple[str, str]:
     """Create a new session and return (session_id, thread_id)."""
+    import datetime
+
     session_id = str(uuid.uuid4())
-    _sessions[session_id] = session_id   # thread_id == session_id for this graph
-    return session_id, session_id
+    thread_id = session_id
+
+    doc = {
+        "session_id": session_id,
+        "title": "New Chat",
+        "created_at": datetime.datetime.utcnow(),
+        "messages": [],
+    }
+    _get_sessions_collection().insert_one(doc)
+    return session_id, thread_id
 
 
 def get_or_create_thread(session_id: str) -> str:
     """Return thread_id for an existing session, or create one if missing."""
-    if session_id not in _sessions:
-        _sessions[session_id] = session_id
-    return _sessions[session_id]
+    existing = _get_sessions_collection().find_one({"session_id": session_id})
+    if existing:
+        return session_id
+
+    # Create if doesn't exist
+    import datetime
+
+    doc = {
+        "session_id": session_id,
+        "title": "New Chat",
+        "created_at": datetime.datetime.utcnow(),
+        "messages": [],
+    }
+    _get_sessions_collection().insert_one(doc)
+    return session_id
 
 
-def list_sessions() -> list[str]:
-    """Return all known session IDs."""
-    return list(_sessions.keys())
+def list_sessions() -> list[dict]:
+    """Return all sessions with metadata (id, title, created_at, message_count)."""
+    import datetime
+
+    sessions = []
+    for doc in _get_sessions_collection().find().sort("created_at", -1):
+        created_at = doc.get("created_at")
+        if isinstance(created_at, datetime.datetime):
+            created_at = created_at.isoformat()
+        elif created_at is None and "_id" in doc:
+            created_at = doc["_id"].generation_time.isoformat()
+
+        sessions.append(
+            {
+                "session_id": doc["session_id"],
+                "title": doc.get("title", "New Chat"),
+                "created_at": created_at,
+                "message_count": len(doc.get("messages", [])),
+            }
+        )
+    return sessions
 
 
-def run_agent(thread_id: str, message: str) -> dict:
+def get_session(session_id: str) -> dict | None:
+    """Return full session details including messages."""
+    import datetime
+
+    doc = _get_sessions_collection().find_one({"session_id": session_id})
+    if not doc:
+        return None
+
+    created_at = doc.get("created_at")
+    if isinstance(created_at, datetime.datetime):
+        created_at = created_at.isoformat()
+
+    messages = doc.get("messages", [])
+    formatted_messages = []
+    for msg in messages:
+        msg_copy = dict(msg)
+        msg_created_at = msg_copy.get("created_at")
+        if isinstance(msg_created_at, datetime.datetime):
+            msg_copy["created_at"] = msg_created_at.isoformat()
+        formatted_messages.append(msg_copy)
+
+    return {
+        "session_id": doc["session_id"],
+        "title": doc.get("title", "New Chat"),
+        "created_at": created_at,
+        "messages": formatted_messages,
+    }
+
+
+def update_session_title(session_id: str, title: str) -> bool:
+    """Update session title. Returns True if successful."""
+    result = _get_sessions_collection().update_one(
+        {"session_id": session_id}, {"$set": {"title": title}}
+    )
+    return result.modified_count > 0
+
+
+def delete_session(session_id: str) -> bool:
+    """Delete a session. Returns True if successful."""
+    result = _get_sessions_collection().delete_one({"session_id": session_id})
+    return result.deleted_count > 0
+
+
+def add_message_to_session(session_id: str, role: str, content: str):
+    """Add a message to the session's messages array."""
+    import datetime
+
+    _get_sessions_collection().update_one(
+        {"session_id": session_id},
+        {
+            "$push": {
+                "messages": {
+                    "role": role,
+                    "content": content,
+                    "created_at": datetime.datetime.utcnow().isoformat(),
+                }
+            }
+        },
+    )
+
+
+def run_agent(thread_id: str, message: str, session_id: str | None = None) -> dict:
     """
     Invoke the RAG graph for a single question and return a dict that
     matches the shape expected by chat.py:
@@ -544,13 +673,15 @@ def run_agent(thread_id: str, message: str) -> dict:
             "sources":     list[dict],   # structured vector-store source objects
             "web_sources": list[dict],   # web-search results (if used)
         }
+
+    If session_id is provided, also persist the messages to MongoDB.
     """
-    inputs = {"question": message, "source_docs": [], "retries": 0}
+    inputs = {"question": message, "source_docs": [], "web_docs": [], "retries": 0}
     result = app.invoke(inputs)
 
     generation = result.get("generation", "")
-    raw_source_docs = result.get("source_docs", [])   # List[Document]
-    raw_docs_text   = result.get("documents", "")      # flat text (web search)
+    raw_source_docs = result.get("source_docs", [])  # List[Document]
+    raw_docs_text = result.get("documents", "")  # flat text (web search)
     web_search_was_used = bool(raw_docs_text) and not bool(raw_source_docs)
 
     # --- Vector-store sources: build structured objects from Document metadata ---
@@ -564,28 +695,41 @@ def run_agent(thread_id: str, message: str) -> dict:
         else:
             skills_list = list(skills_raw) if skills_raw else []
 
-        sources.append({
-            "job_title":               m.get("job_title"),
-            "company":                 m.get("company"),
-            "location":                m.get("location"),
-            "job_url":                 m.get("job_url"),
-            "skills_required":         skills_list,
-            "job_description_summary": doc.page_content[:300] if doc.page_content else None,
-            "experience":              m.get("experience"),
-            "salary":                  m.get("salary"),
-            "employment_type":         m.get("employment_type"),
-        })
+        sources.append(
+            {
+                "job_title": m.get("job_title"),
+                "company": m.get("company"),
+                "location": m.get("location"),
+                "job_url": m.get("job_url"),
+                "skills_required": skills_list,
+                "job_description_summary": doc.page_content[:300]
+                if doc.page_content
+                else None,
+                "experience": m.get("experience"),
+                "salary": m.get("salary"),
+                "employment_type": m.get("employment_type"),
+            }
+        )
 
-    # --- Web sources: build from flat text chunks ---
+    # --- Web sources: build structured objects from raw Tavily results ---
     web_sources: list[dict] = []
-    if web_search_was_used and raw_docs_text:
-        for chunk in raw_docs_text.split("\n\n"):
-            chunk = chunk.strip()
-            if chunk:
-                web_sources.append({"content": chunk})
+    raw_web_docs = result.get("web_docs", [])   # List[dict] from Tavily
+    if raw_web_docs:
+        # Limit to 1 result as requested
+        first = raw_web_docs[0]
+        web_sources = [{
+            "title":   first.get("title") or first.get("url", "Web Result"),
+            "url":     first.get("url"),
+            "content": first.get("content", "")[:400],
+        }]
+
+    # Persist messages to MongoDB if session_id provided
+    if session_id:
+        add_message_to_session(session_id, "user", message)
+        add_message_to_session(session_id, "assistant", generation)
 
     return {
-        "reply":       generation,
-        "sources":     sources,
+        "reply": generation,
+        "sources": sources,
         "web_sources": web_sources,
     }

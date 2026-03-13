@@ -1,6 +1,6 @@
 import { atom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
-import type { ChatMessage } from '../types/api';
+import type { ChatMessage, ChatSession } from '../types/api';
 
 export const chatSessionIdAtom = atom<string | null>(null);
 export const chatMessagesAtom = atom<ChatMessage[]>([]);
@@ -8,6 +8,7 @@ export const chatLoadingAtom = atom<boolean>(false);
 export const chatErrorAtom = atom<string | null>(null);
 export const chatInputAtom = atom<string>('');
 export const chatSidebarOpenAtom = atomWithStorage<boolean>('chatSidebarOpen', true);
+export const chatSessionListAtom = atom<ChatSession[]>([]);
 
 export const chatCanSendAtom = atom((get) => {
   const loading = get(chatLoadingAtom);
