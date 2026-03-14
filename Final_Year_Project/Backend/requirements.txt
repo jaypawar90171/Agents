@@ -5,3 +5,7 @@ python-dotenv
 ollama
 langchain-core
 langchain-groq
+tavily-python
+langchain-community
+langgraph
+langchain-mongodb

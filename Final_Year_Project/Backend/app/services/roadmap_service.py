@@ -3,6 +3,7 @@ Roadmap generation service: embeds company query via Ollama, retrieves jobs via
 MongoDB vector search, and generates a skill-based learning roadmap via Groq.
 Uses the app's jobs_collection (FOUNDIT_DB_NAME / FOUNDIT_COLLECTION_NAME).
 """
+
 import os
 import logging
 import ollama
@@ -16,22 +17,28 @@ logger = logging.getLogger(__name__)
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 EMBED_MODEL = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
 CHAT_MODEL = "llama-3.3-70b-versatile"
-TOP_K = 10
-MIN_SCORE = 0.5
-MAX_CONTEXT_CHARS = 3500
-VECTOR_INDEX = "foundit_job_vector_index"
+TOP_K = 15
+MIN_SCORE = 0.2
+MAX_CONTEXT_CHARS = 5000
+VECTOR_INDEX = "vector_index"
+
 
 # Custom exceptions for the route to map to HTTP status codes
 class RoadmapValidationError(ValueError):
     """Company name validation failed (e.g. too short)."""
+
     pass
+
 
 class RoadmapNotFoundError(ValueError):
     """No job listings found for the company."""
+
     pass
+
 
 class RoadmapServiceError(RuntimeError):
     """Ollama or Groq (or other external) failure."""
+
     pass
 
 
@@ -48,16 +55,9 @@ def embed_query(query: str):
 
 
 def retrieve_documents(query_embedding, company_name: str):
-    pipeline = [
-        {
-            "$vectorSearch": {
-                "index": VECTOR_INDEX,
-                "path": "job_embedding",
-                "queryVector": query_embedding,
-                "numCandidates": 50,
-                "limit": TOP_K,
-            }
-        },
+    # Fetch company jobs AND their embeddings for similarity scoring
+    company_pipeline = [
+        {"$match": {"company": {"$regex": company_name, "$options": "i"}}},
         {
             "$project": {
                 "_id": 0,
@@ -67,18 +67,47 @@ def retrieve_documents(query_embedding, company_name: str):
                 "skills_required": 1,
                 "job_description_summary": 1,
                 "job_url": 1,
-                "score": {"$meta": "vectorSearchScore"},
-            }
-        },
-        {
-            "$match": {
-                "company": {"$regex": company_name, "$options": "i"}
+                "job_embedding": 1,   # ← MUST include so cosine scoring can work
             }
         },
     ]
-    results = list(jobs_collection.aggregate(pipeline))
-    filtered = [r for r in results if r.get("score", 0) >= MIN_SCORE]
-    return filtered
+
+    company_jobs = list(jobs_collection.aggregate(company_pipeline))
+    logger.info("Company regex '%s' matched %d jobs", company_name, len(company_jobs))
+
+    if not company_jobs:
+        return []
+
+    # Score each job using cosine similarity against the query embedding
+    scored_jobs = []
+    no_embedding_jobs = []
+    for job in company_jobs:
+        emb = job.pop("job_embedding", None)   # pop so it doesn't leak into API response
+        if emb:
+            job["score"] = cosine_similarity(query_embedding, emb)
+            scored_jobs.append(job)
+        else:
+            no_embedding_jobs.append(job)
+
+    if scored_jobs:
+        scored_jobs.sort(key=lambda x: x.get("score", 0), reverse=True)
+        return scored_jobs[:TOP_K]
+
+    # Fallback: no embeddings stored — return raw jobs so roadmap can still be generated
+    logger.warning("No embeddings found for company '%s'; returning unscored jobs", company_name)
+    return no_embedding_jobs[:TOP_K]
+
+
+def cosine_similarity(vec1, vec2):
+    """Calculate cosine similarity between two vectors."""
+    dot_product = sum(a * b for a, b in zip(vec1, vec2))
+    magnitude1 = sum(a * a for a in vec1) ** 0.5
+    magnitude2 = sum(b * b for b in vec2) ** 0.5
+
+    if magnitude1 == 0 or magnitude2 == 0:
+        return 0
+
+    return dot_product / (magnitude1 * magnitude2)
 
 
 def trim_context(context: str) -> str:
@@ -95,21 +124,24 @@ def format_context(documents: list) -> str:
         parts.append(
             f"""
             Job Listing {idx}:
-            - Company: {doc.get('company', 'N/A')}
-            - Role: {doc.get('job_title', 'N/A')}
-            - Location: {doc.get('location', 'N/A')}
-            - Required Skills: {', '.join(doc.get('skills_required', []))}
-            - Description: {doc.get('job_description_summary', 'N/A')}
-            - Apply URL: {doc.get('job_url', 'N/A')}
-            - Relevance Score: {doc.get('score', 0):.2f}
+            - Company: {doc.get("company", "N/A")}
+            - Role: {doc.get("job_title", "N/A")}
+            - Location: {doc.get("location", "N/A")}
+            - Required Skills: {", ".join(doc.get("skills_required", []))}
+            - Description: {doc.get("job_description_summary", "N/A")}
+            - Apply URL: {doc.get("job_url", "N/A")}
+            - Relevance Score: {doc.get("score", 0):.2f}
         """
         )
     return "\n".join(parts)
 
 
 def _build_roadmap_prompt():
-    return ChatPromptTemplate.from_messages([
-        ("system", """You are an expert career counselor and technical mentor. Your specialty is creating SKILL-BASED learning roadmaps tailored to specific job requirements.
+    return ChatPromptTemplate.from_messages(
+        [
+            (
+                "system",
+                """You are an expert career counselor and technical mentor. Your specialty is creating SKILL-BASED learning roadmaps tailored to specific job requirements.
 
         **CRITICAL INSTRUCTION:**
         You MUST generate a roadmap based ONLY on the EXACT skills listed in "Required Skills" from the job data provided. 
@@ -257,8 +289,11 @@ def _build_roadmap_prompt():
         - Be specific about what to learn within each skill
         - Provide actual free resources (docs, YouTube, free courses)
         - Focus on practical, hands-on learning
-        - Group related skills together when it makes sense (e.g., "Oracle SQL" + "PL/SQL" in consecutive weeks)"""),
-        ("user", """
+        - Group related skills together when it makes sense (e.g., "Oracle SQL" + "PL/SQL" in consecutive weeks)""",
+            ),
+            (
+                "user",
+                """
             **Target Company**: {company}
             **Available Job Data**:
             {context}
@@ -271,8 +306,10 @@ def _build_roadmap_prompt():
             5. Do NOT add generic phases - map directly to the actual required skills
 
             Generate the complete roadmap now.
-        """),
-    ])
+        """,
+            ),
+        ]
+    )
 
 
 def generate_answer(company: str, context: str) -> str:
@@ -281,7 +318,7 @@ def generate_answer(company: str, context: str) -> str:
     llm = ChatGroq(
         model=CHAT_MODEL,
         groq_api_key=GROQ_API_KEY,
-        temperature=0.2,
+        temperature=0.5,
     )
     prompt_template = _build_roadmap_prompt()
     formatted_prompt = prompt_template.format_messages(company=company, context=context)
@@ -317,7 +354,9 @@ def generate_roadmap(company_name: str) -> dict:
     if not validate_query(company_name):
         raise RoadmapValidationError("Company name must be at least 3 characters")
 
-    query_embedding = embed_query(company_name)
+    # Include company name in search query for better vector matching
+    search_query = f"{company_name} jobs"
+    query_embedding = embed_query(search_query)
     documents = retrieve_documents(query_embedding, company_name)
 
     if not documents:
