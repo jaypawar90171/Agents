@@ -152,23 +152,6 @@ export default function JobChat() {
         {/* Chat area */}
         <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
           <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-4 py-6 overflow-hidden">
-            {/* Title row */}
-            <div className="flex items-center justify-between mb-6 flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-500 flex items-center justify-center text-white shadow-lg">
-                  <Briefcase className="w-5 h-5" />
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-                    Job RAG Assistant
-                  </h1>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Ask about roles, skills, jobs, or get career advice
-                  </p>
-                </div>
-              </div>
-            </div>
-
             {/* Messages */}
             <div
               ref={scrollRef}
