@@ -2,7 +2,6 @@ import os
 from dotenv import load_dotenv
 from datasets import Dataset
 from ragas import evaluate
-# NEW IMPORT PATHS
 from ragas.metrics import faithfulness, answer_relevancy, context_precision, context_recall
 from ragas.llms import LangchainLLMWrapper
 from ragas.embeddings import LangchainEmbeddingsWrapper
