@@ -1,18 +1,16 @@
-# Step 1: Build
-FROM node:20-alpine as build
+FROM node:20-alpine
 
 WORKDIR /app
+
+# Install dependencies
 COPY package.json package-lock.json ./
 RUN npm install
 
+# Copy the rest of the application files
 COPY . .
-RUN npm run build
 
-# Step 2: Serve with nginx
-FROM nginx:alpine
+# Expose Vite's default port
+EXPOSE 5173
 
-COPY --from=build /app/build /usr/share/nginx/html
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Start the dev server and bind to all network interfaces
+CMD ["npm", "run", "dev", "--", "--host"]
