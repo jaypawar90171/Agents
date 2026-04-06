@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
+import { useUser } from '@clerk/clerk-react';
 import type { ChatMessage as ChatMessageType } from '../../types/api';
 import { ChatSourceCard, WebSourceCard } from './ChatSourceCard';
 
@@ -9,108 +10,99 @@ interface ChatMessageBubbleProps {
 
 const ReactMarkdownComponents = {
   p: ({ children }: { children?: React.ReactNode }) => (
-    <p className="mb-3 last:mb-0 leading-7">{children}</p>
+    <p className="mb-4 last:mb-0 leading-relaxed font-body">{children}</p>
   ),
   strong: ({ children }: { children?: React.ReactNode }) => (
-    <strong className="font-semibold text-slate-900 dark:text-slate-100">{children}</strong>
+    <strong className="font-bold text-primary">{children}</strong>
   ),
   ul: ({ children }: { children?: React.ReactNode }) => (
-    <ul className="list-disc pl-6 mb-3 space-y-1">{children}</ul>
+    <ul className="list-disc pl-6 mb-4 space-y-2 font-body text-sm text-on-surface-variant leading-relaxed">{children}</ul>
   ),
   ol: ({ children }: { children?: React.ReactNode }) => (
-    <ol className="list-decimal pl-6 mb-3 space-y-1">{children}</ol>
+    <ol className="list-decimal pl-6 mb-4 space-y-2 font-body text-sm text-on-surface-variant leading-relaxed">{children}</ol>
   ),
   li: ({ children }: { children?: React.ReactNode }) => (
-    <li className="text-slate-700 dark:text-slate-200">{children}</li>
+    <li>{children}</li>
   ),
   h1: ({ children }: { children?: React.ReactNode }) => (
-    <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2 mt-4">{children}</h1>
+    <h1 className="text-2xl font-headline font-bold text-on-surface mb-3 mt-6">{children}</h1>
   ),
   h2: ({ children }: { children?: React.ReactNode }) => (
-    <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2 mt-3">{children}</h2>
+    <h2 className="text-xl font-headline font-bold text-on-surface mb-3 mt-5">{children}</h2>
   ),
   h3: ({ children }: { children?: React.ReactNode }) => (
-    <h3 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-1 mt-2">{children}</h3>
+    <h3 className="text-lg font-headline font-bold text-on-surface mb-2 mt-4">{children}</h3>
   ),
   code: ({ children }: { children?: React.ReactNode }) => (
-    <code className="px-1.5 py-0.5 rounded-md bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-sm font-mono">{children}</code>
+    <code className="px-1.5 py-0.5 rounded-md bg-surface-container-low text-primary text-sm font-mono border border-outline-variant/30">{children}</code>
   ),
   a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
-    <a href={href} target="_blank" rel="noopener noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline">{children}</a>
+    <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-bold border-b-2 border-primary-container">{children}</a>
   ),
   blockquote: ({ children }: { children?: React.ReactNode }) => (
-    <blockquote className="border-l-4 border-indigo-300 dark:border-indigo-600 pl-4 my-3 italic text-slate-600 dark:text-slate-300">{children}</blockquote>
+    <blockquote className="bg-surface-container-lowest border-l-4 border-primary p-6 italic font-headline text-neutral-600 bg-neutral-50 shadow-sm rounded-r-xl my-6">
+      {children}
+    </blockquote>
   ),
-  hr: () => <hr className="my-4 border-slate-200 dark:border-slate-700" />,
+  hr: () => <hr className="my-6 border-outline-variant/20" />,
 };
 
 export const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({ message }) => {
+  const { user } = useUser();
   const isUser = message.role === 'user';
 
-  return (
-    <div
-      className={`flex w-full gap-3 ${isUser ? 'justify-end' : 'justify-start'}`}
-      data-role={message.role}
-    >
-      {!isUser && (
-        <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-semibold shadow-md">
-          AI
+  if (isUser) {
+    return (
+      <div className="flex gap-6 max-w-4xl mx-auto justify-end mb-6">
+        <div className="max-w-[80%] bg-primary text-white p-5 rounded-2xl rounded-tr-none shadow-sm">
+          <p className="font-body text-sm leading-relaxed whitespace-pre-wrap break-words">{message.content}</p>
         </div>
-      )}
-      <div
-        className={`flex flex-col max-w-[85%] sm:max-w-[75%] ${
-          isUser ? 'items-end' : 'items-start'
-        }`}
-      >
-        <div
-          className={`rounded-2xl px-5 py-4 text-[15px] shadow-sm ${
-            isUser
-              ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-br-md'
-              : 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-700 rounded-bl-md'
-          }`}
-        >
-          {isUser ? (
-            <p className="whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
+        <div className="w-10 h-10 rounded-full bg-surface-container-highest flex-shrink-0 flex items-center justify-center mt-1 overflow-hidden">
+          {user?.imageUrl ? (
+            <img src={user.imageUrl} alt="User" className="w-full h-full object-cover" />
           ) : (
-            <div className="prose prose-slate dark:prose-invert max-w-none">
-              <ReactMarkdown components={ReactMarkdownComponents}>
-                {message.content}
-              </ReactMarkdown>
-            </div>
+            <span className="font-label text-sm text-on-surface font-bold">U</span>
           )}
         </div>
-        {!isUser && message.sources && message.sources.length > 0 && (
-          <div className="mt-4 w-full space-y-2">
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide px-1 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
-              Job Sources ({Math.min(message.sources.length, 2)})
-            </p>
-            <div className="flex flex-col gap-2">
-              {message.sources.slice(0, 2).map((source, idx) => (
-                <ChatSourceCard key={idx} source={source} index={idx + 1} />
-              ))}
-            </div>
-          </div>
-        )}
-        {!isUser && message.web_sources && message.web_sources.length > 0 && (
-          <div className="mt-4 w-full space-y-2">
-            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide px-1 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-              Web Sources ({message.web_sources.length})
-            </p>
-            <div className="flex flex-col gap-2">
-              {message.web_sources.map((source, idx) => (
-                <WebSourceCard key={idx} source={source} index={idx + 1} />
-              ))}
-            </div>
-          </div>
-        )}
       </div>
-      {isUser && (
-        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-slate-400 to-slate-600 dark:from-slate-600 dark:to-slate-800 flex items-center justify-center text-white text-xs font-medium shadow-md">
-          U
+    );
+  }
+
+  // AI Message
+  return (
+    <div className="flex gap-6 max-w-4xl mx-auto mb-10">
+      <div className="w-10 h-10 rounded-full bg-primary-container flex-shrink-0 flex items-center justify-center mt-1">
+        <span className="font-serif text-white text-xl font-bold italic">A</span>
+      </div>
+      <div className="space-y-4 flex-1 min-w-0">
+        <div className="font-headline text-lg leading-relaxed text-on-surface text-justify">
+          <div className="prose prose-slate dark:prose-invert max-w-none">
+            <ReactMarkdown components={ReactMarkdownComponents}>
+              {message.content}
+            </ReactMarkdown>
+          </div>
         </div>
-      )}
+
+        {/* Sources Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          {message.sources && message.sources.length > 0 && message.sources.slice(0, 2).map((source, idx) => (
+             <div key={idx} className="p-5 bg-surface-container-low rounded-xl border border-outline-variant/10">
+               <h4 className="font-headline font-bold mb-2 flex items-center gap-2">
+                 <span className="w-2 h-2 rounded-full bg-primary inline-block" /> Job Source
+               </h4>
+               <ChatSourceCard source={source} index={idx + 1} />
+             </div>
+          ))}
+          {message.web_sources && message.web_sources.length > 0 && message.web_sources.map((source, idx) => (
+            <div key={`web-${idx}`} className="p-5 bg-surface-container-low rounded-xl border border-outline-variant/10">
+               <h4 className="font-headline font-bold mb-2 flex items-center gap-2 text-tertiary">
+                 <span className="w-2 h-2 rounded-full bg-tertiary inline-block" /> Web Source
+               </h4>
+               <WebSourceCard source={source} index={idx + 1} />
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 };

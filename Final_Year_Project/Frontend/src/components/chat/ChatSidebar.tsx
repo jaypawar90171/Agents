@@ -13,25 +13,9 @@ import {
   deleteSession,
 } from '../../services/chatService';
 import type { ChatSession, ChatMessage } from '../../types/api';
-import { Briefcase, Plus, Trash2, Pencil, ChevronLeft, MessageSquare } from 'lucide-react';
+import { PlusCircle, Trash2, Pencil, ChevronLeft, ChevronRight, Sparkles, HelpCircle, Shield, History } from 'lucide-react';
 
-function formatRelativeTime(dateStr: string): string {
-  if (!dateStr) return '';
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString();
-}
-
-function truncateTitle(title: string, maxLen = 36): string {
+function truncateTitle(title: string, maxLen = 30): string {
   if (title.length <= maxLen) return title;
   return title.slice(0, maxLen) + '…';
 }
@@ -53,7 +37,6 @@ function SessionItem({ session, isActive, onSelect, onRename, onDelete }: Sessio
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Keep editTitle in sync if the session title prop changes (e.g. auto-title)
   useEffect(() => {
     setEditTitle(session.title);
   }, [session.title]);
@@ -96,10 +79,10 @@ function SessionItem({ session, isActive, onSelect, onRename, onDelete }: Sessio
     <div
       role="button"
       tabIndex={0}
-      className={`group flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-colors ${
+      className={`group flex items-center gap-3 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200 ${
         isActive
-          ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300'
-          : 'hover:bg-slate-100 dark:hover:bg-slate-800'
+          ? 'bg-white dark:bg-neutral-800 text-primary shadow-sm'
+          : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800/50'
       }`}
       onClick={onSelect}
       onKeyDown={(e) => e.key === 'Enter' && onSelect()}
@@ -109,7 +92,7 @@ function SessionItem({ session, isActive, onSelect, onRename, onDelete }: Sessio
         setShowDeleteConfirm(false);
       }}
     >
-      <MessageSquare className="w-4 h-4 flex-shrink-0 text-slate-400" />
+      <History className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-primary' : 'text-outline'}`} strokeWidth={2} />
 
       <div className="flex-1 min-w-0">
         {isEditing ? (
@@ -121,23 +104,20 @@ function SessionItem({ session, isActive, onSelect, onRename, onDelete }: Sessio
             onBlur={commitRename}
             onKeyDown={handleKeyDown}
             onClick={(e) => e.stopPropagation()}
-            className="w-full px-1 py-0.5 text-sm bg-white dark:bg-slate-900 border border-indigo-500 rounded focus:outline-none"
+            className="w-full px-1 py-0.5 text-xs bg-white dark:bg-neutral-900 border border-primary rounded focus:outline-none text-on-surface"
           />
         ) : (
-          <p className="text-sm text-slate-700 dark:text-slate-200 truncate leading-snug">
+          <span className="font-label text-xs font-semibold truncate block">
             {truncateTitle(session.title || 'New Chat')}
-          </p>
+          </span>
         )}
-        <p className="text-xs text-slate-400 mt-0.5">
-          {formatRelativeTime(session.created_at)}
-        </p>
       </div>
 
       {isHovered && !isEditing && (
-        <div className="flex items-center gap-0.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-1 flex-shrink-0 text-outline" onClick={(e) => e.stopPropagation()}>
           <button
             onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
-            className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400"
+            className="p-1 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 transition"
             title="Rename"
           >
             <Pencil className="w-3.5 h-3.5" />
@@ -146,8 +126,8 @@ function SessionItem({ session, isActive, onSelect, onRename, onDelete }: Sessio
             onClick={handleDeleteClick}
             className={`p-1 rounded transition-colors ${
               showDeleteConfirm
-                ? 'text-red-500 bg-red-50 dark:bg-red-900/30'
-                : 'hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400'
+                ? 'text-error bg-error-container/30'
+                : 'hover:bg-neutral-200 dark:hover:bg-neutral-700'
             }`}
             title={showDeleteConfirm ? 'Click again to confirm delete' : 'Delete'}
           >
@@ -171,7 +151,6 @@ export default function ChatSidebar({ onNewChat }: ChatSidebarProps) {
   const [currentSessionId, setCurrentSessionId] = useAtom(chatSessionIdAtom);
   const setMessages = useSetAtom(chatMessagesAtom);
 
-  // Load session list on mount and whenever the sidebar opens
   const loadSessions = useCallback(async () => {
     try {
       const sessions = await listSessions();
@@ -185,7 +164,6 @@ export default function ChatSidebar({ onNewChat }: ChatSidebarProps) {
     loadSessions();
   }, [loadSessions]);
 
-  // Allow parent to trigger a refresh by exposing via window (simple approach)
   useEffect(() => {
     (window as any).__reloadChatSidebar = loadSessions;
     return () => { delete (window as any).__reloadChatSidebar; };
@@ -195,11 +173,13 @@ export default function ChatSidebar({ onNewChat }: ChatSidebarProps) {
     if (session.session_id === currentSessionId) return;
     try {
       const detail = await getSession(session.session_id);
-      const msgs: ChatMessage[] = detail.messages.map((msg, idx) => ({
+      const msgs: ChatMessage[] = detail.messages.map((msg: any, idx: number) => ({
         id: `${session.session_id}-${idx}`,
         role: msg.role as 'user' | 'assistant',
         content: msg.content,
         createdAt: msg.created_at ? new Date(msg.created_at).getTime() : Date.now(),
+        sources: Array.isArray(msg.sources) ? msg.sources : undefined,
+        web_sources: Array.isArray(msg.web_sources) ? msg.web_sources : undefined,
       }));
       setCurrentSessionId(session.session_id);
       setMessages(msgs);
@@ -223,7 +203,6 @@ export default function ChatSidebar({ onNewChat }: ChatSidebarProps) {
     try {
       await deleteSession(sid);
       setSessionList((prev) => prev.filter((s) => s.session_id !== sid));
-      // If we deleted the active session, start fresh
       if (sid === currentSessionId) {
         onNewChat();
       }
@@ -234,41 +213,46 @@ export default function ChatSidebar({ onNewChat }: ChatSidebarProps) {
 
   return (
     <>
-      {/* Sidebar panel */}
       <aside
-        className={`flex-shrink-0 h-full bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 flex flex-col overflow-hidden ${
-          isOpen ? 'w-[260px]' : 'w-0'
+        className={`flex-shrink-0 h-full bg-neutral-50 dark:bg-neutral-900 border-r border-neutral-100 dark:border-neutral-800 transition-all duration-300 flex flex-col py-6 px-4 overflow-hidden relative z-10 ${
+          isOpen ? 'w-72 opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-full px-0 border-r-0'
         }`}
       >
-        {/* Header */}
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
-  <div className="flex items-center gap-2">
-    
-    {/* New Chat Button */}
-    <button
-      onClick={onNewChat}
-      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white text-sm font-medium transition-colors"
-    >
-      <Plus className="w-4 h-4" />
-      New Chat
-    </button>
+        <div className="mb-8 px-2 flex-shrink-0">
+          <div className="flex justify-between items-start mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary-container flex items-center justify-center">
+                <Sparkles size={20} className="text-on-primary-container" />
+              </div>
+              <div>
+                <h3 className="font-headline text-xl font-bold text-neutral-900 dark:text-neutral-50 leading-tight">Conversations</h3>
+                <p className="font-label text-[10px] uppercase tracking-widest font-semibold text-neutral-500">Archived Knowledge</p>
+              </div>
+            </div>
+            
+            {/* Sidebar Toggle for Desktop */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-1 rounded-lg text-outline hover:text-on-surface hover:bg-surface-container transition-colors -mt-1 -mr-2"
+              title="Collapse sidebar"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+          </div>
+          
+          <button
+            onClick={onNewChat}
+            className="w-full bg-gradient-to-r from-primary to-primary-container text-white py-3 px-4 rounded-xl font-label text-sm font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.99] transition-all shadow-sm"
+          >
+            <PlusCircle className="w-5 h-5" />
+            New Dialogue
+          </button>
+        </div>
 
-    {/* Sidebar Toggle */}
-    <button
-      onClick={() => setIsOpen(false)}
-      className="p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-      title="Collapse sidebar"
-    >
-      <ChevronLeft className="w-4 h-4" />
-    </button>
-
-  </div>
-</div>
-
-        {/* Session list */}
-        <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
+        <div className="flex-1 overflow-y-auto space-y-1 content-start no-scrollbar">
+          <p className="px-2 pb-2 font-label text-[10px] uppercase tracking-widest font-bold text-outline">Recent Chat</p>
           {sessionList.length === 0 ? (
-            <p className="text-center py-8 text-slate-400 dark:text-slate-500 text-xs">
+            <p className="px-2 py-4 text-outline font-label text-xs">
               No conversations yet
             </p>
           ) : (
@@ -284,16 +268,26 @@ export default function ChatSidebar({ onNewChat }: ChatSidebarProps) {
             ))
           )}
         </div>
+
+        <div className="mt-auto pt-6 border-t border-neutral-100 dark:border-neutral-800 space-y-1 flex-shrink-0">
+           <a className="flex items-center gap-3 p-3 rounded-lg text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer">
+              <HelpCircle className="w-4 h-4" />
+              <span className="font-label text-xs font-semibold">Help</span>
+           </a>
+           <a className="flex items-center gap-3 p-3 rounded-lg text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer">
+              <Shield className="w-4 h-4" />
+              <span className="font-label text-xs font-semibold">Privacy</span>
+           </a>
+        </div>
       </aside>
 
-      {/* Collapse button (shows when sidebar is closed) */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed left-3 top-[72px] z-50 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+          className="absolute left-6 top-[100px] z-[40] p-2 rounded-lg bg-surface-container-lowest border border-outline-variant/30 shadow-md hover:bg-surface-container-low transition-colors text-on-surface"
           title="Open sidebar"
         >
-          <ChevronLeft className="w-4 h-4 text-slate-600 dark:text-slate-300 rotate-180" />
+          <ChevronRight className="w-5 h-5" />
         </button>
       )}
     </>

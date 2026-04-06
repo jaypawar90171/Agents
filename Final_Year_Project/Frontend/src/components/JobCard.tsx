@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MapPin, ArrowRight, Loader2, Briefcase, Sparkles } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Job } from "../types/api";
 import { useRoadmap } from "../hooks/useRoadmap";
@@ -12,20 +12,6 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
   const navigate = useNavigate();
   const { generateRoadmap } = useRoadmap();
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
-
-  const getTagStyle = (color?: string) => {
-    switch (color) {
-      case "green":
-        return "bg-emerald-50 text-emerald-600 border border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-700/50";
-      case "blue":
-        return "bg-blue-50 text-blue-600 border border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-700/50";
-      case "orange":
-        return "bg-orange-50 text-orange-600 border border-orange-200 dark:bg-orange-900/30 dark:text-orange-300 dark:border-orange-700/50";
-      default:
-        return "bg-slate-50 text-slate-600 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700";
-    }
-  };
 
   const handleApply = () => {
     if (job.jobUrl) {
@@ -48,114 +34,59 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
   };
 
   return (
-    <div
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      className="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 dark:hover:shadow-indigo-500/5 transition-all duration-300 flex flex-col overflow-hidden group"
-    >
-      {/* Top accent bar */}
-      <div
-        className="h-1 w-full bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 transition-all duration-500"
-        style={{ opacity: isHovered ? 1 : 0.4 }}
-      />
-
-      <div className="p-6 flex flex-col h-full">
-        {/* Header: Logo + Tags */}
-        <div className="flex justify-between items-start mb-5">
-          {/* Logo with ring effect */}
-          <div className="relative">
-            <div
-              className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-400 to-violet-500 blur-sm transition-opacity duration-300"
-              style={{ opacity: isHovered ? 0.35 : 0 }}
-            />
-            <div className="relative w-14 h-14 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden shadow-sm">
-              <img
-                src={job.logo}
-                alt={`${job.company} Logo`}
-                className="w-9 h-9 object-contain"
-                onError={(e) => {
-                  e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(job.company)}&background=6366f1&color=fff&bold=true`;
-                }}
-              />
-            </div>
+    <article className="group bg-surface-container-lowest p-8 hover:bg-surface-container-low ring-1 ring-outline-variant/10 rounded-3xl hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+      <div className="flex justify-between items-start mb-8">
+        <div className="h-14 w-14 rounded-lg bg-surface flex items-center justify-center p-2">
+          <img 
+            src={job.logo} 
+            alt={`${job.company} Logo`}
+            className="max-h-full max-w-full grayscale group-hover:grayscale-0 transition-all object-contain"
+            onError={(e) => {
+              e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(job.company)}&background=094cb2&color=fff&bold=true`;
+            }}
+          />
+        </div>
+        {job.tags && job.tags.length > 0 && (
+          <div className="flex flex-col gap-1 items-end">
+            {job.tags.slice(0, 2).map(tag => (
+              <span key={tag} className="font-label text-[10px] uppercase tracking-widest bg-tertiary-fixed text-on-tertiary-fixed px-2 py-1 rounded">
+                {tag}
+              </span>
+            ))}
           </div>
+        )}
+      </div>
 
-          {/* Tags */}
-          {job.tags && job.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 justify-end max-w-[55%]">
-              {job.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide uppercase ${getTagStyle(job.tagColor)}`}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Company + Location */}
-        <div className="mb-1">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 leading-tight group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors duration-200">
-            {job.company}
-          </h3>
-        </div>
-        <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 mb-5">
-          <MapPin size={13} strokeWidth={2.5} />
-          <span className="text-xs font-medium">{job.location}</span>
-        </div>
-
-        {/* Divider */}
-        <div className="h-px bg-slate-100 dark:bg-slate-800 mb-5" />
-
-        {/* Role Detail */}
-        <div className="flex items-start gap-3 mb-6 flex-grow">
-          <div className="mt-0.5 flex-shrink-0 w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center">
-            <Briefcase size={14} className="text-indigo-500 dark:text-indigo-400" strokeWidth={2} />
-          </div>
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-0.5">
-              Role
-            </p>
-            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 leading-snug line-clamp-2">
-              {job.title}
-            </p>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col gap-2.5">
-          {/* Primary: Apply Now */}
-          <button
-            onClick={handleApply}
-            className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] text-white text-sm font-semibold shadow-md shadow-indigo-500/25 hover:shadow-indigo-500/40 transition-all duration-200 flex items-center justify-center gap-2"
-          >
-            Apply Now
-            <ArrowRight size={15} strokeWidth={2.5} />
-          </button>
-
-          {/* Secondary: Roadmap */}
-          <button
-            onClick={handleRoadmapGeneration}
-            disabled={isGenerating}
-            className="w-full py-2.5 rounded-xl border border-orange-200 dark:border-orange-700/50 bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:hover:bg-orange-900/40 disabled:opacity-50 disabled:cursor-not-allowed text-orange-600 dark:text-orange-400 text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 active:scale-[0.98]"
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 size={15} className="animate-spin" strokeWidth={2.5} />
-                Generating Roadmap...
-              </>
-            ) : (
-              <>
-                <Sparkles size={15} strokeWidth={2} />
-                Generate Roadmap
-              </>
-            )}
-          </button>
+      <div className="space-y-1 mb-8">
+        <h2 className="font-headline text-xl text-on-surface group-hover:text-primary transition-colors line-clamp-2" title={job.title}>
+          {job.title}
+        </h2>
+        <p className="font-body text-sm font-medium text-on-surface-variant">
+          {job.company}
+        </p>
+        <div className="flex items-center gap-2 text-outline text-xs mt-3">
+          {/* Cannot use material-symbols-outlined due to class conflicts / load, keeping text */}
+          <span className="font-label">📍 {job.location}</span>
         </div>
       </div>
-    </div>
+
+      <div className="flex flex-col sm:flex-row gap-3 pt-4">
+        <button 
+          onClick={handleApply}
+          className="flex-1 bg-gradient-to-r from-primary to-primary-container text-on-primary py-3 rounded-lg font-label text-xs uppercase tracking-widest font-bold hover:opacity-90 transition-all"
+        >
+          Apply Now
+        </button>
+        <button 
+          onClick={handleRoadmapGeneration}
+          disabled={isGenerating}
+          className="flex-1 bg-surface-container-high text-primary py-3 rounded-lg font-label text-xs uppercase tracking-widest font-bold hover:bg-surface-container-highest transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          {isGenerating && <Loader2 size={14} className="animate-spin" />}
+          Roadmap
+        </button>
+      </div>
+    </article>
   );
 };
 

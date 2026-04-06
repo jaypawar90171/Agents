@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.60.1",
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/forms": "^0.5.11",
     "@types/js-cookie": "^3.0.6",
     "axios": "^1.13.5",
     "body-parser": "^2.2.2",

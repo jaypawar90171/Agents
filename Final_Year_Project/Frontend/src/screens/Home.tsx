@@ -3,47 +3,51 @@ import { useAtomValue } from 'jotai';
 import {filteredJobsAtom} from '../store/store';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
-import SearchBar from '../components/SearchBar';
 import JobList from '../components/JobList';
 
 const Home: React.FC = () => {
   const jobs = useAtomValue(filteredJobsAtom);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-background text-on-surface flex flex-col font-sans overflow-x-hidden">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
-        <SearchBar />
-
-        <div className="flex flex-col lg:flex-row gap-8">
+      <main className="max-w-7xl mx-auto px-8 py-10 w-full flex-grow">
+        <div className="flex flex-col lg:flex-row gap-12">
+          {/* Filters Sidebar */}
           <Sidebar />
 
-          <div className="flex-grow min-w-0">
-            <div className="flex flex-col sm:flex-row justify-between items-end mb-6 gap-2">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Top Companies for You</h2>
-              <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-                Showing <span className="font-bold text-primary">{jobs.length}</span> results
-              </span>
-            </div>
+          {/* Main Content Area */}
+          <section className="flex-1">
+            <header className="mb-12 flex justify-between items-end">
+              <div>
+                <h1 className="font-headline text-4xl text-on-surface mb-2">Top Companies for You</h1>
+                <p className="font-body text-on-surface-variant max-w-lg">Discover roles matching your current trajectory at premier global institutions.</p>
+              </div>
+              <div className="hidden md:block">
+                <span className="font-label text-xs uppercase tracking-tighter text-outline">
+                  Showing {jobs.length} results
+                </span>
+              </div>
+            </header>
 
-            
-            <div className="bg-slate-50 dark:bg-slate-900/40 rounded-2xl">
-              <JobList />
-            </div>
-          </div>
+            <JobList />
+          </section>
         </div>
       </main>
 
-      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 mt-auto py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-sm text-slate-500 dark:text-slate-400 text-center md:text-left font-medium">
-            © 2026 LearnLaunch. All rights reserved. <br className="md:hidden" /> Designed for future leaders.
-          </p>
-          <div className="flex gap-8">
-            <a href="#" className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-500 font-medium transition-colors">Privacy</a>
-            <a href="#" className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-500 font-medium transition-colors">Terms</a>
-            <a href="#" className="text-sm text-slate-500 dark:text-slate-400 hover:text-indigo-500 font-medium transition-colors">Support</a>
+      <footer className="bg-slate-50 dark:bg-slate-950 full-width py-12 border-t border-slate-100 dark:border-slate-900 mt-20">
+        <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto w-full">
+          <div className="mb-8 md:mb-0">
+            <span className="font-serif italic text-slate-400 text-xl">LearnLaunch</span>
+            <p className="font-sans text-xs uppercase tracking-widest text-slate-500 mt-2">© 2026 LearnLaunch. Curating the future of work.</p>
+          </div>
+          <div className="flex items-center gap-6">
+            <div className="flex gap-4 font-sans text-xs uppercase tracking-widest text-slate-500">
+              <a className="hover:underline transition-all hover:text-indigo-500" href="#">Privacy</a>
+              <a className="hover:underline transition-all hover:text-indigo-500" href="#">Terms</a>
+              <a className="hover:underline transition-all hover:text-indigo-500" href="#">Support</a>
+            </div>
           </div>
         </div>
       </footer>

@@ -1,14 +1,14 @@
 import React from 'react';
-import { useAtom, useSetAtom } from 'jotai';
-import { JobType, Industry } from '../store/store';
+import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import { 
+  JobType, 
+  Industry,
   selectedJobTypesAtom, 
   selectedIndustriesAtom, 
   salaryRangeAtom,
   resetFiltersAtom,
   activeFiltersCountAtom
 } from '../store/store';
-import { useAtomValue } from 'jotai';
 
 const Sidebar: React.FC = () => {
   const [selectedJobTypes, setSelectedJobTypes] = useAtom(selectedJobTypesAtom);
@@ -30,113 +30,94 @@ const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="w-full lg:w-64 flex-shrink-0 space-y-8">
-      <div className="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-slate-800 shadow-soft sticky top-24">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100">Filters</h3>
+    <aside className="w-full lg:w-64 flex-shrink-0">
+      <div className="sticky top-28 space-y-10">
+        <div>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="font-label text-xs uppercase tracking-widest text-tertiary font-semibold">
+              Filter Results {activeFiltersCount > 0 && `(${activeFiltersCount})`}
+            </h3>
             {activeFiltersCount > 0 && (
-              <span className="bg-indigo-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                {activeFiltersCount}
-              </span>
+              <button 
+                onClick={() => resetFilters()} 
+                className="text-xs text-primary font-bold hover:underline font-label uppercase tracking-widest"
+              >
+                Clear
+              </button>
             )}
           </div>
-          {activeFiltersCount > 0 && (
-            <button 
-              className="text-xs text-indigo-500 font-medium hover:underline"
-              onClick={() => resetFilters()}
-            >
-              Clear all
-            </button>
-          )}
-        </div>
+          
+          <div className="space-y-8">
+            {/* Job Type Section */}
+            <div className="space-y-4">
+              <label className="font-headline text-lg text-on-surface">Job Type</label>
+              <div className="space-y-3">
+                {Object.values(JobType).map((type) => (
+                  <label key={type} className="flex items-center gap-3 cursor-pointer group">
+                    <input 
+                      type="checkbox" 
+                      className="rounded-sm border-outline-variant text-primary focus:ring-primary w-4 h-4"
+                      checked={selectedJobTypes.includes(type)}
+                      onChange={() => toggleJobType(type)}
+                    />
+                    <span className="font-label text-sm text-on-surface-variant group-hover:text-on-surface transition-colors">
+                      {type}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
 
-        {/* Job Type Section */}
-        <div className="mb-8">
-          <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">
-            Job Type
-          </h4>
-          <div className="space-y-3">
-            {Object.values(JobType).map((type) => (
-              <label key={type} className="flex items-center space-x-3 cursor-pointer group">
-                <div className={`
-                    w-4 h-4 rounded border flex items-center justify-center transition-colors
-                    ${selectedJobTypes.includes(type) ? 'bg-indigo-500 border-indigo-500' : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 group-hover:border-indigo-500'}
-                `}>
-                    {selectedJobTypes.includes(type) && (
-                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                    )}
-                </div>
+            {/* Salary Range Section */}
+            <div className="space-y-4">
+              <label className="font-headline text-lg text-on-surface">Salary Range</label>
+              <div className="px-2">
                 <input 
-                  type="checkbox" 
-                  className="hidden"
-                  checked={selectedJobTypes.includes(type)}
-                  onChange={() => toggleJobType(type)}
+                  type="range" 
+                  min="0" 
+                  max="150000" 
+                  step="5000"
+                  value={salaryRange}
+                  onChange={(e) => setSalaryRange(Number(e.target.value))}
+                  className="w-full h-1 bg-surface-container-high rounded-full appearance-none accent-primary"
                 />
-                <span className={`text-sm transition-colors ${selectedJobTypes.includes(type) ? 'text-slate-900 dark:text-slate-100 font-medium' : 'text-slate-600 dark:text-slate-400 group-hover:text-indigo-500'}`}>
-                    {type}
-                </span>
-              </label>
-            ))}
-          </div>
-        </div>
+                <div className="flex justify-between mt-3">
+                  <span className="font-label text-xs text-outline">$0k</span>
+                  <span className="font-label text-xs text-primary font-bold">
+                    {salaryRange === 0 ? 'Any' : `$${(salaryRange/1000).toFixed(0)}k+`}
+                  </span>
+                  <span className="font-label text-xs text-outline">$150k</span>
+                </div>
+              </div>
+            </div>
 
-        {/* Salary Range Section */}
-        <div className="mb-8">
-          <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">
-            Salary Range
-          </h4>
-          <div className="relative pt-2">
-            <input 
-              type="range" 
-              min="0" 
-              max="150000" 
-              step="5000"
-              value={salaryRange}
-              onChange={(e) => setSalaryRange(Number(e.target.value))}
-              className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-500" 
-            />
-            <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-3 font-medium">
-              <span>$0</span>
-              <span className="text-indigo-500 font-bold">
-                {salaryRange === 0 ? 'Any' : `$${(salaryRange/1000).toFixed(0)}k+`}
-              </span>
+            {/* Industry Section */}
+            <div className="space-y-4">
+              <label className="font-headline text-lg text-on-surface">Industry</label>
+              <div className="space-y-3">
+                {Object.values(Industry).map((ind) => (
+                  <label key={ind} className="flex items-center gap-3 cursor-pointer group">
+                    <input 
+                      type="checkbox" 
+                      className="rounded-sm border-outline-variant text-primary focus:ring-primary w-4 h-4"
+                      checked={selectedIndustries.includes(ind)}
+                      onChange={() => toggleIndustry(ind)}
+                    />
+                    <span className="font-label text-sm text-on-surface-variant group-hover:text-on-surface transition-colors">
+                      {ind}
+                    </span>
+                  </label>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Industry Section */}
-        <div>
-          <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">
-            Industry
-          </h4>
-          <div className="space-y-3">
-             {Object.values(Industry).map((ind) => (
-              <label key={ind} className="flex items-center space-x-3 cursor-pointer group">
-                <div className={`
-                    w-4 h-4 rounded border flex items-center justify-center transition-colors
-                    ${selectedIndustries.includes(ind) ? 'bg-indigo-500 border-indigo-500' : 'border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 group-hover:border-indigo-500'}
-                `}>
-                    {selectedIndustries.includes(ind) && (
-                        <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                    )}
-                </div>
-                <input 
-                  type="checkbox" 
-                  className="hidden"
-                  checked={selectedIndustries.includes(ind)}
-                  onChange={() => toggleIndustry(ind)}
-                />
-                <span className={`text-sm transition-colors ${selectedIndustries.includes(ind) ? 'text-slate-900 dark:text-slate-100 font-medium' : 'text-slate-600 dark:text-slate-400 group-hover:text-indigo-500'}`}>
-                    {ind}
-                </span>
-              </label>
-            ))}
-          </div>
+        {/* Archival Accent */}
+        <div className="p-6 bg-tertiary/5 rounded-xl border-l-2 border-tertiary">
+          <p className="font-label text-xs leading-relaxed text-on-tertiary-fixed-variant">
+            Curated insights based on your recent activity and saved roadmaps.
+          </p>
         </div>
       </div>
     </aside>

@@ -1,4 +1,5 @@
 import React, { useCallback, useRef, useEffect } from 'react';
+import { Paperclip, Mic, Image, ArrowUp } from 'lucide-react';
 
 interface ChatInputProps {
   value: string;
@@ -13,7 +14,7 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   onChange,
   onSend,
   disabled = false,
-  placeholder = 'Ask about jobs, roles, skills, or career advice...',
+  placeholder = 'Ask a scholarly question or provide context...',
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -44,31 +45,45 @@ export const ChatInput: React.FC<ChatInputProps> = ({
   }, [value]);
 
   return (
-    <form onSubmit={handleSubmit} className="w-full">
-      <div className="flex gap-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-400 transition-all">
-        <textarea
-          ref={textareaRef}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={disabled}
-          placeholder={placeholder}
-          rows={1}
-          className="flex-1 min-h-[44px] max-h-[200px] resize-none bg-transparent px-4 py-3 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none disabled:opacity-50"
-          aria-label="Message"
-        />
-        <button
-          type="submit"
-          disabled={disabled || !value.trim()}
-          className="flex-shrink-0 self-end rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          aria-label="Send message"
-        >
-          Send
-        </button>
+    <div className="max-w-4xl mx-auto relative w-full">
+      <div className="bg-surface-container-lowest rounded-2xl shadow-lg shadow-neutral-200/50 border border-outline-variant/20 p-2 focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+        <form onSubmit={handleSubmit}>
+          <textarea
+            ref={textareaRef}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={disabled}
+            placeholder={placeholder}
+            rows={2}
+            className="w-full bg-transparent border-none focus:ring-0 font-body text-sm min-h-[60px] p-4 resize-none text-on-surface placeholder-outline"
+            aria-label="Message"
+          />
+          <div className="flex items-center justify-between px-4 pb-2">
+            <div className="flex gap-2 text-outline">
+              <button type="button" className="p-2 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors">
+                <Paperclip className="w-5 h-5" />
+              </button>
+              <button type="button" className="p-2 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors">
+                <Mic className="w-5 h-5" />
+              </button>
+              <button type="button" className="p-2 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors">
+                <Image className="w-5 h-5" />
+              </button>
+            </div>
+            <button
+              type="submit"
+              disabled={disabled || !value.trim()}
+              className="bg-primary text-white w-10 h-10 flex items-center justify-center rounded-xl hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ArrowUp className="w-5 h-5" strokeWidth={3} />
+            </button>
+          </div>
+        </form>
       </div>
-      <p className="mt-1.5 text-xs text-slate-400 dark:text-slate-500 text-center sm:text-left">
-        Enter to send · Shift+Enter for new line
+      <p className="text-[10px] text-center mt-3 font-label text-outline uppercase tracking-widest">
+        Alexandria AI Curator • Academic Reference V4.2
       </p>
-    </form>
+    </div>
   );
 };
