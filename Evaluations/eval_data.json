@@ -1,0 +1,561 @@
+[
+    {
+        "user_input": ["Job titles at Morgan Stanley 2024-2026 career roles and positions"],
+        "response": ["Based on the provided context, the following job titles are available at Morgan Stanley:\n    Java Full stack Director Software Engineering\n    Java Fullstack Lead Software Engineer Vice President Software Engineering\n    Python with Java Developer Associate Software Engineering"],
+        "reference": ["The career roles for Morgan Stanley include: Java Full stack Director Software Engineering, Java Fullstack Lead Software Engineer Vice President Software Engineering, Python with Java Developer Associate Software Engineering"],
+        "retrieved_contexts": [
+    {
+      "company": "Morgan Stanley",
+      "title": "Java Full stack Director Software Engineering",
+      "skills": [
+        "Java",
+        "Angular",
+        "GenAI",
+        "Copilot",
+        "AI-driven development practices",
+        "SDLC",
+        "code reviews",
+        "automated testing",
+        "data structures",
+        "algorithms",
+        "Python",
+        "SQL",
+        "databases",
+        "cloud platforms",
+        "data engineering",
+        "reporting solutions",
+        "Power BI",
+        "Apache Airflow",
+        "OLAP tools",
+        "workflow automation"
+      ],
+      "location": "Mumbai, India",
+      "description": "We are seeking a Director to develop and maintain software solutions that support business needs, leveraging innovation and modern technologies such as Java, Angular, and AI-driven development practices. The ideal candidate will have hands-on experience in full stack software development, strong understanding of data structures and algorithms, and proficiency in additional languages and frameworks."
+    },
+    {
+      "company": "Morgan Stanley",
+      "title": "Java Fullstack Lead Software Engineer Vice President Software Engineering",
+      "skills": [
+        "Java",
+        "React",
+        "Angular",
+        "Springboot",
+        "Microservices",
+        "Python",
+        "SQL",
+        "Databases",
+        "GenAI",
+        "Copilot",
+        "AI-driven development",
+        "Data structures",
+        "Algorithms",
+        "Design patterns",
+        "SDLC practices",
+        "Automated testing",
+        "CI/CD pipelines",
+        "Agile methodologies",
+        "Problem-solving",
+        "Analytical skills",
+        "Communication skills",
+        "Leadership skills",
+        "Stakeholder management"
+      ],
+      "location": "Mumbai, India",
+      "description": "We are seeking a Java Fullstack Lead to join our Operations Technology team. The successful candidate will lead the design, development, and delivery of scalable, enterprise-grade reporting and analytics solutions. The candidate will be expected to mentor and lead a high-performing team of engineers, foster a culture of technical excellence, and drive innovation through technology."
+    },
+    {
+      "company": "Morgan Stanley",
+      "title": "Python with Java Developer Associate Software Engineering",
+      "skills": [
+        "Python",
+        "Java",
+        "Relational database",
+        "Microservices",
+        "Distributed systems",
+        "Build tooling",
+        "Linux",
+        "Cloud Stack",
+        "Docker",
+        "Kubernetes",
+        "Frontend technologies",
+        "Angular",
+        "React",
+        "Jenkins",
+        "Gradle",
+        "NoSQL",
+        "MongoDB",
+        "Snowflake"
+      ],
+      "location": "Mumbai, India",
+      "description": "Morgan Stanley is seeking a self-starter, experienced full stack developer to join the Fixed Income Front Office Technology team. The individual will work as part of the global development team to help analyze, design, develop, and document a modern technology stack to power our digital platforms."
+            }
+        ]
+    },
+        {
+         "user_input": "What does Infosys expect from freshers in software roles?",
+
+        "response": "Based on the provided context, Infosys expects freshers in software roles to contribute to the design, development, validation, and support activities. They should have good technical and soft skills to work effectively in a team. Key expectations include:\nUnderstanding client requirements and translating them into system requirements\nParticipating in project estimation and solution delivery\nDeveloping optimized, high-quality code deliverables However, the context does not provide a comprehensive list of expectations specifically for freshers, as the job descriptions seem to be for experienced candidates.",
+
+        "reference": [
+        "Infosys expects freshers in software roles to have good technical and soft skills, the ability to understand client requirements, participate in project estimation and solution delivery, and develop optimized, high-quality code deliverables. However, the provided context does not specifically outline expectations for freshers, as the job descriptions appear to be for experienced candidates."
+            ],
+
+        "retrieved_contexts": [
+        {
+            "company": "Infosys",
+            "title": "Python Software Developer - ENG @Infosys - PAN INDIA",
+            "skills": ["Django", "Python", "Python Development"],
+            "location": "Hybrid - Hyderabad, Chennai, Bengaluru",
+            "description": "As part of the Infosys delivery team, your primary role would be to ensure effective Design, Development, Validation and Support activities, to assure that our clients are satisfied with the high levels of service in the technology domain. You will gather the requirements and specifications to understand the client requirements in a detailed manner and translate the same into system requirements. You will play a key role in the overall estimation of work requirements to provide the right information on project estimations to Technology Leads and Project Managers. You would be a key contributor to building efficient programs/ systems and help clients navigate their digital transformation journey. This role is ideal for those who want to contribute to digital transformation and work with a team to deliver high-quality services."
+        },
+        {
+          "company": "Infosys",
+          "title": "Python Software Developer@Infosys",
+          "skills": ["Django", "Python", "Flask"],
+          "location": "Hybrid - Hyderabad, Pune, Bengaluru",
+          "description": "As part of the Infosys delivery team, your primary role would be to ensure effective Design, Development, Validation and Support activities, to assure that our clients are satisfied with the high levels of service in the technology domain. The role involves working with various technologies and providing high levels of service to clients. The ideal candidate should have experience in design, development, validation, and support activities. The candidate should also have good technical and soft skills to work effectively in a team. The role offers a great opportunity to work with a leading technology company and develop a career in the technology domain."
+        },
+        {
+          "company": "Infosys",
+          "title": "Python Software Developer -DN",
+          "skills": ["Python", "Django", "Machine Learning", "Open Systems"],
+          "location": "Hyderabad, Chennai, Bengaluru",
+          "description": "As part of the Infosys delivery team, your primary role would be to interface with the client for quality assurance, issue resolution and ensuring high customer satisfaction. You will understand requirements, create and review designs, validate the architecture and ensure high levels of service offerings to clients in the technology domain. You will participate in project estimation, provide inputs for solution delivery, conduct technical risk planning, perform code reviews and unit test plan reviews. You will lead and guide your teams towards developing optimized high quality code deliverables, continual knowledge management and adherence to the organizational guidelines and processes. You would be a key contributor to building efficient programs/ systems and if you think you fit right in to help our clients navigate their next in their digital transformation journey."
+        }
+  ]
+},
+{
+  "user_input": "What skills are needed for a Java developer role?",
+
+  "response": "The skills needed for a Java developer role vary depending on the company and position. Based on the provided context, some common skills required for Java developer roles include: Core Java, Spring MVC, Hibernate, Java 8 / 11+, Front-end frameworks, CI/CD pipelines, Secure authentication mechanisms, Problem-solving ability, Communication skills, and Collaboration and teamwork skills. These skills may not be exhaustive, as different companies may have different requirements.",
+
+  "reference": [
+    "Core Java", "Spring MVC", "Hibernate", "SAP integration (SAP JCo)", "Oracle PL/SQL",
+    "front-end frameworks", "CI/CD pipelines", "OOP",  "Multithreading",
+    "Collections",
+    "Streams",
+    "Spring Boot",
+    "Microservices",
+    "JMeter",
+    "Linux",
+    "SAP Procurement Processes",
+    "SAP Functional Basics",
+    "Git",
+    "Azure DevOps",
+    "CI/CD",
+    "Release Automation",
+    "Docker",
+    "Kubernetes",
+    "Angular",
+    "React.js",
+    "Active Directory",
+    "LDAP",
+    "SSO",
+    "Spring Containers",
+    "XML",
+    "JSON",
+    "SOAP",
+    "REST Services",
+    "Lambdas",
+    "Swagger",
+    "Cloud computing",
+    "Relational databases",
+    "DB2",
+    "PostgreSQL",
+    "Test Driven Development",
+    "Junit",
+    "Cucumber",
+    "Rest assured",
+    "Unix",
+    "Shell scripting",
+    "Sybase",
+    "Agile development",
+    "DevOps",
+    "JAVA 1.8+",
+    "JSP",
+    "Spring MVC Framework"
+  ],
+
+  "retrieved_contexts": [
+    {
+      "company": "Tata Consultancy Services",
+      "title": "Java Developer",
+      "skills": ["Core Java", "Spring MVC", "Hibernate", "JSP / Servlet / JSTL", "PLSQL/Postgres SQL", "Software estimation", "Liferay Portal", "Analytical ability", "Customer communication", "Problem Solving", "Team skills", "Software security"],
+      "location": "Mumbai, India",
+      "description": "We are seeking a Java Developer with 5-9 years of experience to work on software development, enhancement, maintenance, and support..."
+    },
+    {
+      "company": "LANXESS",
+      "title": "Senior Analyst Java Developer",
+      "skills": ["Java 8 / 11+", "SAP integration (SAP JCo)", "Oracle PL/SQL", "front-end frameworks", "CI/CD pipelines", "secure authentication mechanisms", "OOP", "Multithreading", "Collections", "Streams", "Spring Boot", "REST APIs", "Microservices", "SAP Jco", "JMeter", "Linux", "SAP Procurement Processes", "SAP Functional Basics", "Git", "Azure DevOps", "CI/CD", "Release Automation", "Docker", "Kubernetes", "Angular", "React.js", "Active Directory", "LDAP", "SSO"],
+      "location": "Thane, India",
+      "description": "We are seeking a highly skilled Java Developer with strong expertise in modern Java development..."
+    },
+    {
+      "company": "Morgan Stanley",
+      "title": "Java Developer Associate Software Engineer",
+      "skills": ["Java", "APIs", "Spring Containers", "Spring Boot", "XML", "JSON", "SOAP", "REST Services", "Java 8", "Lambdas", "Streams", "Completable Future", "Optional", "generics", "Open API", "Swagger", "Asynchronous messaging", "Cloud computing", "Relational databases", "DB2", "PostgreSQL", "Test Driven Development", "Behavior Driven Development", "Junit", "Cucumber", "Rest assured", "Unix", "Shell scripting", "Sybase", "Agile development", "DevOps"],
+      "location": "Mumbai, India",
+      "description": "We are seeking a Java Developer to join our Institutional Securities Technology team..."
+    },
+    {
+      "company": "Crisil",
+      "title": "Java Developer Off Roll Hiring Immediate Joiners Only",
+      "skills": ["JAVA 1.8+", "JSP", "jQuery", "Ajax", "Spring framework", "Oracle database", "Eclipse", "Apache Tomcat Server", "Client Communication", "WebLogic server", "code merging", "Spring MVC Framework", "Basic Communication Skills"],
+      "location": "Mumbai, India",
+      "description": "We are seeking a Java Developer with 1-2.5 years of experience..."
+    },
+    {
+      "company": "Marktine",
+      "title": "Java Developer",
+      "skills": ["Java", "collaboration", "problem-solving", "code review", "troubleshooting", "debugging", "communication"],
+      "location": "Remote",
+      "description": "We are seeking a skilled Java developer to collaborate with cross-functional teams..."
+    }
+  ]
+}, 
+{
+  "user_input": "Give detailed job description for Company Name Capgemini?",
+
+  "response": "For Company Name Capgemini, there are two job descriptions available: Automation Testing Selenium Java Cucumber: The ideal candidate will design, develop, and execute automated test scripts, build scalable frameworks, and support end-to-end automation activities. Automation Testing Selenium Java: The ideal candidate will design, develop, and execute automated test scripts with hands-on experience in Selenium and Robot Framework. Both roles involve working on cutting-edge projects, creating solutions to overcome challenges, and offer career paths and internal opportunities within the Capgemini group. Key skills required include Selenium, Java, API testing, and Agile/Scrum methodologies.",
+
+  "reference": [
+    "The ideal candidate will design, develop, and execute automated test scripts",
+    "Build scalable frameworks and support end-to-end automation activities",
+    "Hands-on experience in Selenium and Robot Framework",
+    "Work on cutting-edge projects and create solutions to overcome challenges",
+    "Offer career paths and internal opportunities within the Capgemini group",
+    "Key skills include Selenium, Java, API testing, Agile/Scrum methodologies"
+  ],
+
+  "retrieved_contexts": [
+    {
+      "company": "Capgemini",
+      "title": "Automation Testing Selenium Java Cucumber",
+      "skills": [
+        "Selenium WebDriver",
+        "Core Java",
+        "Cucumber BDD",
+        "TestNG",
+        "JUnit",
+        "API testing",
+        "Postman",
+        "RestAssured",
+        "SQL",
+        "Agile/Scrum",
+        "Git",
+        "Extent Reports",
+        "Allure Reports"
+      ],
+      "location": "Navi Mumbai, Mumbai, India",
+      "description": "We are seeking an experienced Automation Test Engineer to design, develop, and execute automated test scripts, build scalable frameworks, and support end-to-end automation activities. The ideal candidate will have strong expertise in Selenium WebDriver, Core Java, and Cucumber BDD frameworks, as well as experience with API testing, SQL, and cloud-based execution grids. The role offers a range of career paths and internal opportunities within Capgemini group, comprehensive wellness benefits, and the chance to work on cutting-edge projects in tech and engineering with industry leaders. The company delivers end-to-end services and solutions with deep industry expertise and a strong partner ecosystem, leveraging capabilities across strategy, technology, design, engineering, and business operations. The Automation Test Engineer will be part of a collaborative community of colleagues around the world, working to unlock the value of technology and build a more sustainable, more inclusive world."
+    },
+    {
+      "company": "Capgemini",
+      "title": "Automation Testing Selenium Java",
+      "skills": [
+        "Selenium",
+        "Robot Framework",
+        "Python",
+        "Java",
+        "API Testing",
+        "BDD tools",
+        "Version control systems",
+        "DevOps practices",
+        "Agile/Scrum methodologies",
+        "CI/CD integration",
+        "Defect tracking tools"
+      ],
+      "location": "Navi Mumbai, Mumbai, India",
+      "description": "We are seeking a skilled Automation Test Engineer with hands-on experience in Selenium and Robot Framework to design, develop, and execute automated test scripts. The ideal candidate will have a strong understanding of test automation frameworks, scripting, and continuous integration processes. The role involves working on cutting-edge projects in tech and engineering with industry leaders, and creating solutions to overcome societal and environmental challenges. At Capgemini, you can shape your career with personalized career guidance from leaders, and enjoy comprehensive wellness benefits. The company offers a range of career paths and internal opportunities within the Capgemini group, and delivers end-to-end services and solutions leveraging strengths from strategy and design to engineering."
+    }
+  ]
+},
+{
+  "user_input": "List all the skills which are needed for a python backend engineer role?",
+
+  "response": "The skills required for a Python backend engineer role include expertise in Python, FastAPI, Django, Flask, RESTful APIs, microservices, distributed systems, SQL and NoSQL databases, Docker, Kubernetes, cloud platforms, CI/CD pipelines, asynchronous programming, message queues, and event-driven architectures. Additional skills may include data-related tools, monitoring tools, and emerging technologies like Generative AI, RAG, and vector databases depending on the role.",
+
+  "reference": [
+    "Microservices",
+    "Cloud Server (Google / AWS)",
+    "Docker",
+    "Java",
+    "Kubernetes",
+    "Python",
+    "RESTful APIs",
+    "Distributed systems",
+    "SQL (PostgreSQL, MySQL)",
+    "NoSQL (MongoDB, Redis)",
+    "Kafka / SQS / RabbitMQ",
+    "FastAPI",
+    "asynchronous programming",
+    "REST API design principles",
+    "relational databases",
+    "NoSQL databases",
+    "Git",
+    "CI/CD pipelines",
+    "cloud platforms",
+    "event-driven architectures",
+    "message queues",
+    "API documentation tools",
+    "microservices architecture",
+    "Fast API",
+    "Panda",
+    "Datadog",
+    "AWS S3",
+    "Django",
+    "Flask",
+    "SQL",
+    "Postgresql",
+    "Pandas",
+    "MongoDB",
+    "Numpy",
+    "Agentic AI",
+    "GenAI",
+    "RAG",
+    "PostgreSQL",
+    "MySQL",
+    "Vector databases",
+    "Machine Learning",
+    "Data Science",
+    "Cloud Native",
+    "Prompt Engineering"
+  ],
+
+  "retrieved_contexts": [
+    {
+      "company": "Uplers",
+      "title": "Backend Engineer Java Python",
+      "skills": ["Microservices", "Cloud Server (Google / AWS)", "Docker", "Java", "Kubernetes", "Python", "RESTful APIs", "Distributed systems", "SQL (PostgreSQL, MySQL)", "NoSQL (MongoDB, Redis)", "Kafka / SQS / RabbitMQ"],
+      "location": "Thane, India",
+      "description": "Rtifact is looking for a Sr. Backend Engineer to design, build, and maintain scalable backend services using Java and Python..."
+    },
+    {
+      "company": "Leading Client",
+      "title": "Python Backend Developer (FAST API)",
+      "skills": ["Python", "FastAPI", "asynchronous programming", "REST API design principles", "relational databases", "NoSQL databases", "Git", "CI/CD pipelines", "Docker", "cloud platforms", "event-driven architectures", "message queues", "API documentation tools", "microservices architecture"],
+      "location": "Bengaluru",
+      "description": "We are seeking a skilled Search Engineer with strong proficiency in Python, experience with FastAPI..."
+    },
+    {
+      "company": "Indium Software",
+      "title": "Python Software Developer",
+      "skills": ["Python", "Fast API", "Panda", "Datadog", "AWS S3", "Django", "Flask", "SQL", "Postgresql", "Pandas", "MongoDB", "Numpy"],
+      "location": "Hybrid - Hyderabad, Chennai, Bengaluru",
+      "description": "We are looking for a seasoned Backend Developer with over 10 years of experience in Python development..."
+    },
+    {
+      "company": "Grid Dynamics",
+      "title": "Python Software Developer with Gen AI",
+      "skills": ["Python", "FastAPI", "Django", "Flask", "Agentic AI", "GenAI", "RAG", "SQL", "PostgreSQL", "MySQL", "Vector databases", "Machine Learning", "Data Science", "Cloud Native", "Docker", "Kubernetes", "Prompt Engineering"],
+      "location": "Hybrid - Hyderabad, Chennai, Bengaluru",
+      "description": "We are seeking a skilled backend developer to design, build, and maintain scalable backend services and APIs using Python..."
+    }
+  ]
+},
+{
+  "user_input": "list all job roles for comany name BlackRock",
+
+  "response": "Based on the provided context, BlackRock offers various career paths in financial services, specifically in investment management and asset management. The job descriptions and role requirements for positions such as Application Engineer Java Backend Development Vice President, and Java Backend Engineer Aladdin Engineering Associate, involve working on the company's investment operating system, Aladdin. Key skills required for these roles include Java and related technologies, microservices and APIs, object-oriented programming and design patterns, Agile methodologies, and DevOps. The company seeks candidates with strong analytical, problem-solving, and communication skills, and experience in finance, investment processes, and technical solutions, with opportunities available for entry-level, experienced, and senior-level professionals.",
+
+  "reference": [
+    "Java",
+    "Spring",
+    "TypeScript",
+    "JavaScript",
+    "Microservices",
+    "Angular",
+    "React",
+    "Open-Source technology stack",
+    "REST",
+    "Kafka",
+    "gRPC",
+    "Relational database",
+    "NoSQL Database",
+    "Apache Cassandra",
+    "Mongo",
+    "Ignite",
+    "Redis",
+    "Design-focused and test-driven approaches",
+    "Analytical skills",
+    "Problem-solving skills",
+    "Communication skills",
+    "Finance",
+    "Investment processes",
+    "Agile development",
+    "Cloud platforms",
+    "DevOps",
+    "AI-related projects",
+    "OO skills and design patterns",
+    "Object-oriented programming",
+    "Agile methodologies",
+    "Microsoft Azure",
+    "AWS",
+    "Google Cloud",
+    "Optimization",
+    "Algorithms",
+    "Quantitative processes",
+    "SpringBoot",
+    "Real-time distributed event streaming platform",
+    "Relational databases",
+    "Design patterns",
+    "Test-driven approaches",
+    "Azure DevOps"
+  ],
+
+  "retrieved_contexts": [
+    {
+      "company": "BlackRock",
+      "title": "Application Engineer Java Backend Development Vice President",
+      "skills": ["Java", "Spring", "TypeScript", "JavaScript", "Microservices", "Angular", "React", "Open-Source technology stack", "REST", "Kafka", "gRPC", "Relational database", "NoSQL Database", "Apache Cassandra", "Kafka", "Mongo", "Ignite", "Redis", "Design-focused and test-driven approaches", "Analytical skills", "Problem-solving skills", "Communication skills", "Finance", "Investment processes", "Agile development", "Cloud platforms", "DevOps", "AI-related projects"],
+      "location": "Mumbai, India",
+      "description": "BlackRock is seeking a Software Engineer to work on its investment operating system, Aladdin..."
+    },
+    {
+      "company": "BlackRock",
+      "title": "Application Engineer Java Backend Development Vice President",
+      "skills": ["Java", "Spring", "TypeScript", "JavaScript", "Microservices", "Angular", "React", "Open-Source technology stack", "OO skills and design patterns", "Object-oriented programming", "REST", "Kafka", "gRPC", "Relational database", "NoSQL Database", "Apache Cassandra", "Kafka", "Mongo", "Ignite", "Redis", "Agile methodologies", "Cloud platforms", "Microsoft Azure", "AWS", "Google Cloud", "DevOps", "AI-related projects", "Optimization", "Algorithms", "Quantitative processes"],
+      "location": "Mumbai, India",
+      "description": "BlackRock is seeking a Software Engineer to work on its investment operating system, Aladdin..."
+    },
+    {
+      "company": "BlackRock",
+      "title": "Java Backend Engineer Aladdin Engineering Associate",
+      "skills": ["Java", "Spring", "SpringBoot", "Microservices", "REST", "Real-time distributed event streaming platform", "gRPC", "Open-Source technology stack", "Relational databases", "NoSQL Database", "Object-oriented programming", "Design patterns", "Test-driven approaches", "Agile methodologies", "DevOps", "Azure DevOps", "AI-related projects", "Optimization", "Algorithms", "Quantitative processes"],
+      "location": "Mumbai, India",
+      "description": "BlackRock is seeking a Software Engineer to work on its investment operating system, Aladdin..."
+    }
+  ]
+}, 
+{
+  "user_input": "Genpact career opportunities 2024-2026 IT consulting technical stack requirements soft skills needed certification programs hiring process for Genpact interview preparation tips job description and salary range",
+
+  "response": "Based on the provided context, Genpact's career opportunities in IT consulting require a technical stack that includes: Programming languages such as Java, Python, and JavaScript, knowledge of SDLC methodologies, Agile Methodology, and DevOps tools, and experience with databases like DB2, Sybase, and RDBMS. Strong communication and problem-solving skills are also essential. I do not know the specific certification programs, hiring process, interview preparation tips, job description, or salary range for Genpact as this information is not contained within the context.",
+
+  "reference": [
+    "Java",
+    "Python",
+    "Typscript",
+    "Javascript",
+    "Angular",
+    "Junit",
+    "jbehave",
+    "concordian",
+    "bitbucket",
+    "git",
+    "Jenkins",
+    "SDLC methodologies",
+    "Agile Methodology",
+    "RDBMS database like DB2, Sybase",
+    "Strong communication skills",
+    "RDBMS database",
+    "DB2",
+    "Sybase",
+    "Client service focus",
+    "Spring Cloud Microservices",
+    "Data structures",
+    "Design patterns",
+    "OOP practices",
+    "Relational Databases",
+    "Snowflake",
+    "Spring",
+    "SOAP",
+    "REST Web Services",
+    "XML",
+    "JSON",
+    "DevOps tools",
+    "Git",
+    "Test Driven development",
+    "Agile team management",
+    "Business analysis",
+    "Software design",
+    "Communication",
+    "Problem-solving",
+    "Leadership"
+  ],
+
+  "retrieved_contexts": [
+    {
+      "company": "Genpact",
+      "title": "Principal Consultant Java FS Developer",
+      "skills": [
+        "Java",
+        "Python",
+        "Typscript",
+        "Javascript",
+        "Angular",
+        "Junit",
+        "jbehave",
+        "concordian",
+        "bitbucket",
+        "git",
+        "Jenkins",
+        "SDLC methodologies",
+        "Agile Methodology",
+        "RDBMS database like DB2, Sybase",
+        "Strong communication skills"
+      ],
+      "location": "Mumbai",
+      "description": "Genpact is seeking a Principal Consultant, Java FS Developer to design and deliver high-quality solutions, migrate legacy scenarios to strategic architecture, and coach junior team members..."
+    },
+    {
+      "company": "Genpact",
+      "title": "Principal Consultant Java FS Developer",
+      "skills": [
+        "Java",
+        "Python",
+        "Typscript",
+        "Javascript",
+        "Angular",
+        "Junit",
+        "jbehave",
+        "concordian",
+        "bitbucket",
+        "git",
+        "Jenkins",
+        "SDLC methodologies",
+        "Agile Methodology",
+        "RDBMS database",
+        "DB2",
+        "Sybase",
+        "Strong communication skills",
+        "Client service focus"
+      ],
+      "location": "Mumbai",
+      "description": "Genpact is seeking a Principal Consultant, Java FS Developer to design and deliver high-quality solutions..."
+    },
+    {
+      "company": "Genpact",
+      "title": "Lead Consultant Java Backend developer",
+      "skills": [
+        "Java",
+        "Spring Cloud Microservices",
+        "Data structures",
+        "Design patterns",
+        "OOP practices",
+        "Relational Databases",
+        "DB2",
+        "Sybase",
+        "Snowflake",
+        "Spring",
+        "SOAP",
+        "REST Web Services",
+        "XML",
+        "JSON",
+        "DevOps tools",
+        "Git",
+        "Test Driven development",
+        "Agile team management",
+        "Business analysis",
+        "Software design",
+        "Communication",
+        "Problem-solving",
+        "Leadership"
+      ],
+      "location": "Mumbai",
+      "description": "Genpact is seeking a Lead Consultant, Java Backend developer to join their team..."
+    }
+  ]
+}
+]
