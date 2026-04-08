@@ -308,11 +308,11 @@ app = workflow.compile()
 # --- 5. MAIN EXECUTION FLOW ---
 
 if __name__ == "__main__":
-    KEYWORD = "java"
+    KEYWORD = "flutter"
     LOCATION = "mumbai"
 
     # 1. Get List of Links (Standard Python)
-    job_list = get_job_links(KEYWORD, LOCATION, max_pages=1)
+    job_list = get_job_links(KEYWORD, LOCATION, max_pages=3)
 
     print(f"\n Found {len(job_list)} jobs. Starting AI Pipeline...\n")
 

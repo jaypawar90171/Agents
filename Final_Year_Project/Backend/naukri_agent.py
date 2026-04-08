@@ -55,7 +55,7 @@ parser = JsonOutputParser(pydantic_object=JobPosting)
 
 def setup_driver():
     options = Options()
-    # options.add_argument("--headless") 
+    # options.add_argument("--headless") # Run in headless mode
     options.add_argument("--start-maximized")
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/110.0.0.0 Safari/537.36")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
@@ -303,11 +303,10 @@ app = workflow.compile()
 
 
 if __name__ == "__main__":
-    KEYWORD = "python"
+    KEYWORD = "devops"
     LOCATION = "bangalore"
-
     # 1. Get List of Links (Standard Python)
-    job_list = get_job_links(KEYWORD, LOCATION, max_pages=10)
+    job_list = get_job_links(KEYWORD, LOCATION, max_pages=3)
 
     print(f"\nFound {len(job_list)} jobs. Starting AI Pipeline...\n")
 

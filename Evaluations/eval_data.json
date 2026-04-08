@@ -557,5 +557,391 @@
       "description": "Genpact is seeking a Lead Consultant, Java Backend developer to join their team..."
     }
   ]
+},
+{
+  "user_input": "List all roles are available at TCS for software engineers",
+
+  "response": "Based on the provided context, the technical requirements for TCS software engineer job openings include: Core Java and HTML/CSS for the Core Java Developer role, and Python, Spark, SQL, and Pyspark for the Data Engineer role. The hiring process involves a direct walk-in and virtual interview. However, I do not have information on interview preparation tips. TCS is an IT consulting company with career opportunities available in 2026, including the mentioned roles.",
+
+  "reference": [
+    "Core Java",
+    "HTML/CSS",
+    "Python",
+    "Spark",
+    "SQL",
+    "Pyspark",
+    "Direct walk-in",
+    "Virtual interview"
+  ],
+
+  "retrieved_contexts": [
+    {
+      "company": "Tata Consultancy Services",
+      "title": "Core Java Developer",
+      "skills": ["Core Java", "HTML/CSS"],
+      "location": "Mumbai, India",
+      "description": "TCS is hiring for a Core Java and HTML/CSS Senior Lead Role, with 4 to 10 years of experience, located in Mumbai. The role requires Core Java and HTML/CSS skills. The mode of interview is direct walk-in, with a virtual interview scheduled for 31-01-2026. This is an excellent opportunity for experienced professionals to join TCS. The company is looking for skilled candidates to fill this senior lead role."
+    },
+    {
+      "company": "Tata Consultancy Services",
+      "title": "Data Engineer (Python, Spark, SQL)",
+      "skills": ["Python", "Spark", "SQL", "Pyspark"],
+      "location": "Bengaluru",
+      "description": "We are seeking a Data Engineer with 4+ years of experience in Bengaluru. The ideal candidate should have skills in Python, Spark, and SQL. The role involves working with Pyspark and other key skills. The candidate should be able to work effectively in a team and have strong technical skills."
+    }
+  ]
+}, 
+{
+  "user_input": "List all skills which are required for software engineering roles at Chase Bank",
+
+  "response": "Based on the provided context, the skills required for software engineering roles at Chase Bank (also referred to as JPMorganChase) include: Java, Spring, Multithreading, REST, Data Caching Services, DB schema design, Data access technologies, Automated testing methodologies/frameworks, JUnit, TDD, BDD, Oracle Database, SQL, PL/SQL, Object-oriented design, Design patterns, Maven, Hudson, Git, SVN, UNIX, Linux, MS Windows, UNIX Shell, Perl scripting, Python, Agile Methodologies, CI/CD Tools, Cloud, Artificial Intelligence, Machine Learning, Mobile Technologies, Angular, ReactJS, SQL/NoSQL Databases, ORM Frameworks, Microservices, Kafka, Kubernetes, Docker, Flink, Spark, Databricks, AWS, Application Resiliency, Security, and Cloud technologies. Note that this list may not be exhaustive, as it is based on the provided context only.",
+
+  "reference": [
+    "Java",
+    "Spring",
+    "multithreading",
+    "REST",
+    "data access technologies",
+    "automated testing methodologies/frameworks",
+    "JUnit",
+    "TDD",
+    "BDD",
+    "Oracle Database",
+    "SQL",
+    "PL/SQL",
+    "object-oriented design",
+    "design patterns",
+    "Maven",
+    "Hudson",
+    "Git",
+    "Perl scripting",
+    "Python",
+    "Angular",
+    "ReactJS",
+    "SQL/NoSQL Databases",
+    "ORM Frameworks",
+    "Linux/UNIX",
+    "Microservices",
+    "Kafka",
+    "Kubernetes",
+    "Docker",
+    "Cloud technologies"
+  ],
+
+  "retrieved_contexts": [
+    {
+      "company": "Chase Bank",
+      "title": "Lead Software Engineer Java SpringBoot Oracle",
+      "skills": ["Java", "Spring", "multithreading", "REST", "Data Caching Services", "DB schema design", "data access technologies", "automated testing methodologies/frameworks", "JUnit", "TDD", "BDD", "Oracle Database", "SQL", "PL/SQL", "object-oriented design", "design patterns", "Maven", "Hudson", "Git", "SVN", "UNIX", "Linux", "MS Windows", "UNIX Shell", "Perl scripting"],
+      "location": "Mumbai, India",
+      "description": "We are seeking a Lead Software Engineer to join our Equities Technology team within the Commercial & Investment Bank at JPMorgan Chase..."
+    },
+    {
+      "company": "JPMorganChase",
+      "title": "Senior Manager of Software Engineering Java Full stack Cloud",
+      "skills": ["Java", "Python", "SQL", "Agile Methodologies", "CI/CD Tools", "Cloud", "Artificial Intelligence", "Machine Learning", "Mobile Technologies", "Angular", "ReactJS", "SQL/NoSQL Databases", "PL/SQL", "ORM Frameworks", "Linux/UNIX"],
+      "location": "Mumbai, India",
+      "description": "We are seeking a Lead Software Engineer to join our Consumer & Community Banking and Wealth Management team..."
+    },
+    {
+      "company": "JPMorganChase",
+      "title": "Software Engineer III Java AWS Python",
+      "skills": ["Java", "Spring", "Microservices", "Kafka", "SQL", "Kubernetes", "Docker", "Flink", "Spark", "Databricks", "AWS", "Python", "Agile methodologies", "CI/CD", "Application Resiliency", "Security", "Cloud technologies", "Artificial intelligence", "Machine learning", "Mobile"],
+      "location": "Mumbai, India",
+      "description": "We are seeking an experienced Software Engineer III to join our Commercial & Investment Bank Payments Technology team..."
+    }
+  ]
+},
+{
+  "user_input": "Which companies are offering job role on skill react as primary skill?",
+
+  "response": "Based on the provided context, the following companies are hiring React developers: Broadridge: Full stack Developer (Node and React), Xoriant: React JS developer with Java exposure, BlackRock: Application Engineer Java Backend Development Vice President (requires React as a secondary skill), Flight Centre Travel Group: Front End Developer (React JS). These companies are looking for candidates with strong expertise in React and other related skills such as Node.js, Java, and front-end development. The job descriptions and requirements vary, but most involve designing and developing modern web applications, collaborating with teams, and delivering high-quality solutions.",
+
+  "reference": [
+    "Node.js",
+    "React.js",
+    "Fullstack Development",
+    "React",
+    "TypeScript",
+    "HTML(5)",
+    "CSS(3)",
+    "JavaScript (ES6)",
+    "Java11+",
+    "RESTful APIs",
+    "microservices architecture",
+    "cloud native deployment",
+    "GraphQL",
+    "testing frameworks",
+    "Datadog",
+    "CI/CD pipelines",
+    "JIRA",
+    "Confluence",
+    "Micro Front ends",
+    "BootStrap/Foundation",
+    "SPA systems",
+    "Java",
+    "Spring",
+    "Microservices",
+    "Angular",
+    "Open-Source technology stack",
+    "Kafka",
+    "gRPC",
+    "Relational database",
+    "NoSQL Database",
+    "Apache Cassandra",
+    "Mongo",
+    "Ignite",
+    "Redis",
+    "Design-focused and test-driven approaches",
+    "Analytical skills",
+    "Agile development",
+    "Cloud platforms",
+    "DevOps",
+    "AI-related projects",
+    "OO skills and design patterns",
+    "Object-oriented programming",
+    "Agile methodologies",
+    "Microsoft Azure",
+    "AWS",
+    "React JS",
+    "Redux",
+    "MobX",
+    "Webpack"
+  ],
+
+  "retrieved_contexts": [
+    {
+      "company": "Broadridge",
+      "title": "Full stack Developer (Node and React)",
+      "skills": ["Node.js", "React.js", "Fullstack Development"],
+      "location": "Hybrid - Bengaluru",
+      "description": "We are looking for a talented Full Stack Developer with strong expertise in Node.js and React.js to design, develop, and maintain modern web applications..."
+    },
+    {
+      "company": "Xoriant",
+      "title": "React JS developer with Java exposure",
+      "skills": ["React", "TypeScript", "HTML(5)", "CSS(3)", "JavaScript (ES6)", "Java11+", "RESTful APIs", "microservices architecture", "cloud native deployment", "GraphQL", "testing frameworks", "Datadog", "CI/CD pipelines", "JIRA", "Confluence", "Micro Front ends", "BootStrap/Foundation", "SPA systems"],
+      "location": "Pune, Gurugram, Bengaluru",
+      "description": "We are seeking a highly skilled Full Stack Developer with 7+ years of experience..."
+    },
+    {
+      "company": "BlackRock",
+      "title": "Application Engineer Java Backend Development Vice President",
+      "skills": ["Java", "Spring", "TypeScript", "JavaScript", "Microservices", "Angular", "React", "Open-Source technology stack", "REST", "Kafka", "gRPC", "Relational database", "NoSQL Database", "Apache Cassandra", "Kafka", "Mongo", "Ignite", "Redis", "Design-focused and test-driven approaches", "Analytical skills", "Problem-solving skills", "Communication skills", "Finance", "Investment processes", "Agile development", "Cloud platforms", "DevOps", "AI-related projects"],
+      "location": "Mumbai, India",
+      "description": "BlackRock is seeking a Software Engineer to work on its investment operating system, Aladdin..."
+    },
+    {
+      "company": "Flight Centre Travel Group",
+      "title": "Front End Developer (React JS) - Bangalore",
+      "skills": ["React JS", "HTML", "CSS", "JavaScript", "Redux", "MobX", "Webpack", "Babel", "Problem-solving skills", "Attention to detail", "Team collaboration"],
+      "location": "Bengaluru",
+      "description": "We are looking for a skilled Front End Developer with expertise in React JS..."
+    },
+    {
+      "company": "BlackRock",
+      "title": "Application Engineer Java Backend Development Vice President",
+      "skills": ["Java", "Spring", "TypeScript", "JavaScript", "Microservices", "Angular", "React", "Open-Source technology stack", "OO skills and design patterns", "Object-oriented programming", "REST", "Kafka", "gRPC", "Relational database", "NoSQL Database", "Apache Cassandra", "Kafka", "Mongo", "Ignite", "Redis", "Agile methodologies", "Cloud platforms", "Microsoft Azure", "AWS", "Google Cloud", "DevOps", "AI-related projects", "Optimization", "Algorithms", "Quantitative processes"],
+      "location": "Mumbai, India",
+      "description": "BlackRock is seeking a Software Engineer to work on its investment operating system, Aladdin..."
+    }
+  ]
+},
+{
+  "user_input": "Which companies are offering job role for cybersecurity as primary skills, mention only companies that matches criteria",
+
+  "response": "Based on the provided context, the companies offering job roles with cybersecurity as primary skills are: VOIS, Egdk, Colliers, Bizo Force, and EY.",
+
+  "reference": [
+    "VOIS",
+    "Egdk",
+    "Colliers",
+    "Bizo Force",
+    "EY"
+  ],
+
+  "retrieved_contexts": [
+    {
+      "company": "VOIS",
+      "title": "Cyber Security Architect",
+      "skills": ["Security Engineering", "Perimeter Security", "IT Security", "Cism", "Cloud Security", "Ccsp", "Cyber Security", "Cissp", "ITIL", "Cisa", "OWASP", "Security by Design", "Data Security"],
+      "location": "Hybrid - Pune, India, Bengaluru",
+      "description": "The role requires a skilled professional with expertise in security engineering, perimeter security, IT security, and other related fields..."
+    },
+    {
+      "company": "Egdk",
+      "title": "Security Engineer - EG Cyber and Information Security",
+      "skills": ["Cism", "Automation", "Data analysis", "Linux", "Access management", "Information security", "OWASP", "Active directory", "Vulnerability", "Windows"],
+      "location": "Bengaluru",
+      "description": "EG is seeking a Security Engineer to join their EG Cyber and Information Security team..."
+    },
+    {
+      "company": "Colliers",
+      "title": "Cyber Security Analyst | Base locations",
+      "skills": ["remediation", "cyber security analyst", "Compliance", "Networking", "External audit", "Information security", "ISO 27001", "Automation tools", "Cloud", "Monitoring"],
+      "location": "Mumbai, Gurugram, Bengaluru",
+      "description": "We are seeking a motivated and detail-oriented Cyber Security Analyst..."
+    },
+    {
+      "company": "Bizo Force",
+      "title": "Junior Cyber Security Analyst",
+      "skills": ["Cyber Security", "Information Security", "Networking Concepts", "TCP/IP", "DNS", "HTTP", "Firewalls", "Linux", "Windows", "SIEM tools", "Splunk", "QRadar", "Sentinel", "Vulnerability Scanning", "Cloud Security", "AWS", "Azure", "GCP", "Python", "Bash", "Scripting", "CompTIA Security+", "CEH", "Malware", "Phishing", "Ransomware"],
+      "location": "Kolkata, Mumbai, New Delhi, Hyderabad, Pune, Chennai, Bengaluru",
+      "description": "The job involves monitoring security alerts and logs, identifying and analyzing potential security threats..."
+    },
+    {
+      "company": "EY",
+      "title": "Cyber Security Operations Analyst",
+      "skills": ["Azure", "Cloud Security", "Coaching", "Architecture", "Network Security", "Ai", "Database Design", "Cybersecurity", "Jira", "Incident Response", "Confluence", "Gcp", "Agile", "Scrum", "Aws", "Splunk", "Data Analytics", "Operations", "Cyber Risk", "Security Operations"],
+      "location": "Bengaluru",
+      "description": "This role leads the development of teams providing technical support in protecting Client's digital assets..."
+    }
+  ]
+},
+{
+  "user_input": "List all skills required for Cyber Security Architect or Cyber Security Analyst as job roles",
+
+  "response": "Based on the provided context, the skills required for a Cyber Security Architect in 2024 or a Cyber Security Analyst in 2026 include: technical skills such as Security Engineering, Perimeter Security, IT Security, Cloud Security, and Cyber Security; certifications like CISM, CCSP, CISSP, ITIL, CISA, and CompTIA Security+; and soft skills such as strong analytical and problem-solving skills, and good communication and documentation skills. The hiring process typically involves submitting an application through the company's careers portal, followed by scheduled interviews. For career development, companies like Bizo Force offer learning and certification support, as well as opportunities for growth in a collaborative security team.",
+
+  "reference": [
+    "Security Engineering",
+    "Perimeter Security",
+    "IT Security",
+    "Cism",
+    "Cloud Security",
+    "Ccsp",
+    "Cissp",
+    "ITIL",
+    "Cisa",
+    "OWASP",
+    "TCP/IP",
+    "DNS",
+    "HTTP",
+    "Firewalls",
+    "SIEM tools",
+    "Splunk",
+    "QRadar",
+    "Sentinel",
+    "Python",
+    "Bash",
+    "Scripting",
+    "CompTIA Security+",
+    "CEH",
+    "Malware",
+    "Phishing",
+    "Ransomware",
+    "Network Security",
+    "Ai",
+    "Database Design",
+    "Cybersecurity",
+    "Jira",
+    "Data Analytics",
+    "Operations",
+    "Cyber Risk",
+    "Security Operations",
+    "Identity and Access Management",
+    "Entra ID",
+    "RBAC",
+    "Active Directory ID",
+    "PIM/PAM",
+    "EntraID Connect",
+    "AD FS",
+    "ID Protection",
+    "MFA",
+    "SOC",
+    "MDR"
+
+  ],
+
+  "retrieved_contexts": [
+    {
+      "company": "VOIS",
+      "title": "Cyber Security Architect",
+      "skills": ["Security Engineering", "Perimeter Security", "IT Security", "Cism", "Cloud Security", "Ccsp", "Cyber Security", "Cissp", "ITIL", "Cisa", "OWASP", "Security by Design", "Data Security"],
+      "location": "Hybrid - Pune, India, Bengaluru",
+      "description": "The role requires a skilled professional with expertise in security engineering, perimeter security, IT security..."
+    },
+    {
+      "company": "Bizo Force",
+      "title": "Junior Cyber Security Analyst",
+      "skills": ["Cyber Security", "Information Security", "Networking Concepts", "TCP/IP", "DNS", "HTTP", "Firewalls", "Linux", "Windows", "SIEM tools", "Splunk", "QRadar", "Sentinel", "Vulnerability Scanning", "Cloud Security", "AWS", "Azure", "GCP", "Python", "Bash", "Scripting", "CompTIA Security+", "CEH", "Malware", "Phishing", "Ransomware"],
+      "location": "Kolkata, Mumbai, New Delhi, Hyderabad, Pune, Chennai, Bengaluru",
+      "description": "The job involves monitoring security alerts and logs, identifying and analyzing potential security threats..."
+    },
+    {
+      "company": "EY",
+      "title": "Cyber Security Operations Analyst",
+      "skills": ["Azure", "Cloud Security", "Coaching", "Architecture", "Network Security", "Ai", "Database Design", "Cybersecurity", "Jira", "Incident Response", "Confluence", "Gcp", "Agile", "Scrum", "Aws", "Splunk", "Data Analytics", "Operations", "Cyber Risk", "Security Operations"],
+      "location": "Bengaluru",
+      "description": "This role leads the development of teams providing technical support in protecting Client's digital assets..."
+    },
+    {
+      "company": "Capgemini",
+      "title": "Azure Cloud Cyber Security Engineer",
+      "skills": ["Identity and Access Management", "Entra ID", "RBAC", "Conditional Access Policies", "Active Directory ID", "PIM/PAM", "EntraID Connect", "AD FS", "ID Protection", "MFA", "Azure policy design", "Cloud adoption framework", "Microsoft Defender for Cloud", "Defender for endpoint", "SOC", "MDR", "SIEM", "SOAR", "DAM", "Intune", "MS purview", "DLP", "Insider risk policies", "Network architecture", "TCP/IP", "HTTP", "Security Operation Center", "Key Vault", "Log Analytics", "Cloud security technologies"],
+      "location": "Hybrid - Mumbai, Pune, Bengaluru",
+      "description": "We are seeking a highly skilled Azure Cloud Cyber Security Engineer with expertise in identity and access management..."
+    }
+  ]
+},
+{
+  "user_input": "List all companies which are offering job roles for python flask as primary skills",
+
+  "response": "Based on the provided context, the following companies are offering job roles with Python and Flask as primary skills: Techno Comp (TCI) and Carelon global solution. Both companies are seeking a Python Developer with FastAPI, with Flask being one of the required skills. The job roles involve designing, developing, and maintaining backend services using Python, FastAPI, and Flask.",
+
+  "reference": [
+    "Techno Comp (TCI)",
+    "Carelon global solution"
+  ],
+
+  "retrieved_contexts": [
+    {
+      "company": "Techno Comp (TCI)",
+      "title": "Python Developer with FastApi",
+      "skills": [
+        "Python",
+        "FastAPI",
+        "Flask",
+        "RESTful API",
+        "SQL",
+        "NoSQL",
+        "Docker",
+        "Git",
+        "CI/CD",
+        "Cloud platforms",
+        "Asynchronous programming",
+        "Problem-solving",
+        "Debugging",
+        "Communication",
+        "Teamwork"
+      ],
+      "location": "Hybrid - Gurugram, Bengaluru",
+      "description": "We are seeking a skilled Python Developer with 5+ years of experience to design, develop, and maintain backend services using Python, FastAPI, and Flask..."
+    },
+    {
+      "company": "Carelon global solution",
+      "title": "Python Developer with FastApi",
+      "skills": [
+        "Python",
+        "FastAPI",
+        "Flask",
+        "RESTful API",
+        "SQL",
+        "NoSQL",
+        "Docker",
+        "Git",
+        "CI/CD",
+        "Cloud platforms",
+        "Asynchronous programming",
+        "Problem-solving",
+        "Debugging",
+        "Communication",
+        "Teamwork"
+      ],
+      "location": "Hybrid - Gurugram, Bengaluru",
+      "description": "We are seeking a skilled Python Developer with 5+ years of experience to design, develop, and maintain backend services using Python, FastAPI, and Flask..."
+    }
+  ]
 }
+
 ]
