@@ -1,7 +1,9 @@
 fastapi
 uvicorn[standard]
 pymongo
+motor
 python-dotenv
+python-multipart
 ollama
 langchain-core
 langchain-groq
