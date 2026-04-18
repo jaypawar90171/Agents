@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom';
 
 interface UserInfoCardProps {
   totalRoadmaps: number;
+  totalSkillAnalyses?: number;
 }
 
-const UserInfoCard: React.FC<UserInfoCardProps> = ({ totalRoadmaps }) => {
+const UserInfoCard: React.FC<UserInfoCardProps> = ({ totalRoadmaps, totalSkillAnalyses = 0 }) => {
   const { user } = useUser();
   const navigate = useNavigate();
 
@@ -94,10 +95,10 @@ const UserInfoCard: React.FC<UserInfoCardProps> = ({ totalRoadmaps }) => {
           </div>
           <div>
             <p className="text-[10px] font-label uppercase tracking-widest text-outline dark:text-slate-500 mb-1">
-              Completed
+              Skill Analyses
             </p>
             <p className="text-sm md:text-base font-headline font-bold text-on-background dark:text-slate-100">
-              — Topics
+              {totalSkillAnalyses}
             </p>
           </div>
           <div>

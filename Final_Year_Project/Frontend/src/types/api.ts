@@ -163,3 +163,83 @@ export interface UserRoadmap {
   lastAccessed: string;
   roadmap?: RoadmapDetail;
 }
+
+// Skill Gap Analysis types
+export interface SkillContext {
+  name: string;
+  context: string;
+  level: 'Beginner' | 'Intermediate' | 'Advanced';
+}
+
+export interface ImpliedSkill {
+  name: string;
+  inferred_from: string;
+  reasoning: string;
+}
+
+export interface ValidatedGap {
+  skill: string;
+  importance: 'Critical' | 'Competitive Edge';
+  frequency: number;
+  validation_reason?: string;
+}
+
+export interface LearningResource {
+  title: string;
+  url: string;
+  resource_type: string;
+  is_free: boolean;
+}
+
+export interface WeeklyTask {
+  week_label: string;
+  topic: string;
+  tasks: string[];
+  milestone: string;
+}
+
+export interface SkillLearningStep {
+  skill: string;
+  importance: string;
+  why_it_matters: string;
+  leverage_from_background: string;
+  time_estimate: string;
+  resources: LearningResource[];
+  weekly_breakdown: WeeklyTask[];
+  capstone_project: string;
+  resume_bullet: string;
+}
+
+export interface SkillGapAnalysis {
+  profile: {
+    summary: string;
+    skills: SkillContext[];
+    target_roles: string[];
+    seniority_level: string;
+  };
+  expanded_skills: {
+    all_skills: string[];
+    implied_skills: ImpliedSkill[];
+  };
+  matches: { title: string; required_skills: string[]; score: number; url: string }[];
+  validated_gaps: ValidatedGap[];
+  roadmap: {
+    seniority_level: string;
+    total_timeline: string;
+    learning_sequence: string[];
+    action_plan: SkillLearningStep[];
+    market_outlook: string;
+  };
+}
+
+export interface UserSkillRoadmap {
+  _id: string;
+  userId: string;
+  skillRoadmapId: string;
+  status: 'in-progress' | 'completed' | 'paused';
+  overallProgress: number;
+  skillProgress: { skill: string; isCompleted: boolean; completedAt?: string; notes?: string }[];
+  startDate: string;
+  lastAccessed: string;
+  analysis?: SkillGapAnalysis;
+}

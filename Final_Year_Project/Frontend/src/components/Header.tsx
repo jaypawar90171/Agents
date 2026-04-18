@@ -48,6 +48,16 @@ const Header: React.FC = () => {
               Roadmap
             </Link>
             <Link
+              to="/skills"
+              className={`${
+                location.pathname === "/skills"
+                  ? "text-purple-700 dark:text-purple-400 border-b-2 border-purple-700 dark:border-purple-400 pb-1"
+                  : "text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-300 transition-colors"
+              }`}
+            >
+              Skills
+            </Link>
+            <Link
               to="/chat"
               className={`${
                 location.pathname === "/chat"
