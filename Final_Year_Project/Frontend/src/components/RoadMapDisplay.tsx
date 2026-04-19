@@ -1,21 +1,28 @@
 import React, { useState, useMemo } from "react";
 import {
-  ChevronDown,
-  Sparkles,
-  Target,
-  Award,
-  Calendar,
-  Code,
-  Rocket,
-  Zap,
-  Flame,
-  Star,
-  TrendingUp,
-  CheckCircle2,
-  Lightbulb,
-  Loader2,
+  ChevronDown, ChevronRight,
+  Sparkles, Target, Award, Calendar,
+  Code, Rocket, Zap, Flame, Star,
+  TrendingUp, CheckCircle, Lightbulb,
+  Loader2, BookOpen, Save,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+
+/* ─── Alexandria design tokens ─── */
+const t = {
+  primary:   '#094cb2',
+  container: '#3366cc',
+  surface:   '#faf9fa',
+  surfHigh:  '#efedee',
+  surfLow:   '#f5f3f4',
+  onSurface: '#1b1c1d',
+  variant:   '#434653',
+  outline:   '#737784',
+  tertiary:  '#6d5e00',
+  tertCont:  '#bfab49',
+  error:     '#ba1a1a',
+  white:     '#ffffff',
+};
 
 interface RoadmapDisplayProps {
   content: string;
@@ -23,552 +30,506 @@ interface RoadmapDisplayProps {
   isSaving?: boolean;
 }
 
+/* Map section index → a subtle accent tint (from Alexandria palette) */
+const TINTS = [
+  { bg: 'rgba(9,76,178,0.04)',   border: 'rgba(9,76,178,0.18)',   dot: t.primary,   label: '#00419d' },
+  { bg: 'rgba(109,94,0,0.04)',   border: 'rgba(191,171,73,0.35)', dot: '#6d5e00',    label: '#4a3f00' },
+  { bg: 'rgba(9,76,178,0.06)',   border: 'rgba(9,76,178,0.22)',   dot: t.container,  label: '#00419d' },
+  { bg: 'rgba(109,94,0,0.06)',   border: 'rgba(191,171,73,0.40)', dot: '#524600',    label: '#4a3f00' },
+  { bg: 'rgba(9,76,178,0.035)',  border: 'rgba(9,76,178,0.15)',   dot: t.primary,    label: '#00419d' },
+];
+const tint = (i: number) => TINTS[i % TINTS.length];
+
+const getIcon = (index: number, title: string) => {
+  const l = title.toLowerCase();
+  const sz = 17;
+  if (l.includes('summary') || l.includes('overview'))    return <Target size={sz} />;
+  if (l.includes('skills') || l.includes('analysis'))     return <Zap size={sz} />;
+  if (l.includes('week') || l.includes('breakdown'))      return <TrendingUp size={sz} />;
+  if (l.includes('integration') || l.includes('project')) return <Rocket size={sz} />;
+  if (l.includes('resources') || l.includes('learning'))  return <BookOpen size={sz} />;
+  if (l.includes('progress') || l.includes('tracker'))    return <Award size={sz} />;
+  const icons = [Target, Flame, Code, Star, Calendar, Rocket, Sparkles];
+  const I = icons[index % icons.length];
+  return <I size={sz} />;
+};
+
 const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
   content,
   onAddToProfile,
   isSaving = false,
 }) => {
-  // Initialize with first section expanded for better UX
-  const [expandedSections, setExpandedSections] = useState<{
-    [key: number]: boolean;
-  }>({ 0: true });
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [expanded, setExpanded] = useState<{ [k: number]: boolean }>({ 0: true });
 
-  // Parse markdown content into sections based on headings
-  const parseSections = useMemo(() => {
-    const sections = [];
-    const lines = content.split("\n");
-    let currentSection = null;
-    let currentContent: string[] = [];
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-
-      // Match ## or ### headings
-      if (line.startsWith("## ") || line.startsWith("### ")) {
-        if (currentSection) {
-          sections.push({
-            title: currentSection,
-            content: currentContent.join("\n").trim(),
-          });
-        }
-        currentSection = line.replace(/^#{2,3}\s+/, "").trim();
-        currentContent = [];
-      } else if (currentSection) {
-        currentContent.push(line);
+  const sections = useMemo(() => {
+    const result: { title: string; content: string }[] = [];
+    const lines = content.split('\n');
+    let cur: string | null = null;
+    let buf: string[] = [];
+    for (const line of lines) {
+      if (line.startsWith('## ') || line.startsWith('### ')) {
+        if (cur) result.push({ title: cur, content: buf.join('\n').trim() });
+        cur = line.replace(/^#{2,3}\s+/, '').trim();
+        buf = [];
+      } else if (cur) {
+        buf.push(line);
       }
     }
-
-    // Push the last section
-    if (currentSection) {
-      sections.push({
-        title: currentSection,
-        content: currentContent.join("\n").trim(),
-      });
-    }
-
-    return sections;
+    if (cur) result.push({ title: cur, content: buf.join('\n').trim() });
+    return result;
   }, [content]);
 
-  const getIcon = (index: number, title: string) => {
-    const lowerTitle = title.toLowerCase();
-    const iconClass = "w-6 h-6";
+  const toggle = (i: number) =>
+    setExpanded(prev => ({ ...prev, [i]: !prev[i] }));
 
-    // Icon selection based on section title keywords
-    if (lowerTitle.includes("summary") || lowerTitle.includes("overview")) {
-      return <Target className={iconClass} />;
-    } else if (
-      lowerTitle.includes("skills") ||
-      lowerTitle.includes("analysis")
-    ) {
-      return <Zap className={iconClass} />;
-    } else if (
-      lowerTitle.includes("week") ||
-      lowerTitle.includes("breakdown")
-    ) {
-      return <TrendingUp className={iconClass} />;
-    } else if (
-      lowerTitle.includes("integration") ||
-      lowerTitle.includes("project")
-    ) {
-      return <Rocket className={iconClass} />;
-    } else if (
-      lowerTitle.includes("resources") ||
-      lowerTitle.includes("learning")
-    ) {
-      return <Lightbulb className={iconClass} />;
-    } else if (
-      lowerTitle.includes("progress") ||
-      lowerTitle.includes("tracker")
-    ) {
-      return <Award className={iconClass} />;
-    }
-
-    // Default rotation through icons
-    const icons = [Target, Flame, Code, Star, Calendar, Rocket, Sparkles];
-    const IconComponent = icons[index % icons.length];
-    return <IconComponent className={iconClass} />;
-  };
-
-  const getColorScheme = (index: number) => {
-    const schemes = [
-      {
-        bg: "from-blue-50 to-cyan-50",
-        border: "border-blue-200",
-        accent: "from-blue-500 to-cyan-500",
-        text: "text-blue-600",
-        badge: "bg-blue-100 text-blue-700",
-      },
-      {
-        bg: "from-purple-50 to-pink-50",
-        border: "border-purple-200",
-        accent: "from-purple-500 to-pink-500",
-        text: "text-purple-600",
-        badge: "bg-purple-100 text-purple-700",
-      },
-      {
-        bg: "from-emerald-50 to-teal-50",
-        border: "border-emerald-200",
-        accent: "from-emerald-500 to-teal-500",
-        text: "text-emerald-600",
-        badge: "bg-emerald-100 text-emerald-700",
-      },
-      {
-        bg: "from-orange-50 to-rose-50",
-        border: "border-orange-200",
-        accent: "from-orange-500 to-rose-500",
-        text: "text-orange-600",
-        badge: "bg-orange-100 text-orange-700",
-      },
-      {
-        bg: "from-indigo-50 to-blue-50",
-        border: "border-indigo-200",
-        accent: "from-indigo-500 to-blue-500",
-        text: "text-indigo-600",
-        badge: "bg-indigo-100 text-indigo-700",
-      },
-    ];
-    return schemes[index % schemes.length];
-  };
-
-  const toggleSection = (index: number) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
-  };
-
-  if (parseSections.length === 0) {
+  if (sections.length === 0) {
     return (
-      <div className="w-full p-8 text-center">
-        <p className="text-slate-500">
-          No roadmap sections found. The roadmap may be empty or in an
-          unexpected format.
-        </p>
+      <div style={{ padding: '3rem', textAlign: 'center', fontFamily: "'Inter',sans-serif", color: t.outline }}>
+        No roadmap sections found. The content may be empty or in an unexpected format.
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 min-h-screen p-4 sm:p-6">
-      {/* Header with add to profile button */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 mb-12">
+    <div style={{ width: '100%', fontFamily: "'Inter',sans-serif" }}>
+
+      {/* ── Header ── */}
+      <div
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: '1rem',
+          marginBottom: '2rem',
+        }}
+      >
         <div>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-3 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 shadow-lg">
-              <Sparkles className="w-6 h-6 text-white" />
-            </div>
-            <h2 className="text-4xl font-black bg-gradient-to-r from-indigo-600 via-blue-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
-              Your Learning Roadmap
-            </h2>
-          </div>
-          <p className="text-slate-600 mt-3 text-lg font-medium">
+          <p
+            style={{
+              fontFamily: "'Public Sans',sans-serif",
+              fontWeight: 700,
+              fontSize: '0.625rem',
+              letterSpacing: '0.1em',
+              color: t.tertiary,
+              marginBottom: '0.325rem',
+            }}
+          >
+            ✦ PERSONALIZED PATH
+          </p>
+          <h2
+            style={{
+              fontFamily: "'Noto Serif',serif",
+              fontWeight: 800,
+              fontSize: '1.625rem',
+              color: t.onSurface,
+              lineHeight: 1.2,
+            }}
+          >
+            Your Learning Roadmap
+          </h2>
+          <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.9375rem', color: t.variant, marginTop: '0.375rem' }}>
             Your personalized path to career excellence
           </p>
         </div>
+
         {onAddToProfile && (
           <button
             onClick={onAddToProfile}
             disabled={isSaving}
-            className="group inline-flex items-center gap-2 px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 disabled:opacity-70 disabled:cursor-not-allowed text-white font-bold shadow-xl shadow-indigo-500/40 hover:shadow-2xl hover:shadow-indigo-500/60 transition-all duration-300 transform hover:scale-110 active:scale-95"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+              padding: '0.75rem 1.75rem',
+              borderRadius: '0.75rem',
+              background: `linear-gradient(135deg, ${t.primary}, ${t.container})`,
+              border: 'none',
+              color: t.white,
+              fontFamily: "'Public Sans',sans-serif",
+              fontWeight: 700,
+              fontSize: '0.875rem',
+              letterSpacing: '0.03em',
+              cursor: isSaving ? 'not-allowed' : 'pointer',
+              opacity: isSaving ? 0.75 : 1,
+              boxShadow: '0 4px 16px rgba(9,76,178,0.28)',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              if (!isSaving) {
+                (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 20px rgba(9,76,178,0.36)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.transform = 'none';
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 16px rgba(9,76,178,0.28)';
+            }}
           >
-            {isSaving ? (
-              <>
-                <Loader2 size={20} className="animate-spin" />
-                Saving…
-              </>
-            ) : (
-              <>
-                <Sparkles size={20} className="group-hover:animate-spin" />
-                Save to Profile
-              </>
-            )}
+            {isSaving
+              ? <><Loader2 size={16} style={{ animation: 'rm-spin 0.85s linear infinite' }} /> Saving…</>
+              : <><Save size={16} /> Save to Profile</>
+            }
           </button>
         )}
       </div>
 
-      {/* Timeline */}
-      <div className="space-y-6 relative">
-        {/* Animated vertical line backdrop */}
-        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-gradient-dynamic to-transparent ml-7 rounded-full opacity-60"></div>
-        <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-400 via-purple-500 to-blue-400 ml-7 rounded-full blur-sm opacity-30 animate-pulse"></div>
+      {/* ── Timeline ── */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative' }}>
+        {/* Vertical connector line */}
+        <div
+          style={{
+            position: 'absolute',
+            left: '1.375rem',
+            top: '2.5rem',
+            bottom: '2.5rem',
+            width: '2px',
+            background: 'linear-gradient(180deg, rgba(9,76,178,0.3) 0%, rgba(191,171,73,0.25) 50%, rgba(9,76,178,0.15) 100%)',
+            borderRadius: '999px',
+          }}
+        />
 
-        {parseSections.map((section, index) => {
-          const colorScheme = getColorScheme(index);
+        {sections.map((section, index) => {
+          const tc = tint(index);
+          const isOpen = !!expanded[index];
+
           return (
             <div
               key={index}
-              className="relative"
               style={{
-                animation: `slideIn 0.6s ease-out ${index * 0.12}s both`,
+                display: 'flex',
+                gap: '1.25rem',
+                alignItems: 'flex-start',
+                animation: `rm-slideIn 0.45s ease-out ${index * 0.08}s both`,
               }}
-              onMouseEnter={() => setHoveredIndex(index)}
-              onMouseLeave={() => setHoveredIndex(null)}
             >
-              {/* Animated timeline dot */}
+              {/* Timeline dot */}
               <div
-                className={`absolute left-0 top-6 w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${hoveredIndex === index ? "scale-125" : "scale-100"}`}
+                style={{
+                  width: '2.75rem', height: '2.75rem',
+                  flexShrink: 0,
+                  borderRadius: '50%',
+                  background: tc.dot,
+                  border: `3px solid ${t.white}`,
+                  boxShadow: `0 0 0 2px ${tc.dot}44, 0 4px 12px rgba(27,28,29,0.12)`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  color: t.white,
+                  position: 'relative',
+                  zIndex: 1,
+                  transition: 'transform 0.2s',
+                  cursor: 'pointer',
+                }}
+                onClick={() => toggle(index)}
               >
-                <div
-                  className={`absolute inset-0 rounded-full bg-gradient-to-br ${colorScheme.accent} opacity-20 blur-lg animate-pulse`}
-                ></div>
-                <div
-                  className={`relative w-full h-full rounded-full bg-gradient-to-br ${colorScheme.accent} border-4 border-white flex items-center justify-center shadow-xl`}
-                >
-                  <span className="text-white font-black text-lg">
-                    {index + 1}
-                  </span>
-                </div>
+                <span style={{ fontFamily: "'Noto Serif',serif", fontWeight: 800, fontSize: '0.875rem' }}>
+                  {index + 1}
+                </span>
               </div>
 
               {/* Content card */}
               <div
-                onClick={() => toggleSection(index)}
-                className="ml-32 cursor-pointer group relative"
+                style={{
+                  flex: 1,
+                  borderRadius: '1rem',
+                  background: isOpen ? tc.bg : t.white,
+                  border: isOpen ? `1px solid ${tc.border}` : '1px solid rgba(195,198,213,0.38)',
+                  boxShadow: isOpen ? '0 4px 20px rgba(27,28,29,0.06)' : '0 2px 8px rgba(27,28,29,0.04)',
+                  overflow: 'hidden',
+                  transition: 'all 0.25s ease',
+                }}
               >
-                {/* Decorative background glow */}
-                <div
-                  className={`absolute -inset-2 bg-gradient-to-br ${colorScheme.accent} opacity-0 group-hover:opacity-10 rounded-3xl blur-xl transition-all duration-300`}
-                ></div>
-
-                <div
-                  className={`relative bg-white rounded-2xl border-2 transition-all duration-300 overflow-hidden shadow-lg hover:shadow-2xl ${
-                    expandedSections[index]
-                      ? `border-transparent bg-gradient-to-br ${colorScheme.bg}`
-                      : `border-slate-200 hover:border-transparent ${hoveredIndex === index ? `shadow-${colorScheme.text.split("-")[1]}` : ""}`
-                  }`}
+                {/* Card header button */}
+                <button
+                  onClick={() => toggle(index)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.875rem',
+                    width: '100%',
+                    padding: '1rem 1.25rem',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                  }}
                 >
-                  {/* Gradient accent bar */}
+                  {/* Section icon */}
                   <div
-                    className={`h-1 bg-gradient-to-r ${colorScheme.accent}`}
-                  ></div>
-
-                  {/* Card Header */}
-                  <div className="p-6 sm:p-7 flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-4 flex-1 min-w-0">
-                      <div
-                        className={`mt-1 flex-shrink-0 p-3 rounded-lg bg-gradient-to-br ${colorScheme.accent} text-white transform transition-all duration-300 ${hoveredIndex === index ? "rotate-12 scale-110" : ""}`}
-                      >
-                        {getIcon(index, section.title)}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <h3 className="text-2xl font-black text-slate-900 break-words">
-                            {section.title}
-                          </h3>
-                          <span
-                            className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${colorScheme.badge} uppercase tracking-widest`}
-                          >
-                            Step {index + 1}
-                          </span>
-                        </div>
-                        {!expandedSections[index] && (
-                          <p className="text-slate-600 text-sm mt-2 line-clamp-2 font-medium">
-                            {section.content
-                              .replace(/[#\-\*\[\]]/g, "")
-                              .substring(0, 120)}
-                            ...
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <ChevronDown
-                      size={28}
-                      className={`flex-shrink-0 transition-all duration-300 transform ${colorScheme.text} ${
-                        expandedSections[index] ? "rotate-180" : ""
-                      } ${hoveredIndex === index ? "scale-125" : ""}`}
-                    />
+                    style={{
+                      width: '2.25rem', height: '2.25rem',
+                      borderRadius: '0.5rem',
+                      background: tc.bg,
+                      border: `1px solid ${tc.border}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: tc.dot,
+                      flexShrink: 0,
+                    }}
+                  >
+                    {getIcon(index, section.title)}
                   </div>
 
-                  {/* Card Content */}
-                  {expandedSections[index] && (
-                    <div
-                      className={`border-t-2 border-opacity-20 border-slate-300 px-6 sm:px-7 py-6 bg-gradient-to-b ${colorScheme.bg} backdrop-blur-sm`}
-                    >
-                      <div className="space-y-4">
-                        <ReactMarkdown
-                          components={{
-                            h1: ({ children }) => (
-                              <h1 className="text-2xl font-black text-slate-900 mt-5 mb-3 first:mt-0 flex items-center gap-2">
-                                <span
-                                  className={`inline-block w-1 h-6 rounded-full bg-gradient-to-b ${colorScheme.accent}`}
-                                ></span>
-                                {children}
-                              </h1>
-                            ),
-                            h2: ({ children }) => (
-                              <h2 className="text-xl font-bold text-slate-900 mt-4 mb-2 first:mt-0 flex items-center gap-2">
-                                <Star
-                                  className={`w-4 h-4 ${colorScheme.text}`}
-                                />
-                                {children}
-                              </h2>
-                            ),
-                            h3: ({ children }) => (
-                              <h3 className="text-lg font-bold text-slate-800 mt-3 mb-2 first:mt-0 uppercase tracking-wide">
-                                {children}
-                              </h3>
-                            ),
-                            h4: ({ children }) => (
-                              <h4 className="text-base font-bold text-slate-800 mt-2 mb-1">
-                                {children}
-                              </h4>
-                            ),
-                            p: ({ children }) => (
-                              <p className="mb-3 leading-relaxed text-slate-700 font-medium">
-                                {children}
-                              </p>
-                            ),
-                            ul: ({ children }) => (
-                              <ul className="mb-4 space-y-2">{children}</ul>
-                            ),
-                            ol: ({ children }) => (
-                              <ol className="mb-4 space-y-2">{children}</ol>
-                            ),
-                            li: ({ children }) => (
-                              <li className="flex items-start gap-3">
-                                <CheckCircle2
-                                  className={`w-5 h-5 ${colorScheme.text} flex-shrink-0 mt-0.5 animate-bounce`}
-                                  style={{
-                                    animationDelay: `${Math.random() * 0.5}s`,
-                                  }}
-                                />
-                                <span className="text-slate-700 leading-relaxed font-medium">
-                                  {children}
-                                </span>
-                              </li>
-                            ),
-                            strong: ({ children }) => (
-                              <strong className="font-black text-slate-900 bg-gradient-to-r from-yellow-100 to-yellow-50 px-1 rounded">
-                                {children}
-                              </strong>
-                            ),
-                            em: ({ children }) => (
-                              <em className="italic font-semibold text-slate-800 not-italic before:content-['←'] before:mr-2 after:content-['→'] after:ml-2 before:text-slate-400 after:text-slate-400">
-                                {children}
-                              </em>
-                            ),
-                            code: ({ children }) => (
-                              <code className="px-3 py-1.5 rounded-lg bg-gradient-to-br from-slate-900 to-slate-700 text-amber-300 text-sm font-mono font-bold shadow-md">
-                                {children}
-                              </code>
-                            ),
-                            pre: ({ children }) => (
-                              <pre className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-4 overflow-x-auto mb-4 border border-slate-700 shadow-lg">
-                                <code className="text-amber-300 font-mono text-sm">
-                                  {children}
-                                </code>
-                              </pre>
-                            ),
-                            a: ({ href, children }) => (
-                              <a
-                                href={href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`font-bold underline decoration-2 decoration-wavy transition-all duration-300 hover:scale-105 inline-block bg-gradient-to-r ${colorScheme.accent} bg-clip-text text-transparent`}
-                              >
-                                {children} ↗
-                              </a>
-                            ),
-                            hr: () => (
-                              <div
-                                className={`my-5 h-1 bg-gradient-to-r ${colorScheme.accent} rounded-full opacity-30`}
-                              />
-                            ),
-                            blockquote: ({ children }) => (
-                              <blockquote
-                                className={`border-l-4 bg-gradient-to-r ${colorScheme.bg} border-opacity-50 rounded-r-xl p-4 italic text-slate-700 my-4 font-semibold shadow-md`}
-                              >
-                                <Lightbulb
-                                  className={`w-5 h-5 inline mr-2 mb-1 ${colorScheme.text}`}
-                                />
-                                {children}
-                              </blockquote>
-                            ),
-                          }}
-                        >
-                          {section.content}
-                        </ReactMarkdown>
-                      </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      <h3
+                        style={{
+                          fontFamily: "'Noto Serif',serif",
+                          fontWeight: 700,
+                          fontSize: '1rem',
+                          color: t.onSurface,
+                          lineHeight: 1.3,
+                        }}
+                      >
+                        {section.title}
+                      </h3>
+                      <span
+                        style={{
+                          fontFamily: "'Public Sans',sans-serif",
+                          fontSize: '0.625rem', fontWeight: 700,
+                          letterSpacing: '0.06em',
+                          padding: '0.15rem 0.5rem',
+                          borderRadius: '999px',
+                          background: tc.bg,
+                          color: tc.label,
+                          border: `1px solid ${tc.border}`,
+                        }}
+                      >
+                        STEP {index + 1}
+                      </span>
                     </div>
-                  )}
-                </div>
+                    {!isOpen && (
+                      <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.8125rem', color: t.variant, marginTop: '0.25rem', lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '32rem' }}>
+                        {section.content.replace(/[#\-\*\[\]]/g, '').substring(0, 100)}…
+                      </p>
+                    )}
+                  </div>
+
+                  {isOpen
+                    ? <ChevronDown size={18} color={t.outline} style={{ flexShrink: 0 }} />
+                    : <ChevronRight size={18} color={t.outline} style={{ flexShrink: 0 }} />
+                  }
+                </button>
+
+                {/* Expanded content */}
+                {isOpen && (
+                  <div
+                    style={{
+                      borderTop: `1px solid ${tc.border}`,
+                      padding: '1.25rem 1.5rem',
+                      background: tc.bg,
+                    }}
+                  >
+                    <ReactMarkdown
+                      components={{
+                        h1: ({ children }) => (
+                          <h1 style={{ fontFamily: "'Noto Serif',serif", fontWeight: 800, fontSize: '1.25rem', color: t.onSurface, marginTop: '1.25rem', marginBottom: '0.625rem' }}>
+                            {children}
+                          </h1>
+                        ),
+                        h2: ({ children }) => (
+                          <h2 style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '1.0625rem', color: t.onSurface, marginTop: '1rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                            <Star size={14} color={tc.dot} />
+                            {children}
+                          </h2>
+                        ),
+                        h3: ({ children }) => (
+                          <h3 style={{ fontFamily: "'Public Sans',sans-serif", fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.07em', color: t.outline, textTransform: 'uppercase', marginTop: '0.875rem', marginBottom: '0.375rem' }}>
+                            {children}
+                          </h3>
+                        ),
+                        h4: ({ children }) => (
+                          <h4 style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '0.9375rem', color: t.onSurface, marginTop: '0.75rem', marginBottom: '0.25rem' }}>
+                            {children}
+                          </h4>
+                        ),
+                        p: ({ children }) => (
+                          <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: t.variant, lineHeight: 1.7, marginBottom: '0.75rem' }}>
+                            {children}
+                          </p>
+                        ),
+                        ul: ({ children }) => (
+                          <ul style={{ marginBottom: '0.875rem', paddingLeft: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                            {children}
+                          </ul>
+                        ),
+                        ol: ({ children }) => (
+                          <ol style={{ marginBottom: '0.875rem', paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                            {children}
+                          </ol>
+                        ),
+                        li: ({ children }) => (
+                          <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                            <CheckCircle size={15} color={tc.dot} style={{ flexShrink: 0, marginTop: '0.25rem' }} />
+                            <span style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: t.variant, lineHeight: 1.65 }}>
+                              {children}
+                            </span>
+                          </li>
+                        ),
+                        strong: ({ children }) => (
+                          <strong style={{ fontWeight: 700, color: t.onSurface }}>
+                            {children}
+                          </strong>
+                        ),
+                        em: ({ children }) => (
+                          <em style={{ fontStyle: 'italic', color: t.variant }}>
+                            {children}
+                          </em>
+                        ),
+                        code: ({ children }) => (
+                          <code style={{ padding: '0.2rem 0.5rem', borderRadius: '0.375rem', background: '#1b1c1d', color: '#bfab49', fontFamily: 'monospace', fontSize: '0.8125rem', fontWeight: 600 }}>
+                            {children}
+                          </code>
+                        ),
+                        pre: ({ children }) => (
+                          <pre style={{ background: '#1b1c1d', borderRadius: '0.75rem', padding: '1rem 1.25rem', overflowX: 'auto', marginBottom: '1rem', border: '1px solid rgba(255,255,255,0.08)' }}>
+                            <code style={{ color: '#bfab49', fontFamily: 'monospace', fontSize: '0.8125rem' }}>
+                              {children}
+                            </code>
+                          </pre>
+                        ),
+                        a: ({ href, children }) => (
+                          <a
+                            href={href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: t.primary, fontWeight: 600, textDecoration: 'underline', textUnderlineOffset: '2px' }}
+                          >
+                            {children} ↗
+                          </a>
+                        ),
+                        hr: () => (
+                          <div style={{ height: '1px', background: `linear-gradient(90deg, transparent, ${tc.border}, transparent)`, margin: '1rem 0' }} />
+                        ),
+                        blockquote: ({ children }) => (
+                          <blockquote
+                            style={{
+                              borderLeft: `3px solid ${tc.dot}`,
+                              background: tc.bg,
+                              borderRadius: '0 0.5rem 0.5rem 0',
+                              padding: '0.875rem 1rem',
+                              margin: '0.875rem 0',
+                              display: 'flex',
+                              gap: '0.5rem',
+                              alignItems: 'flex-start',
+                            }}
+                          >
+                            <Lightbulb size={16} color={tc.dot} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
+                            <span style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: t.variant, fontStyle: 'italic', lineHeight: 1.65 }}>
+                              {children}
+                            </span>
+                          </blockquote>
+                        ),
+                      }}
+                    >
+                      {section.content}
+                    </ReactMarkdown>
+                  </div>
+                )}
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Completion message */}
-      <div className="mt-16 relative group">
-        {/* Animated background glow */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 opacity-0 group-hover:opacity-20 blur-2xl rounded-3xl transition-all duration-500"></div>
-
-        <div className="relative p-10 sm:p-12 rounded-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 border-2 border-gradient-to-r from-indigo-200 to-blue-200 text-center shadow-xl backdrop-blur-sm">
-          {/* Decorative elements */}
-          <div className="absolute top-0 left-0 w-20 h-20 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-0"></div>
-          <div className="absolute top-0 right-0 w-20 h-20 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-8 left-20 w-20 h-20 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
-
-          {/* Content */}
-          <div className="relative z-10">
-            <div className="flex justify-center mb-6">
-              <div className="p-4 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-blue-600 shadow-2xl animate-pulse">
-                <Award className="w-10 h-10 text-white" />
-              </div>
-            </div>
-            <h3 className="text-4xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
-              🚀 Ready to Conquer Your Goals?
-            </h3>
-            <p className="text-slate-700 mb-8 text-lg font-semibold max-w-2xl mx-auto leading-relaxed">
-              Follow this personalized roadmap step by step and{" "}
-              <span className="bg-yellow-100 px-2 rounded-lg">
-                unlock your potential
-              </span>{" "}
-              to land your dream role!
-            </p>
-            <div className="flex flex-wrap justify-center gap-3 mb-8">
-              {["Master Skills", "Build Projects", "Land Job"].map(
-                (item, i) => (
-                  <span
-                    key={i}
-                    className={`inline-flex items-center gap-2 px-4 py-2 rounded-full font-bold text-sm shadow-md ${
-                      i === 0
-                        ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white"
-                        : i === 1
-                          ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
-                          : "bg-gradient-to-r from-emerald-500 to-teal-500 text-white"
-                    }`}
-                  >
-                    <TrendingUp className="w-4 h-4" />
-                    {item}
-                  </span>
-                ),
-              )}
-            </div>
-            {onAddToProfile && (
-              <button
-                onClick={onAddToProfile}
-                disabled={isSaving}
-                className="group/btn inline-flex items-center gap-3 px-10 py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-600 hover:from-indigo-600 hover:via-purple-600 hover:to-blue-700 disabled:opacity-70 disabled:cursor-not-allowed text-white font-black text-lg shadow-2xl shadow-indigo-500/50 hover:shadow-3xl hover:shadow-indigo-500/70 transition-all duration-300 transform hover:scale-110 active:scale-95 uppercase tracking-wider"
-              >
-                {isSaving ? (
-                  <>
-                    <Loader2 size={22} className="animate-spin" />
-                    Saving…
-                  </>
-                ) : (
-                  <>
-                    <Sparkles size={22} className="group-hover/btn:animate-spin" />
-                    Save This Roadmap
-                    <Rocket
-                      size={22}
-                      className="group-hover/btn:translate-x-1 transition-transform"
-                    />
-                  </>
-                )}
-              </button>
-            )}
-          </div>
+      {/* ── Completion card ── */}
+      <div
+        style={{
+          marginTop: '2.5rem',
+          borderRadius: '1rem',
+          background: t.white,
+          border: '1px solid rgba(195,198,213,0.38)',
+          padding: '2rem',
+          textAlign: 'center',
+          boxShadow: '0 4px 20px rgba(27,28,29,0.05)',
+        }}
+      >
+        <div
+          style={{
+            width: '3rem', height: '3rem',
+            borderRadius: '50%',
+            background: `linear-gradient(135deg, ${t.primary}, ${t.container})`,
+            margin: '0 auto 1rem',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 4px 14px rgba(9,76,178,0.3)',
+          }}
+        >
+          <Award size={20} color={t.white} />
         </div>
+
+        <h3
+          style={{
+            fontFamily: "'Noto Serif',serif",
+            fontWeight: 800,
+            fontSize: '1.375rem',
+            color: t.onSurface,
+            marginBottom: '0.625rem',
+          }}
+        >
+          Ready to Conquer Your Goals?
+        </h3>
+        <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.9375rem', color: t.variant, lineHeight: 1.7, maxWidth: '36rem', margin: '0 auto 1.5rem' }}>
+          Follow this personalized roadmap step by step and unlock your potential to land your dream role.
+        </p>
+
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.625rem', marginBottom: '1.5rem' }}>
+          {['Master Skills', 'Build Projects', 'Land Job'].map((item, i) => (
+            <span
+              key={i}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
+                padding: '0.4rem 1rem',
+                borderRadius: '999px',
+                fontFamily: "'Public Sans',sans-serif",
+                fontWeight: 700,
+                fontSize: '0.8125rem',
+                letterSpacing: '0.03em',
+                background: i === 1 ? 'rgba(109,94,0,0.1)' : 'rgba(9,76,178,0.08)',
+                border: i === 1 ? '1px solid rgba(191,171,73,0.35)' : '1px solid rgba(9,76,178,0.2)',
+                color: i === 1 ? t.tertiary : t.primary,
+              }}
+            >
+              <TrendingUp size={13} />
+              {item}
+            </span>
+          ))}
+        </div>
+
+        {onAddToProfile && (
+          <button
+            onClick={onAddToProfile}
+            disabled={isSaving}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.625rem',
+              padding: '0.875rem 2.25rem',
+              borderRadius: '999px',
+              background: `linear-gradient(135deg, ${t.primary}, ${t.container})`,
+              border: 'none',
+              color: t.white,
+              fontFamily: "'Public Sans',sans-serif",
+              fontWeight: 700,
+              fontSize: '0.9375rem',
+              letterSpacing: '0.04em',
+              cursor: isSaving ? 'not-allowed' : 'pointer',
+              opacity: isSaving ? 0.8 : 1,
+              boxShadow: '0 6px 20px rgba(9,76,178,0.32)',
+              transition: 'transform 0.2s, box-shadow 0.2s',
+            }}
+            onMouseEnter={(e) => {
+              if (!isSaving) {
+                (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-2px)';
+                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 8px 24px rgba(9,76,178,0.42)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.transform = 'none';
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 20px rgba(9,76,178,0.32)';
+            }}
+          >
+            {isSaving
+              ? <><Loader2 size={20} style={{ animation: 'rm-spin 0.85s linear infinite' }} /> Saving…</>
+              : <><Sparkles size={20} /> Save This Roadmap</>
+            }
+          </button>
+        )}
       </div>
 
       <style>{`
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateX(-30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        @keyframes blob {
-          0%, 100% {
-            transform: translate(0, 0) scale(1);
-          }
-          25% {
-            transform: translate(20px, -50px) scale(1.1);
-          }
-          50% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          75% {
-            transform: translate(50px, 50px) scale(1.05);
-          }
-        }
-
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-
-        .animation-delay-0 {
-          animation-delay: 0s;
-        }
-
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-
-        .gradient-dynamic {
-          background: linear-gradient(180deg, 
-            rgba(99, 102, 241, 0.6) 0%, 
-            rgba(139, 92, 246, 0.4) 25%,
-            rgba(59, 130, 246, 0.4) 50%,
-            rgba(139, 92, 246, 0.4) 75%,
-            rgba(99, 102, 241, 0.6) 100%);
-        }
-
-        /* Smooth text selection */
-        ::selection {
-          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-          color: white;
-        }
-
-        /* Custom scrollbar for content */
-        ::-webkit-scrollbar {
-          width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.05);
-          border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-          border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-        }
+        @keyframes rm-spin    { to { transform: rotate(360deg); } }
+        @keyframes rm-slideIn { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:translateX(0); } }
       `}</style>
     </div>
   );

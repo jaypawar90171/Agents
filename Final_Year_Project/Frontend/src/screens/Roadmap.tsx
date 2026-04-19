@@ -4,8 +4,27 @@ import RoadmapDisplay from "../components/RoadMapDisplay";
 import RoadmapJobsUsed from "../components/RoadmapJobsUsed";
 import { useRoadmap } from "../hooks/useRoadmap";
 import { useUser } from "@clerk/clerk-react";
-import { Loader2, Zap } from "lucide-react";
+import { Loader2, Sparkles, MapPin, Briefcase, TrendingUp, CheckCircle, Save } from "lucide-react";
 import roadmapService from "../services/roadmapService";
+
+/* ═══════════════════════════════════════════════════════
+   Alexandria Design Tokens
+═══════════════════════════════════════════════════════ */
+const t = {
+  primary:   '#094cb2',
+  container: '#3366cc',
+  surface:   '#faf9fa',
+  surfHigh:  '#efedee',
+  surfLow:   '#f5f3f4',
+  onSurface: '#1b1c1d',
+  variant:   '#434653',
+  outline:   '#737784',
+  tertiary:  '#6d5e00',
+  tertCont:  '#bfab49',
+  error:     '#ba1a1a',
+  errCont:   '#ffdad6',
+  white:     '#ffffff',
+};
 
 const MIN_COMPANY_LENGTH = 3;
 
@@ -13,15 +32,15 @@ const Roadmap: React.FC = () => {
   const { user } = useUser();
   const { roadmap, loading, error, generateRoadmap } = useRoadmap();
   const [companyName, setCompanyName] = useState("");
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
+  const [saveStatus, setSaveStatus]   = useState<"idle" | "saving" | "success" | "error">("idle");
   const [saveMessage, setSaveMessage] = useState("");
+  const [inputFocused, setInputFocused] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = companyName.trim();
     if (trimmed.length >= MIN_COMPANY_LENGTH) {
-      const response = await generateRoadmap(trimmed);
-      console.log(response);
+      await generateRoadmap(trimmed);
     }
   };
 
@@ -32,12 +51,11 @@ const Roadmap: React.FC = () => {
     setSaveMessage("");
     try {
       const jobDetails = {
-        company: companyName.trim() || undefined,
-        role: roadmap.jobs_used?.[0]?.job_title ?? undefined,
-        location: roadmap.jobs_used?.[0]?.location ?? undefined,
+        company:  companyName.trim() || undefined,
+        role:     roadmap.jobs_used?.[0]?.job_title ?? undefined,
+        location: roadmap.jobs_used?.[0]?.location  ?? undefined,
       };
-      const response = await roadmapService.parseAndSaveRoadmap(roadmap.roadmap, userId, jobDetails);
-      console.log("Saved Response: " + JSON.stringify(response.roadmap));
+      await roadmapService.parseAndSaveRoadmap(roadmap.roadmap, userId, jobDetails);
       setSaveStatus("success");
       setSaveMessage("Roadmap saved to your profile.");
     } catch (err) {
@@ -49,171 +67,471 @@ const Roadmap: React.FC = () => {
   const canSubmit = companyName.trim().length >= MIN_COMPANY_LENGTH;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/20 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex flex-col font-sans">
-      <Header />
+    <>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,800;1,700;1,800&family=Inter:wght@400;500;600&family=Public+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet"
+      />
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full flex-grow">
-        {/* Hero Section */}
-        <div className="mb-12">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-xl font-semibold text-indigo-600 uppercase tracking-wide">
-              Career Roadmap Generator
-            </span>
-          </div>
-          <h1 className="text-4xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent mb-4">
-            Your Path to Success
-          </h1>
-        </div>
+      <div
+        style={{
+          minHeight: '100vh',
+          background: t.surface,
+          display: 'flex',
+          flexDirection: 'column',
+          fontFamily: "'Inter',sans-serif",
+        }}
+      >
+        <Header />
 
-        {/* Search Form */}
-        <form onSubmit={handleSubmit} className="mb-12">
-          <div className="flex flex-col sm:flex-row gap-3 bg-white dark:bg-slate-900 p-2 rounded-2xl shadow-lg shadow-indigo-500/10 border border-slate-200 dark:border-slate-800">
-            <input
-              type="text"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="Enter Company Name e.g. Google, Amazon, Microsoft, Tesla"
-              className="flex-1 px-6 py-4 rounded-xl border-0 outline-none text-lg placeholder-slate-400 dark:placeholder-slate-500 focus:ring-0 bg-transparent text-slate-900 dark:text-slate-100"
-              minLength={MIN_COMPANY_LENGTH}
-              disabled={loading}
-            />
-            <button
-              type="submit"
-              disabled={loading || !canSubmit}
-              className="px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 whitespace-nowrap"
+        <main
+          style={{
+            maxWidth: '64rem',
+            margin: '0 auto',
+            padding: '0 1.5rem 4rem',
+            width: '100%',
+            flex: 1,
+          }}
+        >
+
+          {/* ═══════════════════════════════
+              HERO
+          ═══════════════════════════════ */}
+          <div style={{ padding: '2.75rem 0 2.25rem' }}>
+            <p
+              style={{
+                fontFamily: "'Public Sans',sans-serif",
+                fontWeight: 700,
+                fontSize: '0.625rem',
+                letterSpacing: '0.12em',
+                color: t.tertiary,
+                marginBottom: '0.625rem',
+              }}
             >
-              {loading ? (
-                <>
-                  <Loader2 size={20} className="animate-spin" />
-                  Generating…
-                </>
-              ) : (
-                <>
-                  <Zap size={18} />
-                  Generate Roadmap
-                </>
-              )}
-            </button>
-          </div>
-
-          {companyName.trim().length > 0 &&
-            companyName.trim().length < MIN_COMPANY_LENGTH && (
-              <p className="text-sm text-amber-600 mt-3 font-medium">
-                💡 Company name must be at least {MIN_COMPANY_LENGTH}{" "}
-                characters.
-              </p>
-            )}
-        </form>
-
-        {/* Error State */}
-        {error && (
-          <div className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-red-50 to-red-100/50 dark:from-red-950/40 dark:to-red-900/30 border-2 border-red-200 dark:border-red-900 text-red-700 dark:text-red-300">
-            <p className="font-semibold mb-1">⚠️ Error generating roadmap</p>
-            <p className="text-sm">{error}</p>
-          </div>
-        )}
-
-        {/* Save status message */}
-        {saveStatus === "success" && (
-          <div className="mb-6 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-900/30 border-2 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200">
-            <p className="font-semibold">{saveMessage}</p>
-          </div>
-        )}
-        {saveStatus === "error" && (
-          <div className="mb-6 p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border-2 border-red-200 dark:border-red-900 text-red-700 dark:text-red-300">
-            <p className="font-semibold">{saveMessage}</p>
-          </div>
-        )}
-
-        {/* Roadmap Display */}
-        {roadmap && (
-          <div className="space-y-8 animate-fadeIn">
-            {/* Jobs Used Section */}
-            {roadmap.jobs_used.length > 0 && (
-              <div className="rounded-3xl bg-white dark:bg-slate-900 border-2 border-indigo-200 dark:border-indigo-500/50 shadow-xl shadow-indigo-500/10 p-8">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-6 flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-lg bg-indigo-500 text-white flex items-center justify-center text-sm font-bold">
-                    💼
-                  </span>
-                  Jobs Used in This Roadmap
-                </h2>
-                <RoadmapJobsUsed jobs={roadmap.jobs_used} />
-              </div>
-            )}
-
-            {/* Main Roadmap */}
-            <div className="rounded-3xl bg-white dark:bg-slate-900 border-2 border-indigo-200 dark:border-indigo-500/50 shadow-xl shadow-indigo-500/10 p-8">
-              <RoadmapDisplay
-                content={roadmap.roadmap}
-                onAddToProfile={handleAddToProfile}
-                isSaving={saveStatus === "saving"}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Empty State */}
-        {!roadmap && !loading && (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-indigo-100 to-blue-100 dark:from-indigo-950/60 dark:to-blue-950/40 flex items-center justify-center">
-              <Zap className="w-12 h-12 text-indigo-500" />
-            </div>
-            <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">
-              Ready to start your learning journey?
-            </h3>
-            <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-              Search for a company above to generate a personalized roadmap with
-              essential skills and learning milestones.
+              ✦ CAREER DEVELOPMENT
+            </p>
+            <h1
+              style={{
+                fontFamily: "'Noto Serif',serif",
+                fontWeight: 800,
+                lineHeight: 1.1,
+                marginBottom: '0.875rem',
+              }}
+            >
+              <span style={{ fontSize: '2.625rem', color: t.onSurface, display: 'block' }}>
+                Career Roadmap
+              </span>
+              <span style={{ fontSize: '2.625rem', color: t.primary, fontStyle: 'italic', display: 'block' }}>
+                Generator
+              </span>
+            </h1>
+            <p
+              style={{
+                fontFamily: "'Inter',sans-serif",
+                fontSize: '1rem',
+                color: t.variant,
+                lineHeight: 1.7,
+                maxWidth: '38rem',
+              }}
+            >
+              Enter a target company to generate a curated learning roadmap with
+              essential skills, milestones, and resources tailored to land the role.
             </p>
           </div>
-        )}
-      </main>
 
-      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 mt-auto py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-sm text-slate-500 dark:text-slate-400 text-center md:text-left font-medium">
-            © 2026 LearnLaunch. All rights reserved.{" "}
-            <br className="md:hidden" /> Designed for future leaders.
-          </p>
-          <div className="flex gap-8">
-            <a
-              href="#"
-              className="text-sm text-slate-500 hover:text-indigo-500 font-medium transition-colors"
+          {/* ═══════════════════════════════
+              SEARCH FORM
+          ═══════════════════════════════ */}
+          <form onSubmit={handleSubmit} style={{ marginBottom: '2.5rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                gap: '0.75rem',
+                flexWrap: 'wrap',
+                padding: '0.5rem',
+                borderRadius: '1rem',
+                background: t.white,
+                border: inputFocused
+                  ? `1.5px solid rgba(9,76,178,0.35)`
+                  : '1.5px solid rgba(195,198,213,0.45)',
+                boxShadow: inputFocused
+                  ? '0 4px 20px rgba(9,76,178,0.1)'
+                  : '0 4px 16px rgba(27,28,29,0.06)',
+                transition: 'border-color 0.2s, box-shadow 0.2s',
+              }}
             >
-              Privacy
-            </a>
-            <a
-              href="#"
-              className="text-sm text-slate-500 hover:text-indigo-500 font-medium transition-colors"
+              <input
+                id="company-name-input"
+                type="text"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                onFocus={() => setInputFocused(true)}
+                onBlur={() => setInputFocused(false)}
+                placeholder="Enter company name — e.g. Google, Amazon, Microsoft, Tesla"
+                minLength={MIN_COMPANY_LENGTH}
+                disabled={loading}
+                style={{
+                  flex: 1,
+                  minWidth: '14rem',
+                  padding: '0.875rem 1rem',
+                  borderRadius: '0.625rem',
+                  border: 'none',
+                  outline: 'none',
+                  background: 'none',
+                  fontFamily: "'Inter',sans-serif",
+                  fontSize: '0.9375rem',
+                  color: t.onSurface,
+                  cursor: loading ? 'not-allowed' : 'text',
+                }}
+              />
+
+              <button
+                id="generate-roadmap-btn"
+                type="submit"
+                disabled={loading || !canSubmit}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.875rem 1.75rem',
+                  borderRadius: '0.75rem',
+                  background: loading || !canSubmit
+                    ? t.surfHigh
+                    : `linear-gradient(135deg, ${t.primary}, ${t.container})`,
+                  border: 'none',
+                  color: loading || !canSubmit ? t.outline : t.white,
+                  fontFamily: "'Public Sans',sans-serif",
+                  fontWeight: 700,
+                  fontSize: '0.875rem',
+                  letterSpacing: '0.04em',
+                  cursor: loading || !canSubmit ? 'not-allowed' : 'pointer',
+                  boxShadow: loading || !canSubmit ? 'none' : '0 4px 14px rgba(9,76,178,0.28)',
+                  transition: 'all 0.2s ease',
+                  whiteSpace: 'nowrap',
+                }}
+                onMouseEnter={(e) => {
+                  if (!loading && canSubmit) {
+                    (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
+                    (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 18px rgba(9,76,178,0.36)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.transform = 'none';
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow = loading || !canSubmit ? 'none' : '0 4px 14px rgba(9,76,178,0.28)';
+                }}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 size={17} style={{ animation: 'rm-spin 0.85s linear infinite' }} />
+                    Generating…
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={17} />
+                    Generate Roadmap
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Validation hint */}
+            {companyName.trim().length > 0 && companyName.trim().length < MIN_COMPANY_LENGTH && (
+              <p
+                style={{
+                  fontFamily: "'Public Sans',sans-serif",
+                  fontSize: '0.8125rem',
+                  fontWeight: 600,
+                  color: '#6d5e00',
+                  marginTop: '0.625rem',
+                  paddingLeft: '0.5rem',
+                }}
+              >
+                Company name must be at least {MIN_COMPANY_LENGTH} characters.
+              </p>
+            )}
+          </form>
+
+          {/* ═══════════════════════════════
+              LOADING STATE
+          ═══════════════════════════════ */}
+          {loading && (
+            <div
+              style={{
+                borderRadius: '1rem',
+                background: t.white,
+                border: '1px solid rgba(195,198,213,0.38)',
+                padding: '3rem 2rem',
+                textAlign: 'center',
+                boxShadow: '0 4px 20px rgba(27,28,29,0.05)',
+                marginBottom: '2rem',
+              }}
             >
-              Terms
-            </a>
-            <a
-              href="#"
-              className="text-sm text-slate-500 hover:text-indigo-500 font-medium transition-colors"
+              <div
+                style={{
+                  width: '3.5rem', height: '3.5rem',
+                  borderRadius: '50%',
+                  background: `linear-gradient(135deg, ${t.primary}, ${t.container})`,
+                  margin: '0 auto 1.25rem',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 4px 14px rgba(9,76,178,0.3)',
+                  animation: 'rm-pulse 1.5s ease-in-out infinite',
+                }}
+              >
+                <Sparkles size={22} color={t.white} />
+              </div>
+              <p style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '1.125rem', color: t.onSurface, marginBottom: '0.375rem' }}>
+                Curating your roadmap…
+              </p>
+              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: t.outline }}>
+                Analyzing job data and generating your personalized path for{' '}
+                <span style={{ color: t.primary, fontWeight: 600 }}>{companyName}</span>
+              </p>
+              {/* Thin progress bar */}
+              <div style={{ marginTop: '1.25rem', height: '3px', borderRadius: '999px', background: t.surfHigh, overflow: 'hidden', maxWidth: '20rem', margin: '1.25rem auto 0' }}>
+                <div style={{ height: '100%', background: `linear-gradient(90deg, ${t.primary}, ${t.tertCont})`, borderRadius: '999px', animation: 'rm-loading 1.8s ease-in-out infinite' }} />
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════
+              ERROR STATE
+          ═══════════════════════════════ */}
+          {error && (
+            <div
+              style={{
+                marginBottom: '2rem',
+                padding: '1.5rem',
+                borderRadius: '0.875rem',
+                background: t.errCont,
+                border: '1px solid rgba(186,26,26,0.2)',
+              }}
             >
-              Support
-            </a>
+              <p style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '1rem', color: t.error, marginBottom: '0.375rem' }}>
+                ⚠ Error generating roadmap
+              </p>
+              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: '#93000a', lineHeight: 1.6 }}>
+                {error}
+              </p>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════
+              SAVE STATUS TOASTS
+          ═══════════════════════════════ */}
+          {saveStatus === "success" && (
+            <div
+              style={{
+                marginBottom: '1.5rem',
+                padding: '1rem 1.25rem',
+                borderRadius: '0.75rem',
+                background: 'rgba(46,125,50,0.08)',
+                border: '1px solid rgba(46,125,50,0.25)',
+                display: 'flex', alignItems: 'center', gap: '0.625rem',
+              }}
+            >
+              <CheckCircle size={18} color="#2e7d32" />
+              <p style={{ fontFamily: "'Public Sans',sans-serif", fontWeight: 600, fontSize: '0.875rem', color: '#1b5e20' }}>
+                {saveMessage}
+              </p>
+            </div>
+          )}
+          {saveStatus === "error" && (
+            <div
+              style={{
+                marginBottom: '1.5rem',
+                padding: '1rem 1.25rem',
+                borderRadius: '0.75rem',
+                background: t.errCont,
+                border: '1px solid rgba(186,26,26,0.2)',
+              }}
+            >
+              <p style={{ fontFamily: "'Public Sans',sans-serif", fontWeight: 600, fontSize: '0.875rem', color: t.error }}>
+                {saveMessage}
+              </p>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════
+              ROADMAP RESULTS
+          ═══════════════════════════════ */}
+          {roadmap && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem', animation: 'rm-fadeIn 0.5s ease-out' }}>
+
+              {/* Jobs used section */}
+              {roadmap.jobs_used.length > 0 && (
+                <div
+                  style={{
+                    borderRadius: '1rem',
+                    background: t.white,
+                    border: '1px solid rgba(195,198,213,0.38)',
+                    padding: '1.75rem',
+                    boxShadow: '0 4px 20px rgba(27,28,29,0.05)',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '0.75rem',
+                      marginBottom: '1.25rem',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '2.25rem', height: '2.25rem',
+                        borderRadius: '0.5625rem',
+                        background: 'rgba(9,76,178,0.08)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}
+                    >
+                      <Briefcase size={18} color={t.primary} />
+                    </div>
+                    <h2
+                      style={{
+                        fontFamily: "'Noto Serif',serif",
+                        fontWeight: 800,
+                        fontSize: '1.125rem',
+                        color: t.onSurface,
+                      }}
+                    >
+                      Jobs Used in This Roadmap
+                    </h2>
+                  </div>
+                  <RoadmapJobsUsed jobs={roadmap.jobs_used} />
+                </div>
+              )}
+
+              {/* Main roadmap display */}
+              <div
+                style={{
+                  borderRadius: '1rem',
+                  background: t.white,
+                  border: '1px solid rgba(195,198,213,0.38)',
+                  padding: '1.75rem',
+                  boxShadow: '0 4px 20px rgba(27,28,29,0.05)',
+                }}
+              >
+                <RoadmapDisplay
+                  content={roadmap.roadmap}
+                  onAddToProfile={handleAddToProfile}
+                  isSaving={saveStatus === "saving"}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════
+              EMPTY STATE
+          ═══════════════════════════════ */}
+          {!roadmap && !loading && (
+            <div style={{ textAlign: 'center', padding: '4rem 1rem' }}>
+              {/* Icon */}
+              <div
+                style={{
+                  width: '5.5rem', height: '5.5rem',
+                  borderRadius: '1.25rem',
+                  background: 'rgba(9,76,178,0.06)',
+                  margin: '0 auto 1.75rem',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <TrendingUp size={38} color={t.primary} />
+              </div>
+              <h3
+                style={{
+                  fontFamily: "'Noto Serif',serif",
+                  fontWeight: 800,
+                  fontSize: '1.25rem',
+                  color: t.onSurface,
+                  marginBottom: '0.625rem',
+                }}
+              >
+                Ready to start your learning journey?
+              </h3>
+              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.9375rem', color: t.variant, maxWidth: '34rem', margin: '0 auto 2.5rem', lineHeight: 1.7 }}>
+                Enter a target company above to generate a personalized roadmap with
+                essential skills, milestones, and curated resources.
+              </p>
+
+              {/* Bottom feature cards */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1rem', maxWidth: '44rem', margin: '0 auto' }}>
+                {[
+                  { icon: <Sparkles size={20} color={t.primary} />, title: 'AI-Curated', desc: 'Roadmaps built from real job postings at your target company' },
+                  { icon: <MapPin size={20} color={t.primary} />, title: 'Location-Aware', desc: 'Tailored skill gaps based on regional roles and market demand' },
+                  { icon: <Save size={20} color={t.primary} />, title: 'Save & Track', desc: 'Save any roadmap to your profile and track your progress' },
+                ].map((f) => (
+                  <div
+                    key={f.title}
+                    style={{
+                      borderRadius: '0.875rem',
+                      background: t.white,
+                      border: '1px solid rgba(195,198,213,0.38)',
+                      padding: '1.375rem 1.125rem',
+                      boxShadow: '0 2px 10px rgba(27,28,29,0.04)',
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: '2.5rem', height: '2.5rem',
+                        borderRadius: '0.625rem',
+                        background: 'rgba(9,76,178,0.07)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        margin: '0 auto 0.75rem',
+                      }}
+                    >
+                      {f.icon}
+                    </div>
+                    <p style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '0.9375rem', color: t.onSurface, marginBottom: '0.375rem' }}>
+                      {f.title}
+                    </p>
+                    <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.8125rem', color: t.variant, lineHeight: 1.6 }}>
+                      {f.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </main>
+
+        {/* ═══ Footer ═══ */}
+        <footer style={{ background: t.white, borderTop: '1px solid rgba(195,198,213,0.35)', padding: '2.5rem 1.5rem' }}>
+          <div
+            style={{
+              maxWidth: '64rem',
+              margin: '0 auto',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              gap: '1rem',
+            }}
+          >
+            <p style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.8125rem', color: t.outline }}>
+              © 2026 LearnLaunch Scholarly Systems — All Rights Reserved
+            </p>
+            <div style={{ display: 'flex', gap: '1.75rem' }}>
+              {['Privacy', 'Terms', 'Support'].map((l) => (
+                <a
+                  key={l}
+                  href="#"
+                  style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.8125rem', color: t.outline, textDecoration: 'none', transition: 'color 0.2s' }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = t.primary; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = t.outline; }}
+                >
+                  {l}
+                </a>
+              ))}
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
 
-      <style>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.6s ease-out;
-        }
-      `}</style>
-    </div>
+        <style>{`
+          @keyframes rm-spin    { to { transform: rotate(360deg); } }
+          @keyframes rm-fadeIn  { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+          @keyframes rm-pulse   { 0%,100% { box-shadow: 0 4px 14px rgba(9,76,178,0.3); } 50% { box-shadow: 0 6px 24px rgba(9,76,178,0.5); } }
+          @keyframes rm-loading { 0% { width:0%; margin-left:0; } 50% { width:70%; margin-left:15%; } 100% { width:0%; margin-left:100%; } }
+        `}</style>
+      </div>
+    </>
   );
 };
 

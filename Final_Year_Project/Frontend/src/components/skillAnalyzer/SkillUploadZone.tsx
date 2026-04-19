@@ -31,9 +31,7 @@ export const SkillUploadZone: React.FC<SkillUploadZoneProps> = ({
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!disabled) {
-      setIsDragging(true);
-    }
+    if (!disabled) setIsDragging(true);
   }, [disabled]);
 
   const handleDragLeave = useCallback((e: React.DragEvent) => {
@@ -46,15 +44,11 @@ export const SkillUploadZone: React.FC<SkillUploadZoneProps> = ({
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-    
     if (disabled) return;
-    
     const files = e.dataTransfer.files;
     if (files.length > 0) {
       const file = files[0];
-      if (validateFile(file)) {
-        onFileSelect(file);
-      }
+      if (validateFile(file)) onFileSelect(file);
     }
   }, [disabled, onFileSelect]);
 
@@ -62,40 +56,88 @@ export const SkillUploadZone: React.FC<SkillUploadZoneProps> = ({
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
-      if (validateFile(file)) {
-        onFileSelect(file);
-      }
+      if (validateFile(file)) onFileSelect(file);
     }
   }, [onFileSelect]);
 
   const removeFile = useCallback(() => {
-    if (!disabled) {
-      onFileSelect(null as unknown as File);
-    }
+    if (!disabled) onFileSelect(null as unknown as File);
   }, [disabled, onFileSelect]);
 
   if (selectedFile) {
     return (
-      <div className="relative rounded-xl border-2 border-green-500/50 bg-green-500/10 p-4 dark:border-green-400/50 dark:bg-green-400/10">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500/20 dark:bg-green-400/20">
-            <FileText className="h-6 w-6 text-green-600 dark:text-green-400" />
+      <div
+        style={{
+          borderRadius: '0.75rem',
+          background: 'rgba(9, 76, 178, 0.06)',
+          border: '1px solid rgba(9, 76, 178, 0.2)',
+          padding: '1.25rem 1.5rem',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div
+            style={{
+              width: '3rem',
+              height: '3rem',
+              borderRadius: '0.625rem',
+              background: 'rgba(9, 76, 178, 0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <FileText size={22} color="#094cb2" />
           </div>
-          <div className="flex-1">
-            <p className="font-medium text-green-700 dark:text-green-300">
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontWeight: 600,
+                fontSize: '0.9375rem',
+                color: '#094cb2',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
               {selectedFile.name}
             </p>
-            <p className="text-sm text-green-600/70 dark:text-green-400/70">
-              {(selectedFile.size / 1024).toFixed(1)} KB
+            <p
+              style={{
+                fontFamily: "'Public Sans', sans-serif",
+                fontSize: '0.75rem',
+                color: '#737784',
+                marginTop: '0.125rem',
+              }}
+            >
+              {(selectedFile.size / 1024).toFixed(1)} KB · PDF
             </p>
           </div>
-          <CheckCircle className="h-6 w-6 text-green-500 dark:text-green-400" />
+          <CheckCircle size={20} color="#094cb2" style={{ flexShrink: 0 }} />
           {!disabled && (
             <button
               onClick={removeFile}
-              className="ml-2 rounded-full p-1 hover:bg-green-500/20 dark:hover:bg-green-400/20"
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '0.375rem',
+                borderRadius: '50%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'rgba(9,76,178,0.08)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = 'none';
+              }}
+              aria-label="Remove file"
             >
-              <X className="h-5 w-5 text-green-600 dark:text-green-400" />
+              <X size={18} color="#094cb2" />
             </button>
           )}
         </div>
@@ -108,43 +150,108 @@ export const SkillUploadZone: React.FC<SkillUploadZoneProps> = ({
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`
-        relative cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all duration-300
-        ${isDragging 
-          ? 'border-blue-500 bg-blue-500/10 scale-[1.02]' 
-          : 'border-slate-300 hover:border-blue-400 hover:bg-slate-50 dark:border-slate-600 dark:hover:border-blue-400 dark:hover:bg-slate-800'
-        }
-        ${disabled ? 'cursor-not-allowed opacity-50' : ''}
-      `}
+      style={{
+        position: 'relative',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        borderRadius: '0.75rem',
+        border: isDragging
+          ? '2px dashed #094cb2'
+          : '2px dashed rgba(115, 119, 132, 0.35)',
+        background: isDragging
+          ? 'rgba(9, 76, 178, 0.04)'
+          : 'rgba(255,255,255,0.6)',
+        backdropFilter: 'blur(8px)',
+        padding: '3rem 2rem',
+        textAlign: 'center',
+        transition: 'all 0.25s ease',
+        opacity: disabled ? 0.55 : 1,
+        transform: isDragging ? 'scale(1.015)' : 'scale(1)',
+      }}
     >
       <input
         type="file"
         accept=".pdf"
         onChange={handleFileInput}
         disabled={disabled}
-        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          opacity: 0,
+          cursor: disabled ? 'not-allowed' : 'pointer',
+        }}
         id="resume-upload"
       />
-      
-      <div className="flex flex-col items-center gap-4">
-        <div className={`
-          flex h-16 w-16 items-center justify-center rounded-full transition-colors duration-300
-          ${isDragging ? 'bg-blue-500' : 'bg-slate-100 dark:bg-slate-700'}
-        `}>
-          <Upload className={`h-8 w-8 ${isDragging ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`} />
+
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.25rem' }}>
+        {/* Icon */}
+        <div
+          style={{
+            width: '4.5rem',
+            height: '4.5rem',
+            borderRadius: '50%',
+            background: isDragging ? '#094cb2' : '#efedee',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'background 0.25s ease',
+          }}
+        >
+          <Upload size={26} color={isDragging ? '#fff' : '#434653'} />
         </div>
-        
-        <div className="space-y-1">
-          <p className="text-lg font-semibold text-slate-700 dark:text-slate-200">
-            {isDragging ? 'Drop your resume here' : 'Upload your resume'}
+
+        {/* Text */}
+        <div style={{ maxWidth: '28rem' }}>
+          <p
+            style={{
+              fontFamily: "'Noto Serif', serif",
+              fontWeight: 700,
+              fontSize: '1.25rem',
+              color: '#1b1c1d',
+              marginBottom: '0.5rem',
+              lineHeight: 1.35,
+            }}
+          >
+            {isDragging ? 'Drop your resume here' : 'Drag and drop your resume'}
           </p>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Drag and drop or click to browse (PDF only, max 10MB)
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '0.875rem',
+              color: '#434653',
+              lineHeight: 1.6,
+            }}
+          >
+            Support for PDF files (Max 10MB)
+          </p>
+          <p
+            style={{
+              fontFamily: "'Public Sans', sans-serif",
+              fontSize: '0.75rem',
+              color: '#737784',
+              marginTop: '0.375rem',
+              letterSpacing: '0.02em',
+            }}
+          >
+            OR CLICK TO BROWSE FILES
           </p>
         </div>
 
         {error && (
-          <p className="text-sm font-medium text-red-500">{error}</p>
+          <p
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '0.8125rem',
+              fontWeight: 500,
+              color: '#ba1a1a',
+              background: '#ffdad6',
+              padding: '0.5rem 1rem',
+              borderRadius: '0.5rem',
+            }}
+          >
+            {error}
+          </p>
         )}
       </div>
     </div>

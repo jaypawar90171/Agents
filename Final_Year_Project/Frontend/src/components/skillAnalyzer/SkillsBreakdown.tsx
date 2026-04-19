@@ -7,17 +7,21 @@ interface SkillsBreakdownProps {
   impliedSkills: ImpliedSkill[];
 }
 
-const getLevelColor = (level: string) => {
-  switch (level.toLowerCase()) {
-    case 'beginner':
-      return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
-    case 'intermediate':
-      return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
-    case 'advanced':
-      return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
-    default:
-      return 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
-  }
+const LEVEL_STYLES: Record<string, { bg: string; color: string }> = {
+  beginner:     { bg: 'rgba(109, 94, 0, 0.1)',  color: '#4a3f00' },
+  intermediate: { bg: 'rgba(9, 76, 178, 0.08)',  color: '#094cb2' },
+  advanced:     { bg: 'rgba(9, 76, 178, 0.18)',  color: '#00419d' },
+};
+
+const getLevelStyle = (level: string) =>
+  LEVEL_STYLES[level.toLowerCase()] ?? { bg: '#efedee', color: '#434653' };
+
+const cardStyle: React.CSSProperties = {
+  borderRadius: '0.875rem',
+  background: '#ffffff',
+  border: '1px solid rgba(195, 198, 213, 0.35)',
+  padding: '1.5rem',
+  boxShadow: '0 4px 16px rgba(27, 28, 29, 0.04)',
 };
 
 export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
@@ -25,96 +29,194 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
   impliedSkills,
 }) => {
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-      {/* Explicit Skills */}
-      <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-        <div className="mb-4 flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
-            <span className="text-lg">💼</span>
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem' }}>
+      {/* ── Your Skills ── */}
+      <div style={cardStyle}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
+          <div
+            style={{
+              width: '2rem',
+              height: '2rem',
+              borderRadius: '0.5rem',
+              background: 'rgba(9, 76, 178, 0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1rem',
+            }}
+          >
+            💼
           </div>
-          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+          <h3
+            style={{
+              fontFamily: "'Noto Serif', serif",
+              fontWeight: 700,
+              fontSize: '1rem',
+              color: '#1b1c1d',
+              flex: 1,
+            }}
+          >
             Your Skills
           </h3>
-          <span className="ml-auto rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-400">
+          <span
+            style={{
+              fontFamily: "'Public Sans', sans-serif",
+              fontSize: '0.6875rem',
+              fontWeight: 700,
+              letterSpacing: '0.04em',
+              color: '#094cb2',
+              background: 'rgba(9, 76, 178, 0.08)',
+              padding: '0.2rem 0.625rem',
+              borderRadius: '999px',
+            }}
+          >
             {explicitSkills.length}
           </span>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {explicitSkills.map((skill, index) => (
-            <div
-              key={index}
-              className="group relative flex items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-600 dark:bg-slate-700"
-            >
-              <span className="font-medium text-slate-700 dark:text-slate-300">
-                {skill.name}
-              </span>
-              <span
-                className={`rounded px-1.5 py-0.5 text-xs font-medium ${getLevelColor(skill.level)}`}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+          {explicitSkills.map((skill, index) => {
+            const st = getLevelStyle(skill.level);
+            return (
+              <div
+                key={index}
+                title={skill.context}
+                style={{
+                  position: 'relative',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  borderRadius: '0.5rem',
+                  background: '#faf9fa',
+                  border: '1px solid rgba(195, 198, 213, 0.4)',
+                  padding: '0.375rem 0.75rem',
+                  cursor: 'default',
+                }}
               >
-                {skill.level}
-              </span>
-              
-              {/* Tooltip with context */}
-              <div className="absolute bottom-full left-1/2 mb-2 w-48 -translate-x-1/2 rounded-lg bg-slate-800 p-2 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:bg-slate-900">
-                <p className="text-xs text-slate-300">
-                  <span className="font-medium">Context:</span> {skill.context}
-                </p>
+                <span
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 500,
+                    fontSize: '0.8125rem',
+                    color: '#1b1c1d',
+                  }}
+                >
+                  {skill.name}
+                </span>
+                <span
+                  style={{
+                    fontFamily: "'Public Sans', sans-serif",
+                    fontSize: '0.6875rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.03em',
+                    padding: '0.1rem 0.45rem',
+                    borderRadius: '999px',
+                    background: st.bg,
+                    color: st.color,
+                  }}
+                >
+                  {skill.level.toUpperCase()}
+                </span>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {explicitSkills.length === 0 && (
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            No skills detected in your resume
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: '#737784' }}>
+            No skills detected in your resume.
           </p>
         )}
       </div>
 
-      {/* Implied Skills */}
-      <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800">
-        <div className="mb-4 flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/30">
-            <Lightbulb className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+      {/* ── Inferred Skills ── */}
+      <div style={cardStyle}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
+          <div
+            style={{
+              width: '2rem',
+              height: '2rem',
+              borderRadius: '0.5rem',
+              background: 'rgba(109, 94, 0, 0.1)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Lightbulb size={16} color="#6d5e00" />
           </div>
-          <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
-            Inferred Skills
+          <h3
+            style={{
+              fontFamily: "'Noto Serif', serif",
+              fontWeight: 700,
+              fontSize: '1rem',
+              color: '#1b1c1d',
+              flex: 1,
+            }}
+          >
+            Inferred Insights
           </h3>
-          <span className="ml-auto rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-400">
+          <span
+            style={{
+              fontFamily: "'Public Sans', sans-serif",
+              fontSize: '0.6875rem',
+              fontWeight: 700,
+              letterSpacing: '0.04em',
+              color: '#6d5e00',
+              background: 'rgba(109, 94, 0, 0.1)',
+              padding: '0.2rem 0.625rem',
+              borderRadius: '999px',
+            }}
+          >
             {impliedSkills.length}
           </span>
         </div>
 
-        <div className="space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
           {impliedSkills.map((skill, index) => (
             <div
               key={index}
-              className="group relative rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-600 dark:bg-slate-700"
+              title={skill.reasoning}
+              style={{
+                position: 'relative',
+                borderRadius: '0.5rem',
+                background: '#faf9fa',
+                border: '1px solid rgba(195, 198, 213, 0.4)',
+                padding: '0.625rem 0.875rem',
+                cursor: 'default',
+              }}
             >
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-slate-700 dark:text-slate-300">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <Info size={13} color="#6d5e00" style={{ flexShrink: 0 }} />
+                <span
+                  style={{
+                    fontFamily: "'Inter', sans-serif",
+                    fontWeight: 500,
+                    fontSize: '0.8125rem',
+                    color: '#1b1c1d',
+                  }}
+                >
                   {skill.name}
                 </span>
-                <span className="text-xs text-slate-400">
+                <span
+                  style={{
+                    fontFamily: "'Public Sans', sans-serif",
+                    fontSize: '0.6875rem',
+                    color: '#737784',
+                    marginLeft: 'auto',
+                    flexShrink: 0,
+                  }}
+                >
                   ← {skill.inferred_from}
                 </span>
-              </div>
-              
-              {/* Tooltip with reasoning */}
-              <div className="absolute bottom-full left-0 mb-2 w-64 rounded-lg bg-slate-800 p-3 opacity-0 shadow-lg transition-opacity group-hover:opacity-100 dark:bg-slate-900 z-10">
-                <div className="flex items-start gap-2">
-                  <Info className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-400" />
-                  <p className="text-xs text-slate-300">{skill.reasoning}</p>
-                </div>
               </div>
             </div>
           ))}
         </div>
 
         {impliedSkills.length === 0 && (
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            No additional skills inferred
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: '#737784' }}>
+            No additional skills inferred.
           </p>
         )}
       </div>
