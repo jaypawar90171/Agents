@@ -8,20 +8,20 @@ interface SkillsBreakdownProps {
 }
 
 const LEVEL_STYLES: Record<string, { bg: string; color: string }> = {
-  beginner:     { bg: 'rgba(109, 94, 0, 0.1)',  color: '#4a3f00' },
-  intermediate: { bg: 'rgba(9, 76, 178, 0.08)',  color: '#094cb2' },
-  advanced:     { bg: 'rgba(9, 76, 178, 0.18)',  color: '#00419d' },
+  beginner:     { bg: 'hsl(var(--tertiary) / 0.1)',  color: 'hsl(var(--on-surface))' },
+  intermediate: { bg: 'hsl(var(--primary) / 0.08)',  color: 'hsl(var(--primary))' },
+  advanced:     { bg: 'hsl(var(--primary) / 0.18)',  color: 'hsl(var(--primary))' },
 };
 
 const getLevelStyle = (level: string) =>
-  LEVEL_STYLES[level.toLowerCase()] ?? { bg: '#efedee', color: '#434653' };
+  LEVEL_STYLES[level.toLowerCase()] ?? { bg: 'hsl(var(--surface-container-high))', color: 'hsl(var(--on-surface-variant))' };
 
 const cardStyle: React.CSSProperties = {
   borderRadius: '0.875rem',
-  background: '#ffffff',
-  border: '1px solid rgba(195, 198, 213, 0.35)',
+  background: 'hsl(var(--card))',
+  border: '1px solid hsl(var(--border) / 0.35)',
   padding: '1.5rem',
-  boxShadow: '0 4px 16px rgba(27, 28, 29, 0.04)',
+  boxShadow: '0 4px 16px hsl(var(--foreground) / 0.04)',
 };
 
 export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
@@ -38,7 +38,7 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
               width: '2rem',
               height: '2rem',
               borderRadius: '0.5rem',
-              background: 'rgba(9, 76, 178, 0.08)',
+              background: 'hsl(var(--primary) / 0.08)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -52,7 +52,7 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
               fontFamily: "'Noto Serif', serif",
               fontWeight: 700,
               fontSize: '1rem',
-              color: '#1b1c1d',
+              color: 'hsl(var(--on-surface))',
               flex: 1,
             }}
           >
@@ -64,8 +64,8 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
               fontSize: '0.6875rem',
               fontWeight: 700,
               letterSpacing: '0.04em',
-              color: '#094cb2',
-              background: 'rgba(9, 76, 178, 0.08)',
+              color: 'hsl(var(--primary))',
+              background: 'hsl(var(--primary) / 0.08)',
               padding: '0.2rem 0.625rem',
               borderRadius: '999px',
             }}
@@ -87,8 +87,8 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
                   alignItems: 'center',
                   gap: '0.5rem',
                   borderRadius: '0.5rem',
-                  background: '#faf9fa',
-                  border: '1px solid rgba(195, 198, 213, 0.4)',
+                  background: 'hsl(var(--background))',
+                  border: '1px solid hsl(var(--border) / 0.4)',
                   padding: '0.375rem 0.75rem',
                   cursor: 'default',
                 }}
@@ -98,7 +98,7 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
                     fontFamily: "'Inter', sans-serif",
                     fontWeight: 500,
                     fontSize: '0.8125rem',
-                    color: '#1b1c1d',
+                    color: 'hsl(var(--on-surface))',
                   }}
                 >
                   {skill.name}
@@ -123,7 +123,7 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
         </div>
 
         {explicitSkills.length === 0 && (
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: '#737784' }}>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'hsl(var(--outline))' }}>
             No skills detected in your resume.
           </p>
         )}
@@ -137,20 +137,20 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
               width: '2rem',
               height: '2rem',
               borderRadius: '0.5rem',
-              background: 'rgba(109, 94, 0, 0.1)',
+              background: 'hsl(var(--tertiary) / 0.1)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Lightbulb size={16} color="#6d5e00" />
+            <Lightbulb size={16} color="hsl(var(--tertiary))" />
           </div>
           <h3
             style={{
               fontFamily: "'Noto Serif', serif",
               fontWeight: 700,
               fontSize: '1rem',
-              color: '#1b1c1d',
+              color: 'hsl(var(--on-surface))',
               flex: 1,
             }}
           >
@@ -162,8 +162,8 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
               fontSize: '0.6875rem',
               fontWeight: 700,
               letterSpacing: '0.04em',
-              color: '#6d5e00',
-              background: 'rgba(109, 94, 0, 0.1)',
+              color: 'hsl(var(--tertiary))',
+              background: 'hsl(var(--tertiary) / 0.1)',
               padding: '0.2rem 0.625rem',
               borderRadius: '999px',
             }}
@@ -180,20 +180,20 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
               style={{
                 position: 'relative',
                 borderRadius: '0.5rem',
-                background: '#faf9fa',
-                border: '1px solid rgba(195, 198, 213, 0.4)',
+                background: 'hsl(var(--background))',
+                border: '1px solid hsl(var(--border) / 0.4)',
                 padding: '0.625rem 0.875rem',
                 cursor: 'default',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Info size={13} color="#6d5e00" style={{ flexShrink: 0 }} />
+                <Info size={13} color="hsl(var(--tertiary))" style={{ flexShrink: 0 }} />
                 <span
                   style={{
                     fontFamily: "'Inter', sans-serif",
                     fontWeight: 500,
                     fontSize: '0.8125rem',
-                    color: '#1b1c1d',
+                    color: 'hsl(var(--on-surface))',
                   }}
                 >
                   {skill.name}
@@ -202,7 +202,7 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
                   style={{
                     fontFamily: "'Public Sans', sans-serif",
                     fontSize: '0.6875rem',
-                    color: '#737784',
+                    color: 'hsl(var(--outline))',
                     marginLeft: 'auto',
                     flexShrink: 0,
                   }}
@@ -215,7 +215,7 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
         </div>
 
         {impliedSkills.length === 0 && (
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: '#737784' }}>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'hsl(var(--outline))' }}>
             No additional skills inferred.
           </p>
         )}

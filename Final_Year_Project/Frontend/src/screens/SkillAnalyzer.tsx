@@ -14,27 +14,27 @@ import { SkillRoadmapAccordion } from '../components/skillAnalyzer/SkillRoadmapA
 
 /* ─── Alexandria Design Tokens ─── */
 const t = {
-  primary:    '#094cb2',
-  container:  '#3366cc',
-  surface:    '#faf9fa',
-  surfHigh:   '#efedee',
-  surfLow:    '#f5f3f4',
-  onSurface:  '#1b1c1d',
-  variant:    '#434653',
-  outline:    '#737784',
-  tertiary:   '#6d5e00',
-  tertCont:   '#bfab49',
-  error:      '#ba1a1a',
-  errCont:    '#ffdad6',
-  white:      '#ffffff',
+  primary:    'hsl(var(--primary))',
+  container:  'hsl(var(--primary-container))',
+  surface:    'hsl(var(--background))',
+  surfHigh:   'hsl(var(--surface-container-high))',
+  surfLow:    'hsl(var(--surface-container-low))',
+  onSurface:  'hsl(var(--on-surface))',
+  variant:    'hsl(var(--on-surface-variant))',
+  outline:    'hsl(var(--outline))',
+  tertiary:   'hsl(var(--tertiary))',
+  tertCont:   'hsl(var(--secondary-container))',
+  error:      'hsl(var(--error))',
+  errCont:    'hsl(var(--error-container))',
+  white:      'hsl(var(--card))',
 };
 
 /* ─── Shared card style ─── */
 const card: React.CSSProperties = {
   borderRadius: '1rem',
   background: t.white,
-  border: '1px solid rgba(195,198,213,0.38)',
-  boxShadow: '0 4px 24px rgba(27,28,29,0.06)',
+  border: '1px solid hsl(var(--border) / 0.38)',
+  boxShadow: '0 4px 24px hsl(var(--foreground) / 0.06)',
 };
 
 /* ─── Section heading ─── */
@@ -103,15 +103,15 @@ const InlineUploadCard: React.FC<InlineUploadProps> = ({
           style={{
             width: '100%',
             borderRadius: '0.75rem',
-            background: 'rgba(9,76,178,0.05)',
-            border: '1px solid rgba(9,76,178,0.2)',
+            background: 'hsl(var(--primary) / 0.05)',
+            border: '1px solid hsl(var(--primary) / 0.2)',
             padding: '1rem 1.25rem',
             display: 'flex',
             alignItems: 'center',
             gap: '0.875rem',
           }}
         >
-          <div style={{ ...ibadge('rgba(9,76,178,0.1)') }}>
+          <div style={{ ...ibadge('hsl(var(--primary) / 0.1)') }}>
             <FileText size={18} color={t.primary} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
@@ -145,7 +145,7 @@ const InlineUploadCard: React.FC<InlineUploadProps> = ({
           width: '100%',
           borderRadius: '0.875rem',
           border: isDragging ? `2px dashed ${t.primary}` : '2px dashed rgba(115,119,132,0.3)',
-          background: isDragging ? 'rgba(9,76,178,0.04)' : t.surfLow,
+          background: isDragging ? 'hsl(var(--primary) / 0.04)' : t.surfLow,
           padding: '2rem 1.5rem',
           textAlign: 'center',
           transition: 'all 0.22s ease',
@@ -169,7 +169,7 @@ const InlineUploadCard: React.FC<InlineUploadProps> = ({
             style={{
               width: '3.5rem', height: '3.5rem',
               borderRadius: '50%',
-              background: isDragging ? t.primary : 'rgba(9,76,178,0.08)',
+              background: isDragging ? t.primary : 'hsl(var(--primary) / 0.08)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'background 0.22s',
             }}
@@ -226,19 +226,19 @@ const InlineUploadCard: React.FC<InlineUploadProps> = ({
           alignItems: 'center',
           justifyContent: 'center',
           gap: '0.5rem',
-          boxShadow: '0 4px 14px rgba(9,76,178,0.28)',
+          boxShadow: '0 4px 14px hsl(var(--primary) / 0.28)',
           opacity: disabled ? 0.6 : 1,
           transition: 'transform 0.18s, box-shadow 0.18s',
         }}
         onMouseEnter={(e) => {
           if (!disabled) {
             (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
-            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 18px rgba(9,76,178,0.36)';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 18px hsl(var(--primary) / 0.36)';
           }
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLButtonElement).style.transform = 'none';
-          (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 14px rgba(9,76,178,0.28)';
+          (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 14px hsl(var(--primary) / 0.28)';
         }}
       >
         <FileText size={16} />
@@ -252,7 +252,7 @@ const InlineUploadCard: React.FC<InlineUploadProps> = ({
           display: 'flex',
           justifyContent: 'space-between',
           paddingTop: '0.875rem',
-          borderTop: '1px solid rgba(195,198,213,0.4)',
+          borderTop: '1px solid hsl(var(--border) / 0.4)',
         }}
       >
         {[
@@ -354,10 +354,10 @@ const SkillAnalyzer: React.FC = () => {
                         fontSize: '0.625rem',
                         letterSpacing: '0.1em',
                         color: t.tertiary,
-                        background: 'rgba(191,171,73,0.18)',
+                        background: 'hsl(var(--tertiary) / 0.18)',
                         padding: '0.3rem 0.75rem',
                         borderRadius: '999px',
-                        border: '1px solid rgba(191,171,73,0.35)',
+                        border: '1px solid hsl(var(--tertiary) / 0.35)',
                       }}
                     >
                       ✦ AI-POWERED ANALYSIS
@@ -390,13 +390,13 @@ const SkillAnalyzer: React.FC = () => {
                     {[
                       {
                         icon: <Brain size={16} color={t.primary} />,
-                        bg: 'rgba(9,76,178,0.08)',
+                        bg: 'hsl(var(--primary) / 0.08)',
                         title: 'Deep Parsing',
                         desc: 'Our engine extracts nuanced competencies beyond simple keywords.',
                       },
                       {
                         icon: <TrendingUp size={16} color={t.tertiary} />,
-                        bg: 'rgba(109,94,0,0.1)',
+                        bg: 'hsl(var(--tertiary) / 0.1)',
                         title: 'Roadmap Generation',
                         desc: 'Receive a step-by-step educational plan tailored to market demands.',
                       },
@@ -459,7 +459,7 @@ const SkillAnalyzer: React.FC = () => {
                           alignItems: 'center',
                           justifyContent: 'center',
                           gap: '0.5rem',
-                          boxShadow: '0 4px 16px rgba(9,76,178,0.3)',
+                          boxShadow: '0 4px 16px hsl(var(--primary) / 0.3)',
                           opacity: loading ? 0.7 : 1,
                         }}
                       >
@@ -477,8 +477,8 @@ const SkillAnalyzer: React.FC = () => {
                       marginTop: '0.875rem',
                       borderRadius: '0.75rem',
                       background: t.white,
-                      border: '1px solid rgba(195,198,213,0.4)',
-                      boxShadow: '0 4px 16px rgba(27,28,29,0.08)',
+                      border: '1px solid hsl(var(--border) / 0.4)',
+                      boxShadow: '0 4px 16px hsl(var(--foreground) / 0.08)',
                       padding: '0.875rem 1.125rem',
                     }}
                   >
@@ -492,7 +492,7 @@ const SkillAnalyzer: React.FC = () => {
                       Curator AI is currently processing at{' '}
                       <span style={{ color: t.primary, fontWeight: 600 }}>High Fidelity</span>.
                       Resume analysis takes approximately{' '}
-                      <span style={{ color: t.primary, fontWeight: 600 }}>14 seconds</span>.
+                      <span style={{ color: t.primary, fontWeight: 600 }}>2-3 Minutes</span>.
                     </p>
                     {/* thin progress bar */}
                     <div style={{ marginTop: '0.625rem', height: '3px', borderRadius: '999px', background: t.surfHigh, overflow: 'hidden' }}>
@@ -507,19 +507,19 @@ const SkillAnalyzer: React.FC = () => {
                 {[
                   {
                     icon: <Shield size={22} color={t.primary} />,
-                    bg: 'rgba(9,76,178,0.07)',
+                    bg: 'hsl(var(--primary) / 0.07)',
                     title: 'Scholarly Accuracy',
                     desc: 'Our algorithms are trained on peer-reviewed career frameworks and industry standards.',
                   },
                   {
                     icon: <Brain size={22} color={t.primary} />,
-                    bg: 'rgba(9,76,178,0.07)',
+                    bg: 'hsl(var(--primary) / 0.07)',
                     title: 'Cognitive Mapping',
                     desc: 'We map your existing knowledge to future skill requirements using semantic analysis.',
                   },
                   {
                     icon: <TrendingUp size={22} color={t.primary} />,
-                    bg: 'rgba(9,76,178,0.07)',
+                    bg: 'hsl(var(--primary) / 0.07)',
                     title: 'Progressive Insight',
                     desc: 'Watch your skill profile evolve as you complete curated modules and upload new credentials.',
                   },
@@ -529,9 +529,9 @@ const SkillAnalyzer: React.FC = () => {
                     style={{
                       borderRadius: '0.875rem',
                       background: t.white,
-                      border: '1px solid rgba(195,198,213,0.38)',
+                      border: '1px solid hsl(var(--border) / 0.38)',
                       padding: '1.5rem',
-                      boxShadow: '0 2px 12px rgba(27,28,29,0.04)',
+                      boxShadow: '0 2px 12px hsl(var(--foreground) / 0.04)',
                     }}
                   >
                     <div style={{ ...ibadge(f.bg), width: '2.75rem', height: '2.75rem', borderRadius: '0.625rem', marginBottom: '1rem' }}>
@@ -575,14 +575,14 @@ const SkillAnalyzer: React.FC = () => {
                 margin: '2rem 0',
                 padding: '1.5rem',
                 borderRadius: '0.875rem',
-                background: '#fff5f5',
-                border: '1px solid rgba(186,26,26,0.2)',
+                background: t.errCont,
+                border: '1px solid hsl(var(--error) / 0.2)',
               }}
             >
               <p style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '1rem', color: t.error, marginBottom: '0.375rem' }}>
                 Analysis Failed
               </p>
-              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: '#93000a', marginBottom: '1rem', lineHeight: 1.6 }}>
+              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: t.error, marginBottom: '1rem', lineHeight: 1.6 }}>
                 {error}
               </p>
               <button
@@ -605,7 +605,7 @@ const SkillAnalyzer: React.FC = () => {
                 <button
                   id="new-analysis-btn"
                   onClick={handleNewAnalysis}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1.125rem', borderRadius: '0.625rem', background: t.surface, border: '1px solid rgba(195,198,213,0.5)', color: t.variant, fontFamily: "'Public Sans',sans-serif", fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', letterSpacing: '0.02em' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1.125rem', borderRadius: '0.625rem', background: t.surface, border: '1px solid hsl(var(--border) / 0.5)', color: t.variant, fontFamily: "'Public Sans',sans-serif", fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', letterSpacing: '0.02em' }}
                 >
                   <FileText size={16} /> New Analysis
                 </button>
@@ -613,7 +613,7 @@ const SkillAnalyzer: React.FC = () => {
                   id="save-to-profile-btn"
                   onClick={handleSaveToProfile}
                   disabled={saveStatus === 'saving' || saveStatus === 'success'}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.625rem 1.5rem', borderRadius: '0.625rem', background: saveStatus === 'success' ? '#2e7d32' : `linear-gradient(135deg,${t.primary},${t.container})`, border: 'none', color: t.white, fontFamily: "'Public Sans',sans-serif", fontWeight: 700, fontSize: '0.875rem', cursor: saveStatus === 'saving' || saveStatus === 'success' ? 'default' : 'pointer', letterSpacing: '0.03em', boxShadow: '0 4px 12px rgba(9,76,178,0.25)', opacity: saveStatus === 'saving' ? 0.75 : 1 }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.625rem 1.5rem', borderRadius: '0.625rem', background: saveStatus === 'success' ? 'hsl(142.1 70.6% 45.3%)' : `linear-gradient(135deg,${t.primary},${t.container})`, border: 'none', color: t.white, fontFamily: "'Public Sans',sans-serif", fontWeight: 700, fontSize: '0.875rem', cursor: saveStatus === 'saving' || saveStatus === 'success' ? 'default' : 'pointer', letterSpacing: '0.03em', boxShadow: '0 4px 12px hsl(var(--primary) / 0.25)', opacity: saveStatus === 'saving' ? 0.75 : 1 }}
                 >
                   {saveStatus === 'saving'  ? <Loader2 size={16} style={{ animation: 'sa-spin 0.9s linear infinite' }} /> :
                    saveStatus === 'success' ? <CheckCircle size={16} /> : <Save size={16} />}
@@ -624,7 +624,7 @@ const SkillAnalyzer: React.FC = () => {
               {/* Expertise Report */}
               <div style={{ ...card, padding: '1.75rem' }}>
                 <div style={sh()}>
-                  <div style={ibadge('rgba(9,76,178,0.08)')}><BarChart3 size={18} color={t.primary} /></div>
+                  <div style={ibadge('hsl(var(--primary) / 0.08)')}><BarChart3 size={18} color={t.primary} /></div>
                   Your Expertise Report
                 </div>
                 <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.9375rem', color: t.variant, lineHeight: 1.65, marginBottom: '1.5rem' }}>
@@ -636,7 +636,7 @@ const SkillAnalyzer: React.FC = () => {
                     { label: 'SENIORITY LEVEL', value: skillAnalysis.profile.seniority_level },
                     { label: 'TARGET ROLES',    value: skillAnalysis.profile.target_roles.slice(0, 2).join(', ') },
                   ].map(({ label, value }) => (
-                    <div key={label} style={{ borderRadius: '0.75rem', background: t.surface, border: '1px solid rgba(195,198,213,0.35)', padding: '1rem 1.25rem' }}>
+                    <div key={label} style={{ borderRadius: '0.75rem', background: t.surface, border: '1px solid hsl(var(--border) / 0.35)', padding: '1rem 1.25rem' }}>
                       <p style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', color: t.outline, marginBottom: '0.375rem' }}>{label}</p>
                       <p style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '1.0625rem', color: t.onSurface }}>{value}</p>
                     </div>
@@ -647,7 +647,7 @@ const SkillAnalyzer: React.FC = () => {
               {/* Skills Proficiency */}
               <div style={{ ...card, padding: '1.75rem' }}>
                 <div style={sh()}>
-                  <div style={ibadge('rgba(9,76,178,0.08)')}><BookOpen size={18} color={t.primary} /></div>
+                  <div style={ibadge('hsl(var(--primary) / 0.08)')}><BookOpen size={18} color={t.primary} /></div>
                   Skills Proficiency
                 </div>
                 <SkillsBreakdown
@@ -660,7 +660,7 @@ const SkillAnalyzer: React.FC = () => {
               {skillAnalysis.matches.length > 0 && (
                 <div style={{ ...card, padding: '1.75rem' }}>
                   <div style={sh()}>
-                    <div style={ibadge('rgba(9,76,178,0.08)')}><Target size={18} color={t.primary} /></div>
+                    <div style={ibadge('hsl(var(--primary) / 0.08)')}><Target size={18} color={t.primary} /></div>
                     Best Match Opportunities
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: '0.75rem' }}>
@@ -670,9 +670,9 @@ const SkillAnalyzer: React.FC = () => {
                         href={job.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '0.75rem', background: t.surface, border: '1px solid rgba(195,198,213,0.4)', padding: '0.875rem 1rem', textDecoration: 'none', transition: 'all 0.2s' }}
-                        onMouseEnter={(e) => { const el = e.currentTarget as HTMLAnchorElement; el.style.borderColor = 'rgba(9,76,178,0.3)'; el.style.boxShadow = '0 4px 12px rgba(9,76,178,0.1)'; el.style.transform = 'translateY(-2px)'; }}
-                        onMouseLeave={(e) => { const el = e.currentTarget as HTMLAnchorElement; el.style.borderColor = 'rgba(195,198,213,0.4)'; el.style.boxShadow = 'none'; el.style.transform = 'none'; }}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '0.75rem', background: t.surface, border: '1px solid hsl(var(--border) / 0.4)', padding: '0.875rem 1rem', textDecoration: 'none', transition: 'all 0.2s' }}
+                        onMouseEnter={(e) => { const el = e.currentTarget as HTMLAnchorElement; el.style.borderColor = 'hsl(var(--primary) / 0.3)'; el.style.boxShadow = '0 4px 12px hsl(var(--primary) / 0.1)'; el.style.transform = 'translateY(-2px)'; }}
+                        onMouseLeave={(e) => { const el = e.currentTarget as HTMLAnchorElement; el.style.borderColor = 'hsl(var(--border) / 0.4)'; el.style.boxShadow = 'none'; el.style.transform = 'none'; }}
                       >
                         <div style={{ minWidth: 0 }}>
                           <p style={{ fontFamily: "'Inter',sans-serif", fontWeight: 600, fontSize: '0.875rem', color: t.onSurface, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{job.title}</p>
@@ -702,11 +702,11 @@ const SkillAnalyzer: React.FC = () => {
               {skillAnalysis.roadmap.action_plan.length > 0 && (
                 <div style={{ ...card, padding: '1.75rem' }}>
                   <div style={sh()}>
-                    <div style={ibadge('rgba(109,94,0,0.1)')}><BookOpen size={18} color={t.tertiary} /></div>
+                    <div style={ibadge('hsl(var(--tertiary) / 0.1)')}><BookOpen size={18} color={t.tertiary} /></div>
                     Your Personalized Roadmap
                   </div>
 
-                  <div style={{ borderRadius: '0.75rem', background: 'linear-gradient(135deg,rgba(9,76,178,0.05),rgba(191,171,73,0.08))', border: '1px solid rgba(195,198,213,0.35)', padding: '1rem 1.25rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ borderRadius: '0.75rem', background: 'linear-gradient(135deg,hsl(var(--primary) / 0.05),hsl(var(--tertiary) / 0.08))', border: '1px solid hsl(var(--border) / 0.35)', padding: '1rem 1.25rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     {[
                       { label: 'CURATED TIMELINE', value: skillAnalysis.roadmap.total_timeline },
                       { label: 'TARGET SENIORITY',  value: skillAnalysis.roadmap.seniority_level },
@@ -719,7 +719,7 @@ const SkillAnalyzer: React.FC = () => {
                   </div>
 
                   {skillAnalysis.roadmap.market_outlook && (
-                    <div style={{ borderRadius: '0.75rem', background: t.surface, border: '1px solid rgba(195,198,213,0.4)', padding: '1rem 1.25rem', marginBottom: '1.25rem' }}>
+                    <div style={{ borderRadius: '0.75rem', background: t.surface, border: '1px solid hsl(var(--border) / 0.4)', padding: '1rem 1.25rem', marginBottom: '1.25rem' }}>
                       <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: t.variant, lineHeight: 1.65 }}>{skillAnalysis.roadmap.market_outlook}</p>
                     </div>
                   )}
@@ -729,7 +729,7 @@ const SkillAnalyzer: React.FC = () => {
                       <p style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', color: t.outline, marginBottom: '0.625rem' }}>RECOMMENDED LEARNING SEQUENCE</p>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                         {skillAnalysis.roadmap.learning_sequence.map((skill, index) => (
-                          <span key={index} style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.8125rem', fontWeight: 600, color: t.primary, background: 'rgba(9,76,178,0.07)', border: '1px solid rgba(9,76,178,0.15)', padding: '0.3rem 0.75rem', borderRadius: '999px', display:'flex', alignItems:'center', gap:'0.375rem' }}>
+                          <span key={index} style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.8125rem', fontWeight: 600, color: t.primary, background: 'hsl(var(--primary) / 0.07)', border: '1px solid hsl(var(--primary) / 0.15)', padding: '0.3rem 0.75rem', borderRadius: '999px', display:'flex', alignItems:'center', gap:'0.375rem' }}>
                             <span style={{ fontFamily: "'Noto Serif',serif", fontWeight: 800, color: t.tertiary }}>{index + 1}.</span>
                             {skill}
                           </span>
@@ -748,7 +748,7 @@ const SkillAnalyzer: React.FC = () => {
                   id="save-sticky-btn"
                   onClick={handleSaveToProfile}
                   disabled={saveStatus === 'saving' || saveStatus === 'success'}
-                  style={{ display:'flex', alignItems:'center', gap:'0.625rem', padding:'0.875rem 2.25rem', borderRadius:'999px', background: saveStatus === 'success' ? '#2e7d32' : `linear-gradient(135deg,${t.primary},${t.container})`, border:'none', color: t.white, fontFamily:"'Public Sans',sans-serif", fontWeight:700, fontSize:'0.9375rem', letterSpacing:'0.03em', cursor: saveStatus === 'saving' || saveStatus === 'success' ? 'default' : 'pointer', boxShadow:'0 8px 28px rgba(9,76,178,0.35)', backdropFilter:'blur(8px)', opacity: saveStatus === 'saving' ? 0.8 : 1 }}
+                  style={{ display:'flex', alignItems:'center', gap:'0.625rem', padding:'0.875rem 2.25rem', borderRadius:'999px', background: saveStatus === 'success' ? 'hsl(142.1 70.6% 45.3%)' : `linear-gradient(135deg,${t.primary},${t.container})`, border:'none', color: t.white, fontFamily:"'Public Sans',sans-serif", fontWeight:700, fontSize:'0.9375rem', letterSpacing:'0.03em', cursor: saveStatus === 'saving' || saveStatus === 'success' ? 'default' : 'pointer', boxShadow:'0 8px 28px hsl(var(--primary) / 0.35)', backdropFilter:'blur(8px)', opacity: saveStatus === 'saving' ? 0.8 : 1 }}
                 >
                   {saveStatus === 'saving'  ? <Loader2 size={20} style={{ animation: 'sa-spin 0.9s linear infinite' }} /> :
                    saveStatus === 'success' ? <CheckCircle size={20} /> : <Save size={20} />}
@@ -760,7 +760,7 @@ const SkillAnalyzer: React.FC = () => {
         </main>
 
         {/* Footer */}
-        <footer style={{ background: t.white, borderTop: '1px solid rgba(195,198,213,0.35)', padding: '2.5rem 1.5rem' }}>
+        <footer style={{ background: t.white, borderTop: '1px solid hsl(var(--border) / 0.35)', padding: '2.5rem 1.5rem' }}>
           <div style={{ maxWidth: '72rem', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <p style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.8125rem', color: t.outline }}>
               © 2026 LearnLaunch Scholarly Systems — All Rights Reserved

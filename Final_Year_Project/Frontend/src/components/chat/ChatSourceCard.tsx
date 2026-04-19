@@ -45,7 +45,7 @@ export const ChatSourceCard: React.FC<ChatSourceCardProps> = ({ source, index })
           </a>
         )}
       </div>
-      
+
       {(experience || salary || employmentType) && (
         <div className="flex flex-wrap gap-2 mt-3 ml-8">
           {experience && (
@@ -65,7 +65,7 @@ export const ChatSourceCard: React.FC<ChatSourceCardProps> = ({ source, index })
           )}
         </div>
       )}
-      
+
       {skills.length > 0 && (
         <div className="flex flex-wrap gap-1.5 mt-3 ml-8">
           {skills.slice(0, 6).map((s, i) => (

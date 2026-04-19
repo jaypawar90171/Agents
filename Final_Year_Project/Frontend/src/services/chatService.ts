@@ -13,31 +13,34 @@ export async function sendMessage(
   return data;
 }
 
-export async function createSession(): Promise<{ session_id: string }> {
+export async function createSession(userId: string): Promise<{ session_id: string }> {
   const { data } = await apiClient.post<{ session_id: string }>(
-    `${CHAT_PREFIX}/sessions`
+    `${CHAT_PREFIX}/sessions`,
+    { userId }
   );
   return data;
 }
 
-export async function listSessions(): Promise<ChatSession[]> {
+export async function listSessions(userId: string): Promise<ChatSession[]> {
   const { data } = await apiClient.get<{ sessions: ChatSession[] }>(
-    `${CHAT_PREFIX}/sessions`
+    `${CHAT_PREFIX}/sessions`,
+    { params: { userId } }
   );
   return data.sessions;
 }
 
-export async function getSession(session_id: string): Promise<ChatSessionDetail> {
+export async function getSession(session_id: string, userId: string): Promise<ChatSessionDetail> {
   const { data } = await apiClient.get<ChatSessionDetail>(
-    `${CHAT_PREFIX}/sessions/${session_id}`
+    `${CHAT_PREFIX}/sessions/${session_id}`,
+    { params: { userId } }
   );
   return data;
 }
 
-export async function renameSession(session_id: string, title: string): Promise<void> {
-  await apiClient.patch(`${CHAT_PREFIX}/sessions/${session_id}`, { title });
+export async function renameSession(session_id: string, title: string, userId: string): Promise<void> {
+  await apiClient.patch(`${CHAT_PREFIX}/sessions/${session_id}`, { title, userId }, { params: { userId } });
 }
 
-export async function deleteSession(session_id: string): Promise<void> {
-  await apiClient.delete(`${CHAT_PREFIX}/sessions/${session_id}`);
+export async function deleteSession(session_id: string, userId: string): Promise<void> {
+  await apiClient.delete(`${CHAT_PREFIX}/sessions/${session_id}`, { params: { userId } });
 }

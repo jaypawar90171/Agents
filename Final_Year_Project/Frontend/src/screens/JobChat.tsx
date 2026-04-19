@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useAtom, useSetAtom } from "jotai";
+import { useUser } from "@clerk/clerk-react";
 import Header from "../components/Header";
 import { ChatMessageBubble } from "../components/chat/ChatMessageBubble";
 import { ChatInput } from "../components/chat/ChatInput";
@@ -28,6 +29,7 @@ function generateId(): string {
 }
 
 export default function JobChat() {
+  const { user } = useUser();
   const [sessionId, setSessionId] = useAtom(chatSessionIdAtom);
   const [messages, setMessages] = useAtom(chatMessagesAtom);
   const [loading, setLoading] = useAtom(chatLoadingAtom);
@@ -38,6 +40,7 @@ export default function JobChat() {
   const [sessionList, setSessionList] = useAtom(chatSessionListAtom);
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const userId = user?.id ?? "guest";
   const activeSessionTitle = sessionList.find(s => s.session_id === sessionId)?.title || "New Dialogue";
 
   useEffect(() => {
@@ -66,6 +69,7 @@ export default function JobChat() {
       const res = await sendMessageApi({
         message: text,
         session_id: sessionId ?? undefined,
+        userId,
       });
 
       const activeSessionId = res.session_id;
@@ -76,7 +80,7 @@ export default function JobChat() {
       if (isFirstMessage && activeSessionId) {
         const autoTitle = text.length > 40 ? text.slice(0, 40) + "…" : text;
         try {
-          await renameSession(activeSessionId, autoTitle);
+          await renameSession(activeSessionId, autoTitle, userId);
           // Update sidebar list optimistically
           setSessionList((prev) =>
             prev.map((s) =>
@@ -123,6 +127,7 @@ export default function JobChat() {
     loading,
     sessionId,
     messages.length,
+    userId,
     setInput,
     setMessages,
     setError,
@@ -134,14 +139,14 @@ export default function JobChat() {
     clearChat();
     setSession(null);
     (async () => {
-      const { session_id } = await createSession();
+      const { session_id } = await createSession(userId);
       setSessionId(session_id);
       // Reload sidebar so the new blank session appears
       if (typeof (window as any).__reloadChatSidebar === "function") {
         (window as any).__reloadChatSidebar();
       }
     })();
-  }, [clearChat, setSession, setSessionId]);
+  }, [clearChat, setSession, setSessionId, userId]);
 
   return (
     <div className="h-screen flex flex-col bg-background text-on-background overflow-hidden relative">
@@ -151,9 +156,9 @@ export default function JobChat() {
         <ChatSidebar onNewChat={handleNewChat} />
 
         {/* Main Chat Area */}
-        <main className="flex-1 flex flex-col bg-surface-container-lowest relative overflow-hidden">
+        <main className="flex-1 flex flex-col bg-surface-container-lowest dark:bg-[hsl(var(--surface-container-lowest-dark))] relative overflow-hidden">
           {/* Chat Header */}
-          <header className="h-16 flex items-center px-8 bg-surface-container-lowest z-10 border-b border-outline-variant/10">
+          {/* <header className="h-16 flex items-center px-8 bg-surface-container-lowest z-10 border-b border-outline-variant/10">
             <h2 className="text-xl font-headline font-bold text-on-surface truncate">{activeSessionTitle}</h2>
             <div className="ml-auto flex items-center gap-4">
               <span className="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-label font-bold uppercase tracking-wider rounded-full shadow-sm">Scholar Mode</span>
@@ -161,7 +166,7 @@ export default function JobChat() {
                 <MoreHorizontal className="w-5 h-5" />
               </button>
             </div>
-          </header>
+          </header> */}
 
           {/* Chat Content */}
           <div 

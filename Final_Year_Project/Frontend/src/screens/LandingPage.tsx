@@ -15,7 +15,7 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="bg-background text-on-background sans-body">
+    <div className="bg-background text-slate-900 dark:text-white sans-body">
       <style>{`
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -26,19 +26,19 @@ export default function LandingPage() {
       `}</style>
 
       {/* TopNavBar */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl">
+      <nav className="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl">
         <div className="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
-          <div className="text-2xl font-serif font-bold text-blue-900">LearnLaunch</div>
+          <div className="text-2xl font-serif font-bold text-slate-900 dark:text-white">SkillForge</div>
           <div className="hidden md:flex items-center space-gap-8 gap-x-10">
-            <a className="text-blue-700 font-bold border-b-2 border-blue-700 mono-label text-xs uppercase tracking-widest" href="#">Discover</a>
-            <a className="text-slate-600 hover:text-blue-700 transition-colors duration-300 mono-label text-xs uppercase tracking-widest" href="#">Roadmaps</a>
-            <a className="text-slate-600 hover:text-blue-700 transition-colors duration-300 mono-label text-xs uppercase tracking-widest" href="#">AI Chat</a>
-            <a className="text-slate-600 hover:text-blue-700 transition-colors duration-300 mono-label text-xs uppercase tracking-widest" href="#">Success Stories</a>
+            <a className="text-blue-700 dark:text-blue-400 font-bold border-b-2 border-blue-700 dark:border-blue-400 mono-label text-xs uppercase tracking-widest" href="#">Discover</a>
+            <a className="text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-300 mono-label text-xs uppercase tracking-widest" href="#">Roadmaps</a>
+            <a className="text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-300 mono-label text-xs uppercase tracking-widest" href="#">AI Chat</a>
+            <a className="text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-300 mono-label text-xs uppercase tracking-widest" href="#">Success Stories</a>
           </div>
           <div className="flex items-center gap-4">
             <SignedOut>
               <SignInButton mode="modal">
-                <button className="text-slate-600 hover:text-blue-700 transition-colors duration-200 mono-label text-xs uppercase tracking-widest">Sign In</button>
+                <button className="text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-400 transition-colors duration-200 mono-label text-xs uppercase tracking-widest">Sign In</button>
               </SignInButton>
               <SignUpButton mode="modal">
                 <button className="bg-gradient-to-r from-primary to-primary-container text-white px-6 py-2 rounded-full font-medium text-sm transition-all active:opacity-80">Get Started</button>
@@ -59,10 +59,10 @@ export default function LandingPage() {
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>
             <span className="mono-label text-xs uppercase tracking-[0.2em] text-tertiary mb-6 block">Career Evolution Engine</span>
-            <h1 className="font-headline text-6xl md:text-7xl leading-tight text-on-background mb-8">
-              Launch Your <span className="italic text-primary">Dream Career</span> with AI
+            <h1 className="font-headline text-6xl md:text-7xl leading-tight text-slate-900 dark:text-white mb-8">
+              Launch Your <span className="italic text-primary dark:text-blue-400">Dream Career</span> with AI
             </h1>
-            <p className="text-lg text-secondary leading-relaxed mb-10 max-w-lg">
+            <p className="text-lg text-slate-600 dark:text-slate-300 leading-relaxed mb-10 max-w-lg">
               Navigate the modern workforce with personalized roadmaps, AI-powered job matching, and real-time archival-quality career guidance.
             </p>
             <div className="flex flex-wrap gap-4">
@@ -82,7 +82,7 @@ export default function LandingPage() {
                   </button>
                 </Link>
               </SignedIn>
-              <button className="bg-surface-container-high text-primary px-8 py-4 rounded-xl font-medium hover:bg-surface-container-highest transition-colors flex items-center gap-2">
+              <button className="bg-slate-100 dark:bg-slate-800-high text-primary px-8 py-4 rounded-xl font-medium hover:bg-slate-100 dark:bg-slate-800-highest transition-colors flex items-center gap-2">
                 See How It Works
               </button>
             </div>
@@ -102,30 +102,30 @@ export default function LandingPage() {
                   <p className="font-headline text-sm font-bold">Roadmap Optimized</p>
                 </div>
               </div>
-              <p className="text-xs text-secondary leading-relaxed italic">"Your path to Senior Product Designer has been recalibrated based on new market trends."</p>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed italic">"Your path to Senior Product Designer has been recalibrated based on new market trends."</p>
             </div>
           </div>
         </div>
       </section>
       {/* Value Props / Metrics */}
-      <section className="bg-surface-container-low py-16">
+      <section className="bg-slate-100 dark:bg-slate-800-low py-16">
         <div className="max-w-7xl mx-auto px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
             <div>
               <h3 className="font-headline text-4xl text-primary mb-2">50,000+</h3>
-              <p className="mono-label text-[10px] uppercase tracking-widest text-secondary">Active Learners</p>
+              <p className="mono-label text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400">Active Learners</p>
             </div>
             <div>
               <h3 className="font-headline text-4xl text-primary mb-2">1,200+</h3>
-              <p className="mono-label text-[10px] uppercase tracking-widest text-secondary">Job Listings</p>
+              <p className="mono-label text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400">Job Listings</p>
             </div>
             <div>
               <h3 className="font-headline text-4xl text-primary mb-2">85%</h3>
-              <p className="mono-label text-[10px] uppercase tracking-widest text-secondary">Success Rate</p>
+              <p className="mono-label text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400">Success Rate</p>
             </div>
             <div>
               <h3 className="font-headline text-4xl text-primary mb-2">24/7</h3>
-              <p className="mono-label text-[10px] uppercase tracking-widest text-secondary">AI Career Support</p>
+              <p className="mono-label text-[10px] uppercase tracking-widest text-slate-600 dark:text-slate-400">AI Career Support</p>
             </div>
           </div>
         </div>
@@ -135,50 +135,50 @@ export default function LandingPage() {
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div className="max-w-2xl">
             <span className="mono-label text-xs uppercase tracking-[0.2em] text-tertiary mb-4 block">Capabilities</span>
-            <h2 className="font-headline text-5xl text-on-background">Precision Tools for Modern Professionals</h2>
+            <h2 className="font-headline text-5xl text-slate-900 dark:text-white">Precision Tools for Modern Professionals</h2>
           </div>
-          <p className="text-secondary max-w-sm mb-2">Curated features designed to eliminate the friction between your current skills and your next big role.</p>
+          <p className="text-slate-600 dark:text-slate-400 max-w-sm mb-2">Curated features designed to eliminate the friction between your current skills and your next big role.</p>
         </div>
         <div className="grid md:grid-cols-3 gap-8">
           {/* Feature 1 */}
-          <div className="p-8 bg-surface-container-lowest rounded-2xl transition-all hover:bg-white hover:shadow-lg group">
+          <div className="p-8 bg-slate-100 dark:bg-slate-800 rounded-2xl transition-all hover:bg-white dark:hover:bg-slate-700 hover:shadow-lg group">
             <div className="mb-6 text-primary">
               <span className="material-symbols-outlined text-4xl" data-icon="search_insights" style={{ fontVariationSettings: "\'FILL\' 0" }}>search_insights</span>
             </div>
             <h4 className="font-headline text-2xl mb-4">Smart Job Discovery</h4>
-            <p className="text-secondary text-sm leading-relaxed">Advanced algorithms that match your unique DNA to roles that actually fit your long-term goals.</p>
+            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Advanced algorithms that match your unique DNA to roles that actually fit your long-term goals.</p>
           </div>
           {/* Feature 2 */}
-          <div className="p-8 bg-surface-container-lowest rounded-2xl transition-all hover:bg-white hover:shadow-lg group">
+          <div className="p-8 bg-slate-100 dark:bg-slate-800 rounded-2xl transition-all hover:bg-white dark:hover:bg-slate-700 hover:shadow-lg group">
             <div className="mb-6 text-primary">
               <span className="material-symbols-outlined text-4xl" data-icon="route" style={{ fontVariationSettings: "\'FILL\' 0" }}>route</span>
             </div>
             <h4 className="font-headline text-2xl mb-4">AI Roadmap Generator</h4>
-            <p className="text-secondary text-sm leading-relaxed">Dynamic learning paths that evolve as you progress, closing the gap between intent and mastery.</p>
+            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Dynamic learning paths that evolve as you progress, closing the gap between intent and mastery.</p>
           </div>
           {/* Feature 3 */}
-          <div className="p-8 bg-surface-container-lowest rounded-2xl transition-all hover:bg-white hover:shadow-lg group">
+          <div className="p-8 bg-slate-100 dark:bg-slate-800 rounded-2xl transition-all hover:bg-white dark:hover:bg-slate-700 hover:shadow-lg group">
             <div className="mb-6 text-primary">
               <span className="material-symbols-outlined text-4xl" data-icon="forum" style={{ fontVariationSettings: "\'FILL\' 0" }}>forum</span>
             </div>
             <h4 className="font-headline text-2xl mb-4">Career AI Chat</h4>
-            <p className="text-secondary text-sm leading-relaxed">Immediate, archival-quality responses to your complex professional questions and negotiations.</p>
+            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Immediate, archival-quality responses to your complex professional questions and negotiations.</p>
           </div>
           {/* Feature 4 */}
-          <div className="p-8 bg-surface-container-lowest rounded-2xl transition-all hover:bg-white hover:shadow-lg group">
+          <div className="p-8 bg-slate-100 dark:bg-slate-800 rounded-2xl transition-all hover:bg-white dark:hover:bg-slate-700 hover:shadow-lg group">
             <div className="mb-6 text-primary">
               <span className="material-symbols-outlined text-4xl" data-icon="analytics" style={{ fontVariationSettings: "\'FILL\' 0" }}>analytics</span>
             </div>
             <h4 className="font-headline text-2xl mb-4">Progress Tracking</h4>
-            <p className="text-secondary text-sm leading-relaxed">Visual data mapping of your growth, milestones, and readiness for the global market.</p>
+            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Visual data mapping of your growth, milestones, and readiness for the global market.</p>
           </div>
           {/* Feature 5 */}
-          <div className="p-8 bg-surface-container-lowest rounded-2xl transition-all hover:bg-white hover:shadow-lg group">
+          <div className="p-8 bg-slate-100 dark:bg-slate-800 rounded-2xl transition-all hover:bg-white dark:hover:bg-slate-700 hover:shadow-lg group">
             <div className="mb-6 text-primary">
               <span className="material-symbols-outlined text-4xl" data-icon="workspace_premium" style={{ fontVariationSettings: "\'FILL\' 0" }}>workspace_premium</span>
             </div>
             <h4 className="font-headline text-2xl mb-4">Skill Certification</h4>
-            <p className="text-secondary text-sm leading-relaxed">Industry-recognized credentials that validate your expertise and boost your profile visibility.</p>
+            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">Industry-recognized credentials that validate your expertise and boost your profile visibility.</p>
           </div>
           {/* CTA Card */}
           <div className="p-8 bg-primary rounded-2xl flex flex-col justify-between text-white">
@@ -190,7 +190,7 @@ export default function LandingPage() {
         </div>
       </section>
       {/* How It Works (Editorial Step-by-Step) */}
-      <section className="py-24 bg-surface-container">
+      <section className="py-24 bg-slate-100 dark:bg-slate-800">
         <div className="max-w-7xl mx-auto px-8">
           <h2 className="font-headline text-5xl text-center mb-20">The Archival Process</h2>
           <div className="space-y-32">
@@ -204,7 +204,7 @@ export default function LandingPage() {
               <div className="w-full md:w-1/2">
                 <span className="font-headline italic text-7xl text-primary/10 block mb-4">01</span>
                 <h3 className="font-headline text-3xl mb-6">Sign Up &amp; Profile Sync</h3>
-                <p className="text-secondary leading-relaxed mb-8">Begin your journey by creating a profile that captures your aspirations. Sync your existing portfolio and LinkedIn to provide the AI with a foundation of your current trajectory.</p>
+                <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-8">Begin your journey by creating a profile that captures your aspirations. Sync your existing portfolio and LinkedIn to provide the AI with a foundation of your current trajectory.</p>
                 <ul className="space-y-4">
                   <li className="flex items-center gap-3 text-sm font-medium">
                     <span className="material-symbols-outlined text-primary text-xl" data-icon="check_circle" style={{ fontVariationSettings: "\'FILL\' 1" }}>check_circle</span>
@@ -227,7 +227,7 @@ export default function LandingPage() {
               <div className="w-full md:w-1/2">
                 <span className="font-headline italic text-7xl text-primary/10 block mb-4">02</span>
                 <h3 className="font-headline text-3xl mb-6">Explore Jobs</h3>
-                <p className="text-secondary leading-relaxed mb-8">Access our curated database of premium roles. Our AI filters out the noise, presenting only the opportunities that align with your growth potential and values.</p>
+                <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-8">Access our curated database of premium roles. Our AI filters out the noise, presenting only the opportunities that align with your growth potential and values.</p>
                 <div className="flex gap-4">
                   <span className="px-4 py-2 bg-white rounded-full text-xs mono-label text-slate-500 uppercase">Tech</span>
                   <span className="px-4 py-2 bg-white rounded-full text-xs mono-label text-slate-500 uppercase">Design</span>
@@ -245,7 +245,7 @@ export default function LandingPage() {
               <div className="w-full md:w-1/2">
                 <span className="font-headline italic text-7xl text-primary/10 block mb-4">03</span>
                 <h3 className="font-headline text-3xl mb-6">Generate Roadmap</h3>
-                <p className="text-secondary leading-relaxed mb-8">Once you find your target, LearnLaunch constructs a custom learning path. Every module, project, and certification is chosen to maximize your impact during the application process.</p>
+                <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-8">Once you find your target, LearnLaunch constructs a custom learning path. Every module, project, and certification is chosen to maximize your impact during the application process.</p>
                 <button className="text-primary font-bold border-b border-primary/30 pb-1 hover:border-primary transition-all">View Sample Roadmap</button>
               </div>
             </div>
@@ -259,7 +259,7 @@ export default function LandingPage() {
               <div className="w-full md:w-1/2">
                 <span className="font-headline italic text-7xl text-primary/10 block mb-4">04</span>
                 <h3 className="font-headline text-3xl mb-6">Land Your Dream Job</h3>
-                <p className="text-secondary leading-relaxed mb-8">Execute your final interview with the backing of our AI negotiation assistant. Secure your position and begin the next chapter of your professional narrative.</p>
+                <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-8">Execute your final interview with the backing of our AI negotiation assistant. Secure your position and begin the next chapter of your professional narrative.</p>
                 <div className="flex items-center gap-4 p-4 bg-tertiary-fixed rounded-xl border border-tertiary/10">
                   <span className="material-symbols-outlined text-tertiary" data-icon="trophy">trophy</span>
                   <p className="text-sm font-semibold text-on-tertiary-fixed">Average 24% salary increase reported</p>
@@ -273,16 +273,16 @@ export default function LandingPage() {
       <section className="py-24 px-8 max-w-7xl mx-auto">
         <div className="text-center mb-20">
           <h2 className="font-headline text-5xl mb-4">Real Success Stories</h2>
-          <p className="text-secondary mono-label text-sm uppercase tracking-widest">Profiles in Professional Growth</p>
+          <p className="text-slate-600 dark:text-slate-400 mono-label text-sm uppercase tracking-widest">Profiles in Professional Growth</p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Testimonial 1 */}
-          <div className="bg-surface-container-low p-10 rounded-2xl flex flex-col justify-between">
+          <div className="bg-slate-100 dark:bg-slate-800-low p-10 rounded-2xl flex flex-col justify-between">
             <div>
               <div className="text-primary mb-6">
                 <span className="material-symbols-outlined text-4xl" data-icon="format_quote">format_quote</span>
               </div>
-              <p className="font-headline text-xl leading-relaxed text-on-background mb-8 italic">
+              <p className="font-headline text-xl leading-relaxed text-slate-900 dark:text-white mb-8 italic">
                 "The AI roadmap wasn't just a list of courses—it was a strategic playbook. I transitioned from Junior Developer to Senior Lead in 14 months."
               </p>
             </div>
@@ -297,12 +297,12 @@ export default function LandingPage() {
             </div>
           </div>
           {/* Testimonial 2 */}
-          <div className="bg-surface-container-high p-10 rounded-2xl flex flex-col justify-between">
+          <div className="bg-slate-100 dark:bg-slate-800-high p-10 rounded-2xl flex flex-col justify-between">
             <div>
               <div className="text-primary mb-6">
                 <span className="material-symbols-outlined text-4xl" data-icon="format_quote">format_quote</span>
               </div>
-              <p className="font-headline text-xl leading-relaxed text-on-background mb-8 italic">
+              <p className="font-headline text-xl leading-relaxed text-slate-900 dark:text-white mb-8 italic">
                 "LearnLaunch understood my career gaps better than I did. The AI Chat helped me navigate a difficult salary negotiation with total confidence."
               </p>
             </div>
@@ -317,12 +317,12 @@ export default function LandingPage() {
             </div>
           </div>
           {/* Testimonial 3 */}
-          <div className="bg-surface-container-low p-10 rounded-2xl flex flex-col justify-between">
+          <div className="bg-slate-100 dark:bg-slate-800-low p-10 rounded-2xl flex flex-col justify-between">
             <div>
               <div className="text-primary mb-6">
                 <span className="material-symbols-outlined text-4xl" data-icon="format_quote">format_quote</span>
               </div>
-              <p className="font-headline text-xl leading-relaxed text-on-background mb-8 italic">
+              <p className="font-headline text-xl leading-relaxed text-slate-900 dark:text-white mb-8 italic">
                 "Finally, a career platform that feels premium. The interface is distraction-free, allowing me to focus on the work that actually matters."
               </p>
             </div>

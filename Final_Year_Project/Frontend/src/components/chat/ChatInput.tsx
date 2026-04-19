@@ -81,9 +81,6 @@ export const ChatInput: React.FC<ChatInputProps> = ({
           </div>
         </form>
       </div>
-      <p className="text-[10px] text-center mt-3 font-label text-outline uppercase tracking-widest">
-        Alexandria AI Curator • Academic Reference V4.2
-      </p>
     </div>
   );
 };

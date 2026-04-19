@@ -20,60 +20,55 @@ const Header: React.FC = () => {
 
   return (
     <header className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-sm dark:shadow-none docked full-width top-0 sticky z-50">
-      <nav className="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto w-full">
+      <nav className="flex justify-between items-center px-8 py-4 w-full">
         {/* Brand & Nav */}
         <div className="flex items-center gap-8">
           <Link to="/" className="text-2xl font-headline font-bold text-slate-900 dark:text-slate-50 tracking-tight">
-            LearnLaunch
+            SkillForge
           </Link>
           <div className="hidden md:flex items-center gap-6 font-headline text-lg leading-relaxed">
             <Link
               to="/home"
-              className={`${
-                location.pathname === "/home"
-                  ? "text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1"
-                  : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
-              }`}
+              className={`${location.pathname === "/home"
+                ? "text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1"
+                : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
+                }`}
             >
               Explore
             </Link>
             <Link
               to="/roadmap"
-              className={`${
-                location.pathname === "/roadmap"
-                  ? "text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1"
-                  : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
-              }`}
+              className={`${location.pathname === "/roadmap"
+                ? "text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1"
+                : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
+                }`}
             >
               Roadmap
             </Link>
             <Link
               to="/skills"
-              className={`${
-                location.pathname === "/skills"
-                  ? "text-purple-700 dark:text-purple-400 border-b-2 border-purple-700 dark:border-purple-400 pb-1"
-                  : "text-slate-600 dark:text-slate-400 hover:text-purple-600 dark:hover:text-purple-300 transition-colors"
-              }`}
+              className={`${location.pathname === "/skills"
+                ? "text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1"
+                : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
+                }`}
             >
               Skills
             </Link>
             <Link
               to="/chat"
-              className={`${
-                location.pathname === "/chat"
-                  ? "text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1"
-                  : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
-              }`}
+              className={`${location.pathname === "/chat"
+                ? "text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1"
+                : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
+                }`}
             >
               Chat
             </Link>
             <Link
               to="/profile"
-              className={`${
-                location.pathname === "/profile"
-                  ? "text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1"
-                  : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
-              }`}
+              className={`${location.pathname === "/profile"
+                ? "text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1"
+                : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
+                }`}
             >
               Profile
             </Link>
@@ -84,12 +79,12 @@ const Header: React.FC = () => {
         <div className="flex items-center gap-4 flex-1 max-w-md ml-auto">
           <div className="relative w-full hidden md:block">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm w-4 h-4" />
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full bg-surface-container-lowest border-none ring-1 ring-outline-variant/30 focus:ring-2 focus:ring-primary rounded-lg py-2 pl-10 pr-4 text-sm font-body outline-none" 
-              placeholder="Search companies, roles, skills..." 
+              className="w-full bg-surface-container-lowest border-none ring-1 ring-outline-variant/30 focus:ring-2 focus:ring-primary rounded-lg py-2 pl-10 pr-4 text-sm font-body outline-none"
+              placeholder="Search companies, roles, skills..."
             />
           </div>
 

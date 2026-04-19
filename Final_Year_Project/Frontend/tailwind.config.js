@@ -7,97 +7,169 @@ export default {
   ],
   theme: {
   	extend: {
-  		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
-  		},
-  		colors: {
-			"outline-variant": "#c3c6d5",
-			"on-primary-container": "#e7ebff",
-			"on-background": "#1b1c1d",
-			"inverse-on-surface": "#f2f0f1",
-			"surface-container": "#efedee",
-			"on-tertiary": "#ffffff",
-			"surface-tint": "#2259bf",
-			"on-secondary-fixed": "#171c20",
-			"tertiary-container": "#bfab49",
-			"primary-fixed-dim": "#b1c5ff",
-			"on-tertiary-fixed-variant": "#524600",
-			"surface-container-high": "#e9e8e9",
-			"inverse-surface": "#303031",
-			"on-tertiary-container": "#4a3f00",
-			"on-primary-fixed": "#001946",
-			"on-secondary": "#ffffff",
-			"primary-fixed": "#d9e2ff",
-			"tertiary-fixed-dim": "#dcc661",
-			"surface-variant": "#e3e2e3",
-			"on-error": "#ffffff",
-			"on-primary": "#ffffff",
-			"error": "#ba1a1a",
-			"tertiary-fixed": "#f9e37a",
-			"primary": "#094cb2",
-			"on-tertiary-fixed": "#211b00",
-			"inverse-primary": "#b1c5ff",
-			"error-container": "#ffdad6",
-			"surface-dim": "#dbdadb",
-			"secondary-container": "#dfe3e8",
-			"primary-container": "#3366cc",
-			"background": "#faf9fa",
-			"surface-container-lowest": "#ffffff",
-			"tertiary": "#6d5e00",
-			"surface": "#faf9fa",
-			"on-surface": "#1b1c1d",
-			"on-primary-fixed-variant": "#00419d",
-			"secondary": "#5a5f63",
-			"on-secondary-container": "#606569",
-			"on-error-container": "#93000a",
-			"surface-bright": "#faf9fa",
-			"surface-container-highest": "#e3e2e3",
-			"secondary-fixed-dim": "#c2c7cc",
-			"on-secondary-fixed-variant": "#42474b",
-			"secondary-fixed": "#dfe3e8",
-			"on-surface-variant": "#434653",
-			"surface-container-low": "#f5f3f4",
-			"outline": "#737784",
-  			foreground: 'hsl(var(--foreground))',
-  			card: {
-  				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
-  			},
-  			popover: {
-  				DEFAULT: 'hsl(var(--popover))',
-  				foreground: 'hsl(var(--popover-foreground))'
-  			},
-  			muted: {
-  				DEFAULT: 'hsl(var(--muted))',
-  				foreground: 'hsl(var(--muted-foreground))'
-  			},
-  			accent: {
-  				DEFAULT: 'hsl(var(--accent))',
-  				foreground: 'hsl(var(--accent-foreground))'
-  			},
-  			destructive: {
-  				DEFAULT: 'hsl(var(--destructive))',
-  				foreground: 'hsl(var(--destructive-foreground))'
-  			},
-  			border: 'hsl(var(--border))',
-  			input: 'hsl(var(--input))',
-  			ring: 'hsl(var(--ring))',
-  			chart: {
-  				'1': 'hsl(var(--chart-1))',
-  				'2': 'hsl(var(--chart-2))',
-  				'3': 'hsl(var(--chart-3))',
-  				'4': 'hsl(var(--chart-4))',
-  				'5': 'hsl(var(--chart-5))'
-  			}
-  		},
-		fontFamily: {
-			headline: ["Noto Serif"],
-			body: ["Inter"],
-			label: ["Public Sans"]
-		}
-  	}
+      colors: {
+        background: {
+          DEFAULT: 'hsl(var(--background))',
+          dark: 'hsl(var(--background-dark))',
+        },
+        foreground: {
+          DEFAULT: 'hsl(var(--foreground))',
+          dark: 'hsl(var(--foreground-dark))',
+        },
+        surface: {
+          DEFAULT: 'hsl(var(--surface))',
+          dark: 'hsl(var(--surface-dark))',
+        },
+        'surface-container-lowest': {
+          DEFAULT: 'hsl(var(--surface-container-lowest))',
+          dark: 'hsl(var(--surface-container-lowest-dark))',
+        },
+        'surface-container-low': {
+          DEFAULT: 'hsl(var(--surface-container-low))',
+          dark: 'hsl(var(--surface-container-low-dark))',
+        },
+        'surface-container': {
+          DEFAULT: 'hsl(var(--surface-container))',
+          dark: 'hsl(var(--surface-container-dark))',
+        },
+        'surface-container-high': {
+          DEFAULT: 'hsl(var(--surface-container-high))',
+          dark: 'hsl(var(--surface-container-high-dark))',
+        },
+        'on-surface': {
+          DEFAULT: 'hsl(var(--on-surface))',
+          dark: 'hsl(var(--on-surface-dark))',
+        },
+        'on-background': {
+          DEFAULT: 'hsl(var(--on-background))',
+          dark: 'hsl(var(--on-background-dark))',
+        },
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          dark: 'hsl(var(--primary-dark))',
+        },
+        'on-primary': {
+          DEFAULT: 'hsl(var(--on-primary))',
+          dark: 'hsl(var(--on-primary-dark))',
+        },
+        'primary-container': {
+          DEFAULT: 'hsl(var(--primary-container))',
+          dark: 'hsl(var(--primary-container-dark))',
+        },
+        'on-primary-container': {
+          DEFAULT: 'hsl(var(--on-primary-container))',
+          dark: 'hsl(var(--on-primary-container-dark))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          dark: 'hsl(var(--secondary-dark))',
+        },
+        'on-secondary': {
+          DEFAULT: 'hsl(var(--on-secondary))',
+          dark: 'hsl(var(--on-secondary-dark))',
+        },
+        'secondary-container': {
+          DEFAULT: 'hsl(var(--secondary-container))',
+          dark: 'hsl(var(--secondary-container-dark))',
+        },
+        'on-secondary-container': {
+          DEFAULT: 'hsl(var(--on-secondary-container))',
+          dark: 'hsl(var(--on-secondary-container-dark))',
+        },
+        tertiary: {
+          DEFAULT: 'hsl(var(--tertiary))',
+          dark: 'hsl(var(--tertiary-dark))',
+        },
+        'on-tertiary': {
+          DEFAULT: 'hsl(var(--on-tertiary))',
+          dark: 'hsl(var(--on-tertiary-dark))',
+        },
+        error: {
+          DEFAULT: 'hsl(var(--error))',
+          dark: 'hsl(var(--error-dark))',
+        },
+        'on-error': {
+          DEFAULT: 'hsl(var(--on-error))',
+          dark: 'hsl(var(--on-error-dark))',
+        },
+        outline: {
+          DEFAULT: 'hsl(var(--outline))',
+          dark: 'hsl(var(--outline-dark))',
+        },
+        'outline-variant': {
+          DEFAULT: 'hsl(var(--outline-variant))',
+          dark: 'hsl(var(--outline-variant-dark))',
+        },
+        'surface-dim': {
+          DEFAULT: 'hsl(var(--surface-dim))',
+          dark: 'hsl(var(--surface-dim-dark))',
+        },
+        'surface-bright': {
+          DEFAULT: 'hsl(var(--surface-bright))',
+          dark: 'hsl(var(--surface-bright-dark))',
+        },
+        'surface-variant': {
+          DEFAULT: 'hsl(var(--surface-variant))',
+          dark: 'hsl(var(--surface-variant-dark))',
+        },
+        'on-surface-variant': {
+          DEFAULT: 'hsl(var(--on-surface-variant))',
+          dark: 'hsl(var(--on-surface-variant-dark))',
+        },
+        'inverse-surface': {
+          DEFAULT: 'hsl(var(--inverse-surface))',
+          dark: 'hsl(var(--inverse-surface-dark))',
+        },
+        'inverse-on-surface': {
+          DEFAULT: 'hsl(var(--inverse-on-surface))',
+          dark: 'hsl(var(--inverse-on-surface-dark))',
+        },
+        'inverse-primary': {
+          DEFAULT: 'hsl(var(--inverse-primary))',
+          dark: 'hsl(var(--inverse-primary-dark))',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))'
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))'
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))'
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))'
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))'
+        },
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        chart: {
+          '1': 'hsl(var(--chart-1))',
+          '2': 'hsl(var(--chart-2))',
+          '3': 'hsl(var(--chart-3))',
+          '4': 'hsl(var(--chart-4))',
+          '5': 'hsl(var(--chart-5))'
+        }
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)'
+      },
+      fontFamily: {
+        headline: ["Noto Serif"],
+        body: ["Inter"],
+        label: ["Public Sans"]
+      }
+    }
   },
   plugins: [require("tailwindcss-animate"), require("@tailwindcss/forms"), require("@tailwindcss/container-queries")],
 }

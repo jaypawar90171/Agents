@@ -36,7 +36,7 @@ const Home: React.FC = () => {
         </div>
       </main>
 
-      <footer className="bg-slate-50 dark:bg-slate-950 full-width py-12 border-t border-slate-100 dark:border-slate-900 mt-20">
+      <footer className="bg-slate-50 dark:bg-[#0f172a] full-width py-12 border-t border-slate-100 dark:border-slate-800 mt-20">
         <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto w-full">
           <div className="mb-8 md:mb-0">
             <span className="font-serif italic text-slate-400 text-xl">LearnLaunch</span>

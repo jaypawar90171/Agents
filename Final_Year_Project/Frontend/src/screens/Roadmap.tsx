@@ -11,19 +11,19 @@ import roadmapService from "../services/roadmapService";
    Alexandria Design Tokens
 ═══════════════════════════════════════════════════════ */
 const t = {
-  primary:   '#094cb2',
-  container: '#3366cc',
-  surface:   '#faf9fa',
-  surfHigh:  '#efedee',
-  surfLow:   '#f5f3f4',
-  onSurface: '#1b1c1d',
-  variant:   '#434653',
-  outline:   '#737784',
-  tertiary:  '#6d5e00',
-  tertCont:  '#bfab49',
-  error:     '#ba1a1a',
-  errCont:   '#ffdad6',
-  white:     '#ffffff',
+  primary:   'hsl(var(--primary))',
+  container: 'hsl(var(--primary-container))',
+  surface:   'hsl(var(--background))',
+  surfHigh:  'hsl(var(--surface-container-high))',
+  surfLow:   'hsl(var(--surface-container-low))',
+  onSurface: 'hsl(var(--on-surface))',
+  variant:   'hsl(var(--on-surface-variant))',
+  outline:   'hsl(var(--outline))',
+  tertiary:  'hsl(var(--tertiary))',
+  tertCont:  'hsl(var(--secondary-container))',
+  error:     'hsl(var(--error))',
+  errCont:   'hsl(var(--error-container))',
+  white:     'hsl(var(--card))',
 };
 
 const MIN_COMPANY_LENGTH = 3;
@@ -152,11 +152,11 @@ const Roadmap: React.FC = () => {
                 borderRadius: '1rem',
                 background: t.white,
                 border: inputFocused
-                  ? `1.5px solid rgba(9,76,178,0.35)`
-                  : '1.5px solid rgba(195,198,213,0.45)',
+                  ? `1.5px solid hsl(var(--primary) / 0.35)`
+                  : '1.5px solid hsl(var(--border) / 0.45)',
                 boxShadow: inputFocused
-                  ? '0 4px 20px rgba(9,76,178,0.1)'
-                  : '0 4px 16px rgba(27,28,29,0.06)',
+                  ? '0 4px 20px hsl(var(--primary) / 0.1)'
+                  : '0 4px 16px hsl(var(--foreground) / 0.06)',
                 transition: 'border-color 0.2s, box-shadow 0.2s',
               }}
             >
@@ -205,19 +205,19 @@ const Roadmap: React.FC = () => {
                   fontSize: '0.875rem',
                   letterSpacing: '0.04em',
                   cursor: loading || !canSubmit ? 'not-allowed' : 'pointer',
-                  boxShadow: loading || !canSubmit ? 'none' : '0 4px 14px rgba(9,76,178,0.28)',
+                  boxShadow: loading || !canSubmit ? 'none' : '0 4px 14px hsl(var(--primary) / 0.28)',
                   transition: 'all 0.2s ease',
                   whiteSpace: 'nowrap',
                 }}
                 onMouseEnter={(e) => {
                   if (!loading && canSubmit) {
                     (e.currentTarget as HTMLButtonElement).style.transform = 'translateY(-1px)';
-                    (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 18px rgba(9,76,178,0.36)';
+                    (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 6px 18px hsl(var(--primary) / 0.36)';
                   }
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLButtonElement).style.transform = 'none';
-                  (e.currentTarget as HTMLButtonElement).style.boxShadow = loading || !canSubmit ? 'none' : '0 4px 14px rgba(9,76,178,0.28)';
+                  (e.currentTarget as HTMLButtonElement).style.boxShadow = loading || !canSubmit ? 'none' : '0 4px 14px hsl(var(--primary) / 0.28)';
                 }}
               >
                 {loading ? (
@@ -241,7 +241,7 @@ const Roadmap: React.FC = () => {
                   fontFamily: "'Public Sans',sans-serif",
                   fontSize: '0.8125rem',
                   fontWeight: 600,
-                  color: '#6d5e00',
+                  color: t.tertiary,
                   marginTop: '0.625rem',
                   paddingLeft: '0.5rem',
                 }}
@@ -259,10 +259,10 @@ const Roadmap: React.FC = () => {
               style={{
                 borderRadius: '1rem',
                 background: t.white,
-                border: '1px solid rgba(195,198,213,0.38)',
+                border: '1px solid hsl(var(--border) / 0.38)',
                 padding: '3rem 2rem',
                 textAlign: 'center',
-                boxShadow: '0 4px 20px rgba(27,28,29,0.05)',
+                boxShadow: '0 4px 20px hsl(var(--foreground) / 0.05)',
                 marginBottom: '2rem',
               }}
             >
@@ -273,7 +273,7 @@ const Roadmap: React.FC = () => {
                   background: `linear-gradient(135deg, ${t.primary}, ${t.container})`,
                   margin: '0 auto 1.25rem',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: '0 4px 14px rgba(9,76,178,0.3)',
+                  boxShadow: '0 4px 14px hsl(var(--primary) / 0.3)',
                   animation: 'rm-pulse 1.5s ease-in-out infinite',
                 }}
               >
@@ -303,13 +303,13 @@ const Roadmap: React.FC = () => {
                 padding: '1.5rem',
                 borderRadius: '0.875rem',
                 background: t.errCont,
-                border: '1px solid rgba(186,26,26,0.2)',
+                border: '1px solid hsl(var(--error) / 0.2)',
               }}
             >
               <p style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '1rem', color: t.error, marginBottom: '0.375rem' }}>
                 ⚠ Error generating roadmap
               </p>
-              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: '#93000a', lineHeight: 1.6 }}>
+              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: t.error, lineHeight: 1.6 }}>
                 {error}
               </p>
             </div>
@@ -324,13 +324,13 @@ const Roadmap: React.FC = () => {
                 marginBottom: '1.5rem',
                 padding: '1rem 1.25rem',
                 borderRadius: '0.75rem',
-                background: 'rgba(46,125,50,0.08)',
-                border: '1px solid rgba(46,125,50,0.25)',
+                background: 'hsl(142.1 70.6% 45.3% / 0.08)',
+                border: '1px solid hsl(142.1 70.6% 45.3% / 0.25)',
                 display: 'flex', alignItems: 'center', gap: '0.625rem',
               }}
             >
               <CheckCircle size={18} color="#2e7d32" />
-              <p style={{ fontFamily: "'Public Sans',sans-serif", fontWeight: 600, fontSize: '0.875rem', color: '#1b5e20' }}>
+              <p style={{ fontFamily: "'Public Sans',sans-serif", fontWeight: 600, fontSize: '0.875rem', color: 'hsl(142.1 70.6% 25.3%)' }}>
                 {saveMessage}
               </p>
             </div>
@@ -342,7 +342,7 @@ const Roadmap: React.FC = () => {
                 padding: '1rem 1.25rem',
                 borderRadius: '0.75rem',
                 background: t.errCont,
-                border: '1px solid rgba(186,26,26,0.2)',
+                border: '1px solid hsl(var(--error) / 0.2)',
               }}
             >
               <p style={{ fontFamily: "'Public Sans',sans-serif", fontWeight: 600, fontSize: '0.875rem', color: t.error }}>
@@ -363,9 +363,9 @@ const Roadmap: React.FC = () => {
                   style={{
                     borderRadius: '1rem',
                     background: t.white,
-                    border: '1px solid rgba(195,198,213,0.38)',
+                    border: '1px solid hsl(var(--border) / 0.38)',
                     padding: '1.75rem',
-                    boxShadow: '0 4px 20px rgba(27,28,29,0.05)',
+                    boxShadow: '0 4px 20px hsl(var(--foreground) / 0.05)',
                   }}
                 >
                   <div
@@ -378,7 +378,7 @@ const Roadmap: React.FC = () => {
                       style={{
                         width: '2.25rem', height: '2.25rem',
                         borderRadius: '0.5625rem',
-                        background: 'rgba(9,76,178,0.08)',
+                        background: 'hsl(var(--primary) / 0.08)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}
                     >
@@ -404,9 +404,9 @@ const Roadmap: React.FC = () => {
                 style={{
                   borderRadius: '1rem',
                   background: t.white,
-                  border: '1px solid rgba(195,198,213,0.38)',
+                  border: '1px solid hsl(var(--border) / 0.38)',
                   padding: '1.75rem',
-                  boxShadow: '0 4px 20px rgba(27,28,29,0.05)',
+                  boxShadow: '0 4px 20px hsl(var(--foreground) / 0.05)',
                 }}
               >
                 <RoadmapDisplay
@@ -428,7 +428,7 @@ const Roadmap: React.FC = () => {
                 style={{
                   width: '5.5rem', height: '5.5rem',
                   borderRadius: '1.25rem',
-                  background: 'rgba(9,76,178,0.06)',
+                  background: 'hsl(var(--primary) / 0.06)',
                   margin: '0 auto 1.75rem',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}
@@ -463,16 +463,16 @@ const Roadmap: React.FC = () => {
                     style={{
                       borderRadius: '0.875rem',
                       background: t.white,
-                      border: '1px solid rgba(195,198,213,0.38)',
+                      border: '1px solid hsl(var(--border) / 0.38)',
                       padding: '1.375rem 1.125rem',
-                      boxShadow: '0 2px 10px rgba(27,28,29,0.04)',
+                      boxShadow: '0 2px 10px hsl(var(--foreground) / 0.04)',
                     }}
                   >
                     <div
                       style={{
                         width: '2.5rem', height: '2.5rem',
                         borderRadius: '0.625rem',
-                        background: 'rgba(9,76,178,0.07)',
+                        background: 'hsl(var(--primary) / 0.07)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                         margin: '0 auto 0.75rem',
                       }}
@@ -493,7 +493,7 @@ const Roadmap: React.FC = () => {
         </main>
 
         {/* ═══ Footer ═══ */}
-        <footer style={{ background: t.white, borderTop: '1px solid rgba(195,198,213,0.35)', padding: '2.5rem 1.5rem' }}>
+        <footer style={{ background: t.white, borderTop: '1px solid hsl(var(--border) / 0.35)', padding: '2.5rem 1.5rem' }}>
           <div
             style={{
               maxWidth: '64rem',
@@ -527,7 +527,7 @@ const Roadmap: React.FC = () => {
         <style>{`
           @keyframes rm-spin    { to { transform: rotate(360deg); } }
           @keyframes rm-fadeIn  { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
-          @keyframes rm-pulse   { 0%,100% { box-shadow: 0 4px 14px rgba(9,76,178,0.3); } 50% { box-shadow: 0 6px 24px rgba(9,76,178,0.5); } }
+          @keyframes rm-pulse   { 0%,100% { box-shadow: 0 4px 14px hsl(var(--primary) / 0.3); } 50% { box-shadow: 0 6px 24px hsl(var(--primary) / 0.5); } }
           @keyframes rm-loading { 0% { width:0%; margin-left:0; } 50% { width:70%; margin-left:15%; } 100% { width:0%; margin-left:100%; } }
         `}</style>
       </div>

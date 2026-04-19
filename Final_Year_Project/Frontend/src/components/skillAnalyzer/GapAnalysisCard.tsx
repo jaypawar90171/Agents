@@ -8,16 +8,16 @@ interface GapAnalysisCardProps {
 
 const sectionCard: React.CSSProperties = {
   borderRadius: '0.875rem',
-  background: '#ffffff',
-  border: '1px solid rgba(195, 198, 213, 0.35)',
+  background: 'hsl(var(--card))',
+  border: '1px solid hsl(var(--border) / 0.35)',
   padding: '1.5rem',
-  boxShadow: '0 4px 16px rgba(27, 28, 29, 0.04)',
+  boxShadow: '0 4px 16px hsl(var(--foreground) / 0.04)',
 };
 
 const statCard: React.CSSProperties = {
   borderRadius: '0.75rem',
-  background: '#faf9fa',
-  border: '1px solid rgba(195, 198, 213, 0.4)',
+  background: 'hsl(var(--background))',
+  border: '1px solid hsl(var(--border) / 0.4)',
   padding: '1.25rem',
   textAlign: 'center',
 };
@@ -32,10 +32,10 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
       {/* ── Stats row ── */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.875rem' }}>
         {[
-          { value: gaps.length,                     label: 'Total Gaps',   color: '#094cb2' },
-          { value: criticalGaps.length,              label: 'Critical',     color: '#ba1a1a' },
-          { value: competitiveGaps.length,           label: 'Edge Gaps',    color: '#6d5e00' },
-          { value: `${matchScore}%`,                 label: 'Match Score',  color: '#094cb2' },
+          { value: gaps.length,                     label: 'Total Gaps',   color: 'hsl(var(--primary))' },
+          { value: criticalGaps.length,              label: 'Critical',     color: 'hsl(var(--error))' },
+          { value: competitiveGaps.length,           label: 'Edge Gaps',    color: 'hsl(var(--tertiary))' },
+          { value: `${matchScore}%`,                 label: 'Match Score',  color: 'hsl(var(--primary))' },
         ].map((stat, i) => (
           <div key={i} style={statCard}>
             <p
@@ -55,7 +55,7 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
                 fontSize: '0.75rem',
                 fontWeight: 600,
                 letterSpacing: '0.04em',
-                color: '#737784',
+                color: 'hsl(var(--outline))',
                 marginTop: '0.25rem',
               }}
             >
@@ -66,21 +66,21 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
       </div>
 
       {/* ── Critical Gaps ── */}
-      <div style={{ ...sectionCard, borderLeft: '3px solid #ba1a1a' }}>
+      <div style={{ ...sectionCard, borderLeft: '3px solid hsl(var(--error))' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', marginBottom: '1rem' }}>
           <div
             style={{
               width: '2.5rem',
               height: '2.5rem',
               borderRadius: '0.625rem',
-              background: '#ffdad6',
+              background: 'hsl(var(--error-container))',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
             }}
           >
-            <AlertTriangle size={18} color="#ba1a1a" />
+            <AlertTriangle size={18} color="hsl(var(--error))" />
           </div>
           <div>
             <h3
@@ -88,7 +88,7 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
                 fontFamily: "'Noto Serif', serif",
                 fontWeight: 700,
                 fontSize: '1rem',
-                color: '#1b1c1d',
+                color: 'hsl(var(--on-surface))',
               }}
             >
               Critical Skill Gaps
@@ -97,7 +97,7 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
               style={{
                 fontFamily: "'Inter', sans-serif",
                 fontSize: '0.8125rem',
-                color: '#737784',
+                color: 'hsl(var(--outline))',
                 marginTop: '0.125rem',
               }}
             >
@@ -111,8 +111,8 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
               fontSize: '0.75rem',
               fontWeight: 700,
               letterSpacing: '0.04em',
-              color: '#ba1a1a',
-              background: '#ffdad6',
+              color: 'hsl(var(--error))',
+              background: 'hsl(var(--error-container))',
               padding: '0.25rem 0.75rem',
               borderRadius: '999px',
               flexShrink: 0,
@@ -130,8 +130,8 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.75rem',
-                background: '#fff5f5',
-                border: '1px solid rgba(186, 26, 26, 0.15)',
+                background: 'hsl(var(--error-container))',
+                border: '1px solid hsl(var(--error) / 0.15)',
                 borderRadius: '0.625rem',
                 padding: '0.75rem 1rem',
               }}
@@ -141,20 +141,20 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
                   width: '2rem',
                   height: '2rem',
                   borderRadius: '0.5rem',
-                  background: '#ffdad6',
+                  background: 'hsl(var(--error-container))',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
                 }}
               >
-                <Target size={14} color="#ba1a1a" />
+                <Target size={14} color="hsl(var(--error))" />
               </div>
               <div style={{ minWidth: 0 }}>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: '0.875rem', color: '#1b1c1d', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: '0.875rem', color: 'hsl(var(--on-surface))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {gap.skill}
                 </p>
-                <p style={{ fontFamily: "'Public Sans', sans-serif", fontSize: '0.7rem', color: '#737784', marginTop: '0.1rem' }}>
+                <p style={{ fontFamily: "'Public Sans', sans-serif", fontSize: '0.7rem', color: 'hsl(var(--outline))', marginTop: '0.1rem' }}>
                   Found in {gap.frequency} jobs
                 </p>
               </div>
@@ -163,28 +163,28 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
         </div>
 
         {criticalGaps.length === 0 && (
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: '#737784' }}>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'hsl(var(--outline))' }}>
             No critical gaps identified — you have the core skills!
           </p>
         )}
       </div>
 
       {/* ── Competitive Edge Gaps ── */}
-      <div style={{ ...sectionCard, borderLeft: '3px solid #bfab49' }}>
+      <div style={{ ...sectionCard, borderLeft: '3px solid hsl(var(--secondary-container))' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.875rem', marginBottom: '1rem' }}>
           <div
             style={{
               width: '2.5rem',
               height: '2.5rem',
               borderRadius: '0.625rem',
-              background: 'rgba(191, 171, 73, 0.15)',
+              background: 'hsl(var(--tertiary) / 0.15)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
             }}
           >
-            <TrendingUp size={18} color="#6d5e00" />
+            <TrendingUp size={18} color="hsl(var(--tertiary))" />
           </div>
           <div>
             <h3
@@ -192,7 +192,7 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
                 fontFamily: "'Noto Serif', serif",
                 fontWeight: 700,
                 fontSize: '1rem',
-                color: '#1b1c1d',
+                color: 'hsl(var(--on-surface))',
               }}
             >
               Competitive Edge
@@ -201,7 +201,7 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
               style={{
                 fontFamily: "'Inter', sans-serif",
                 fontSize: '0.8125rem',
-                color: '#737784',
+                color: 'hsl(var(--outline))',
                 marginTop: '0.125rem',
               }}
             >
@@ -215,8 +215,8 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
               fontSize: '0.75rem',
               fontWeight: 700,
               letterSpacing: '0.04em',
-              color: '#4a3f00',
-              background: 'rgba(191, 171, 73, 0.18)',
+              color: 'hsl(var(--on-surface))',
+              background: 'hsl(var(--tertiary) / 0.18)',
               padding: '0.25rem 0.75rem',
               borderRadius: '999px',
               flexShrink: 0,
@@ -234,8 +234,8 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.75rem',
-                background: 'rgba(249, 227, 122, 0.1)',
-                border: '1px solid rgba(191, 171, 73, 0.25)',
+                background: 'hsl(var(--tertiary) / 0.1)',
+                border: '1px solid hsl(var(--tertiary) / 0.25)',
                 borderRadius: '0.625rem',
                 padding: '0.75rem 1rem',
               }}
@@ -245,20 +245,20 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
                   width: '2rem',
                   height: '2rem',
                   borderRadius: '0.5rem',
-                  background: 'rgba(191, 171, 73, 0.15)',
+                  background: 'hsl(var(--tertiary) / 0.15)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
                 }}
               >
-                <Users size={14} color="#6d5e00" />
+                <Users size={14} color="hsl(var(--tertiary))" />
               </div>
               <div style={{ minWidth: 0 }}>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: '0.875rem', color: '#1b1c1d', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: '0.875rem', color: 'hsl(var(--on-surface))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {gap.skill}
                 </p>
-                <p style={{ fontFamily: "'Public Sans', sans-serif", fontSize: '0.7rem', color: '#737784', marginTop: '0.1rem' }}>
+                <p style={{ fontFamily: "'Public Sans', sans-serif", fontSize: '0.7rem', color: 'hsl(var(--outline))', marginTop: '0.1rem' }}>
                   Found in {gap.frequency} jobs
                 </p>
               </div>
@@ -267,7 +267,7 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
         </div>
 
         {competitiveGaps.length === 0 && (
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: '#737784' }}>
+          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'hsl(var(--outline))' }}>
             No competitive edge gaps — you're ahead of the curve!
           </p>
         )}

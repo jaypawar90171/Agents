@@ -68,6 +68,7 @@ export interface WebSource {
 export interface SendMessageRequest {
   message: string;
   session_id?: string | null;
+  userId: string;
 }
 
 export interface SendMessageResponse {

@@ -35,9 +35,9 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
 
   const getImportanceBadge = (importance: string) => {
     if (importance === 'Critical') {
-      return { bg: '#ffdad6', color: '#ba1a1a', label: 'CRITICAL' };
+      return { bg: 'hsl(var(--error-container))', color: 'hsl(var(--error))', label: 'CRITICAL' };
     }
-    return { bg: 'rgba(191,171,73,0.18)', color: '#4a3f00', label: 'EDGE' };
+    return { bg: 'hsl(var(--tertiary) / 0.18)', color: 'hsl(var(--on-surface))', label: 'EDGE' };
   };
 
   return (
@@ -52,13 +52,13 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
             key={index}
             style={{
               borderRadius: '0.875rem',
-              background: '#ffffff',
+              background: 'hsl(var(--card))',
               border: isExpanded
-                ? '1px solid rgba(9, 76, 178, 0.25)'
-                : '1px solid rgba(195, 198, 213, 0.35)',
+                ? '1px solid hsl(var(--primary) / 0.25)'
+                : '1px solid hsl(var(--border) / 0.35)',
               boxShadow: isExpanded
-                ? '0 4px 20px rgba(9, 76, 178, 0.08)'
-                : '0 2px 8px rgba(27, 28, 29, 0.04)',
+                ? '0 4px 20px hsl(var(--primary) / 0.08)'
+                : '0 2px 8px hsl(var(--foreground) / 0.04)',
               transition: 'box-shadow 0.25s ease, border-color 0.25s ease',
               overflow: 'hidden',
             }}
@@ -79,17 +79,17 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                 transition: 'background 0.2s ease',
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = '#faf9fa';
+                (e.currentTarget as HTMLButtonElement).style.background = 'hsl(var(--background))';
               }}
               onMouseLeave={(e) => {
                 (e.currentTarget as HTMLButtonElement).style.background = 'none';
               }}
             >
               {/* Expand/Collapse chevron */}
-              <div style={{ flexShrink: 0, color: '#094cb2' }}>
+              <div style={{ flexShrink: 0, color: 'hsl(var(--primary))' }}>
                 {isExpanded
                   ? <ChevronDown size={18} />
-                  : <ChevronRight size={18} color="#737784" />
+                  : <ChevronRight size={18} color="hsl(var(--outline))" />
                 }
               </div>
 
@@ -101,8 +101,8 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                   aria-label={isCompleted ? 'Mark incomplete' : 'Mark complete'}
                 >
                   {isCompleted
-                    ? <CheckCircle size={22} color="#094cb2" />
-                    : <Circle size={22} color="#c3c6d5" />
+                    ? <CheckCircle size={22} color="hsl(var(--primary))" />
+                    : <Circle size={22} color="hsl(var(--border))" />
                   }
                 </button>
               )}
@@ -115,7 +115,7 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                       fontFamily: "'Noto Serif', serif",
                       fontWeight: 700,
                       fontSize: '0.9375rem',
-                      color: isCompleted ? '#737784' : '#1b1c1d',
+                      color: isCompleted ? 'hsl(var(--outline))' : 'hsl(var(--on-surface))',
                       textDecoration: isCompleted ? 'line-through' : 'none',
                     }}
                   >
@@ -137,12 +137,12 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                   </span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', marginTop: '0.25rem' }}>
-                  <Clock size={12} color="#737784" />
+                  <Clock size={12} color="hsl(var(--outline))" />
                   <span
                     style={{
                       fontFamily: "'Public Sans', sans-serif",
                       fontSize: '0.75rem',
-                      color: '#737784',
+                      color: 'hsl(var(--outline))',
                       letterSpacing: '0.01em',
                     }}
                   >
@@ -156,9 +156,9 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
             {isExpanded && (
               <div
                 style={{
-                  borderTop: '1px solid rgba(195, 198, 213, 0.35)',
+                  borderTop: '1px solid hsl(var(--border) / 0.35)',
                   padding: '1.25rem 1.5rem',
-                  background: '#faf9fa',
+                  background: 'hsl(var(--background))',
                 }}
               >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -170,17 +170,17 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                         fontFamily: "'Noto Serif', serif",
                         fontWeight: 700,
                         fontSize: '0.875rem',
-                        color: '#1b1c1d',
+                        color: 'hsl(var(--on-surface))',
                         marginBottom: '0.5rem',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.5rem',
                       }}
                     >
-                      <Award size={14} color="#094cb2" />
+                      <Award size={14} color="hsl(var(--primary))" />
                       Why it matters
                     </h5>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: '#434653', lineHeight: 1.65 }}>
+                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'hsl(var(--on-surface-variant))', lineHeight: 1.65 }}>
                       {step.why_it_matters}
                     </p>
                   </div>
@@ -192,13 +192,13 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                         fontFamily: "'Noto Serif', serif",
                         fontWeight: 700,
                         fontSize: '0.875rem',
-                        color: '#1b1c1d',
+                        color: 'hsl(var(--on-surface))',
                         marginBottom: '0.5rem',
                       }}
                     >
                       Leverage from your background
                     </h5>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: '#434653', lineHeight: 1.65 }}>
+                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'hsl(var(--on-surface-variant))', lineHeight: 1.65 }}>
                       {step.leverage_from_background}
                     </p>
                   </div>
@@ -210,14 +210,14 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                         fontFamily: "'Noto Serif', serif",
                         fontWeight: 700,
                         fontSize: '0.875rem',
-                        color: '#1b1c1d',
+                        color: 'hsl(var(--on-surface))',
                         marginBottom: '0.625rem',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.5rem',
                       }}
                     >
-                      <BookOpen size={14} color="#094cb2" />
+                      <BookOpen size={14} color="hsl(var(--primary))" />
                       Learning Resources
                     </h5>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -232,27 +232,27 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                             alignItems: 'center',
                             gap: '0.75rem',
                             borderRadius: '0.625rem',
-                            background: '#ffffff',
-                            border: '1px solid rgba(195, 198, 213, 0.4)',
+                            background: 'hsl(var(--card))',
+                            border: '1px solid hsl(var(--border) / 0.4)',
                             padding: '0.625rem 1rem',
                             textDecoration: 'none',
                             transition: 'border-color 0.2s, box-shadow 0.2s',
                           }}
                           onMouseEnter={(e) => {
-                            (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(9,76,178,0.3)';
-                            (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 2px 8px rgba(9,76,178,0.08)';
+                            (e.currentTarget as HTMLAnchorElement).style.borderColor = 'hsl(var(--primary) / 0.3)';
+                            (e.currentTarget as HTMLAnchorElement).style.boxShadow = '0 2px 8px hsl(var(--primary) / 0.08)';
                           }}
                           onMouseLeave={(e) => {
-                            (e.currentTarget as HTMLAnchorElement).style.borderColor = 'rgba(195, 198, 213, 0.4)';
+                            (e.currentTarget as HTMLAnchorElement).style.borderColor = 'hsl(var(--border) / 0.4)';
                             (e.currentTarget as HTMLAnchorElement).style.boxShadow = 'none';
                           }}
                         >
-                          <ExternalLink size={15} color="#094cb2" style={{ flexShrink: 0 }} />
+                          <ExternalLink size={15} color="hsl(var(--primary))" style={{ flexShrink: 0 }} />
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: '0.875rem', color: '#1b1c1d', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: '0.875rem', color: 'hsl(var(--on-surface))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {resource.title}
                             </p>
-                            <p style={{ fontFamily: "'Public Sans', sans-serif", fontSize: '0.6875rem', color: '#737784', marginTop: '0.1rem', letterSpacing: '0.02em' }}>
+                            <p style={{ fontFamily: "'Public Sans', sans-serif", fontSize: '0.6875rem', color: 'hsl(var(--outline))', marginTop: '0.1rem', letterSpacing: '0.02em' }}>
                               {resource.resource_type.toUpperCase()} · {resource.is_free ? 'FREE' : 'PAID'}
                             </p>
                           </div>
@@ -268,14 +268,14 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                         fontFamily: "'Noto Serif', serif",
                         fontWeight: 700,
                         fontSize: '0.875rem',
-                        color: '#1b1c1d',
+                        color: 'hsl(var(--on-surface))',
                         marginBottom: '0.625rem',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.5rem',
                       }}
                     >
-                      <Calendar size={14} color="#094cb2" />
+                      <Calendar size={14} color="hsl(var(--primary))" />
                       Weekly Breakdown
                     </h5>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.625rem' }}>
@@ -284,13 +284,13 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                           key={i}
                           style={{
                             borderRadius: '0.625rem',
-                            background: '#ffffff',
-                            border: '1px solid rgba(195, 198, 213, 0.4)',
+                            background: 'hsl(var(--card))',
+                            border: '1px solid hsl(var(--border) / 0.4)',
                             padding: '0.875rem 1rem',
                           }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.625rem' }}>
-                            <span style={{ fontFamily: "'Noto Serif', serif", fontWeight: 700, fontSize: '0.875rem', color: '#1b1c1d' }}>
+                            <span style={{ fontFamily: "'Noto Serif', serif", fontWeight: 700, fontSize: '0.875rem', color: 'hsl(var(--on-surface))' }}>
                               {week.week_label}
                             </span>
                             <span
@@ -299,8 +299,8 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                                 fontSize: '0.6875rem',
                                 fontWeight: 700,
                                 letterSpacing: '0.03em',
-                                color: '#094cb2',
-                                background: 'rgba(9, 76, 178, 0.08)',
+                                color: 'hsl(var(--primary))',
+                                background: 'hsl(var(--primary) / 0.08)',
                                 padding: '0.15rem 0.5rem',
                                 borderRadius: '999px',
                               }}
@@ -311,8 +311,8 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                           <ul style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem', paddingLeft: 0, listStyle: 'none' }}>
                             {week.tasks.map((task, j) => (
                               <li key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
-                                <span style={{ width: '0.375rem', height: '0.375rem', borderRadius: '50%', background: '#094cb2', flexShrink: 0, marginTop: '0.45rem' }} />
-                                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8125rem', color: '#434653', lineHeight: 1.55 }}>
+                                <span style={{ width: '0.375rem', height: '0.375rem', borderRadius: '50%', background: 'hsl(var(--primary))', flexShrink: 0, marginTop: '0.45rem' }} />
+                                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8125rem', color: 'hsl(var(--on-surface-variant))', lineHeight: 1.55 }}>
                                   {task}
                                 </span>
                               </li>
@@ -322,12 +322,12 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                             style={{
                               marginTop: '0.75rem',
                               borderRadius: '0.5rem',
-                              background: 'rgba(109, 94, 0, 0.08)',
+                              background: 'hsl(var(--tertiary) / 0.08)',
                               padding: '0.375rem 0.75rem',
                               fontFamily: "'Public Sans', sans-serif",
                               fontSize: '0.75rem',
                               fontWeight: 600,
-                              color: '#4a3f00',
+                              color: 'hsl(var(--on-surface))',
                               letterSpacing: '0.02em',
                             }}
                           >
@@ -345,7 +345,7 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                         fontFamily: "'Noto Serif', serif",
                         fontWeight: 700,
                         fontSize: '0.875rem',
-                        color: '#1b1c1d',
+                        color: 'hsl(var(--on-surface))',
                         marginBottom: '0.5rem',
                       }}
                     >
@@ -355,10 +355,10 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                       style={{
                         fontFamily: "'Inter', sans-serif",
                         fontSize: '0.875rem',
-                        color: '#434653',
+                        color: 'hsl(var(--on-surface-variant))',
                         lineHeight: 1.65,
-                        background: '#ffffff',
-                        border: '1px solid rgba(195, 198, 213, 0.4)',
+                        background: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border) / 0.4)',
                         borderRadius: '0.625rem',
                         padding: '0.875rem 1rem',
                       }}
@@ -374,7 +374,7 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                         fontFamily: "'Noto Serif', serif",
                         fontWeight: 700,
                         fontSize: '0.875rem',
-                        color: '#1b1c1d',
+                        color: 'hsl(var(--on-surface))',
                         marginBottom: '0.5rem',
                       }}
                     >
@@ -384,10 +384,10 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                       style={{
                         fontFamily: "'Inter', sans-serif",
                         fontSize: '0.875rem',
-                        color: '#094cb2',
+                        color: 'hsl(var(--primary))',
                         lineHeight: 1.65,
-                        background: 'rgba(9, 76, 178, 0.04)',
-                        border: '1px solid rgba(9, 76, 178, 0.15)',
+                        background: 'hsl(var(--primary) / 0.04)',
+                        border: '1px solid hsl(var(--primary) / 0.15)',
                         borderRadius: '0.625rem',
                         padding: '0.875rem 1rem',
                       }}
