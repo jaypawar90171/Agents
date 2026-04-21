@@ -16,6 +16,7 @@ export default defineConfig({
     allowedHosts: [
       'localhost',
       '127.0.0.1',
+      'outshoot-shortcake-impulsive.ngrok-free.dev',
       '*.ngrok-free.app',
       '*.ngrok.io'
     ],

@@ -24,7 +24,11 @@ interface UseProfileReturn {
     userRoadmapId: string,
     weekNumber: number,
     isCompleted: boolean,
-    notes?: string
+    subProgress?: {
+      whatYoullLearn: boolean[];
+      studyPlan: boolean[];
+      handsOnPractice: boolean[];
+    }
   ) => Promise<void>;
   deleteRoadmap: (userRoadmapId: string) => Promise<void>;
   closeRoadmapDetail: () => void;

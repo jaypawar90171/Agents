@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useAtom, useSetAtom } from "jotai";
+import { useUser } from "@clerk/clerk-react";
 import Header from "../components/Header";
 import { ChatMessageBubble } from "../components/chat/ChatMessageBubble";
 import { ChatInput } from "../components/chat/ChatInput";
@@ -21,13 +22,14 @@ import {
   renameSession,
 } from "../services/chatService";
 import type { ChatMessage } from "../types/api";
-import { MessageSquare, PlusCircle, Briefcase } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 
 function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
 export default function JobChat() {
+  const { user } = useUser();
   const [sessionId, setSessionId] = useAtom(chatSessionIdAtom);
   const [messages, setMessages] = useAtom(chatMessagesAtom);
   const [loading, setLoading] = useAtom(chatLoadingAtom);
@@ -35,8 +37,11 @@ export default function JobChat() {
   const [input, setInput] = useAtom(chatInputAtom);
   const setSession = useSetAtom(chatSetSessionAtom);
   const clearChat = useSetAtom(chatClearAtom);
-  const setSessionList = useSetAtom(chatSessionListAtom);
+  const [sessionList, setSessionList] = useAtom(chatSessionListAtom);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const userId = user?.id ?? "guest";
+  const activeSessionTitle = sessionList.find(s => s.session_id === sessionId)?.title || "New Dialogue";
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
@@ -64,6 +69,7 @@ export default function JobChat() {
       const res = await sendMessageApi({
         message: text,
         session_id: sessionId ?? undefined,
+        userId,
       });
 
       const activeSessionId = res.session_id;
@@ -74,7 +80,7 @@ export default function JobChat() {
       if (isFirstMessage && activeSessionId) {
         const autoTitle = text.length > 40 ? text.slice(0, 40) + "…" : text;
         try {
-          await renameSession(activeSessionId, autoTitle);
+          await renameSession(activeSessionId, autoTitle, userId);
           // Update sidebar list optimistically
           setSessionList((prev) =>
             prev.map((s) =>
@@ -121,6 +127,7 @@ export default function JobChat() {
     loading,
     sessionId,
     messages.length,
+    userId,
     setInput,
     setMessages,
     setError,
@@ -132,87 +139,101 @@ export default function JobChat() {
     clearChat();
     setSession(null);
     (async () => {
-      const { session_id } = await createSession();
+      const { session_id } = await createSession(userId);
       setSessionId(session_id);
       // Reload sidebar so the new blank session appears
       if (typeof (window as any).__reloadChatSidebar === "function") {
         (window as any).__reloadChatSidebar();
       }
     })();
-  }, [clearChat, setSession, setSessionId]);
+  }, [clearChat, setSession, setSessionId, userId]);
 
   return (
-    <div className="h-screen flex flex-col bg-slate-50/80 dark:bg-slate-950 overflow-hidden">
+    <div className="h-screen flex flex-col bg-background text-on-background overflow-hidden relative">
       <Header />
 
-      {/* Body: sidebar + chat area side by side */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden relative z-0">
         <ChatSidebar onNewChat={handleNewChat} />
 
-        {/* Chat area */}
-        <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          <div className="flex-1 flex flex-col max-w-4xl mx-auto w-full px-4 py-6 overflow-hidden">
-            {/* Messages */}
-            <div
-              ref={scrollRef}
-              className="flex-1 overflow-y-auto space-y-6 pb-4 no-scrollbar"
-            >
-              {messages.length === 0 && !loading && (
-                <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-300 mb-4">
-                    <MessageSquare className="w-7 h-7" />
-                  </div>
-                  <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-100 mb-1">
-                    Start a conversation
-                  </h2>
-                  <p className="text-slate-500 dark:text-slate-400 text-sm max-w-sm mb-6">
-                    Ask for job recommendations, skills for a role, or get
-                    career advice. Try questions like "What is LangGraph?" for
-                    web search results.
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {[
-                      "Backend jobs in Bangalore",
-                      "Skills needed for data scientist",
-                      "What is LangGraph?",
-                      "Jobs for Python developers in Pune",
-                      "How do I write a resume?",
-                    ].map((s) => (
-                      <button
-                        key={s}
-                        type="button"
-                        onClick={() => setInput(s)}
-                        className="px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-200 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 transition-colors"
-                      >
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {messages.map((msg) => (
-                <ChatMessageBubble key={msg.id} message={msg} />
-              ))}
-              {loading && <TypingIndicator />}
+        {/* Main Chat Area */}
+        <main className="flex-1 flex flex-col bg-surface-container-lowest dark:bg-[hsl(var(--surface-container-lowest-dark))] relative overflow-hidden">
+          {/* Chat Header */}
+          {/* <header className="h-16 flex items-center px-8 bg-surface-container-lowest z-10 border-b border-outline-variant/10">
+            <h2 className="text-xl font-headline font-bold text-on-surface truncate">{activeSessionTitle}</h2>
+            <div className="ml-auto flex items-center gap-4">
+              <span className="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed text-[10px] font-label font-bold uppercase tracking-wider rounded-full shadow-sm">Scholar Mode</span>
+              <button className="p-2 hover:bg-surface-container-low rounded-full transition-colors text-outline">
+                <MoreHorizontal className="w-5 h-5" />
+              </button>
             </div>
+          </header> */}
 
-            {/* Error */}
-            {error && (
-              <div className="mb-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 px-4 py-2 text-sm text-red-700 dark:text-red-300 flex-shrink-0">
-                {error}
+          {/* Chat Content */}
+          <div 
+            ref={scrollRef}
+            className="flex-1 overflow-y-auto px-4 md:px-12 lg:px-24 py-10 space-y-12 no-scrollbar"
+          >
+            {/* Empty State */}
+            {messages.length === 0 && !loading && (
+              <div className="flex flex-col items-center justify-center py-16 text-center max-w-2xl mx-auto">
+                <h2 className="text-3xl font-headline font-bold text-on-surface mb-4">
+                  Welcome to Alexandria
+                </h2>
+                <p className="text-on-surface-variant font-body mb-10 max-w-lg leading-relaxed">
+                  Your scholarly AI assistant. Ask questions about your career trajectory, market trends, or request a customized learning roadmap.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                  {[
+                    "Generate a career path for a Senior UI/UX Designer",
+                    "How do I negotiate my salary in 2026?",
+                    "What are the highest demand tech skills?",
+                    "Build me a roadmap for Data Science",
+                  ].map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setInput(s)}
+                      className="p-4 rounded-xl bg-surface-container-low border border-outline-variant/20 text-on-surface text-sm font-body hover:bg-surface-container hover:shadow-sm transition-all text-left group"
+                    >
+                      <span className="group-hover:text-primary transition-colors">{s}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
 
-            {/* Input */}
-            <div className="pt-2 flex-shrink-0">
-              <ChatInput
-                value={input}
-                onChange={setInput}
-                onSend={handleSend}
-                disabled={loading}
-              />
+            {/* Messages */}
+            {messages.map((msg) => (
+              <ChatMessageBubble key={msg.id} message={msg} />
+            ))}
+            
+            {loading && (
+              <div className="flex gap-6 max-w-4xl mx-auto">
+                <div className="w-10 h-10 rounded-full bg-primary-container flex-shrink-0 flex items-center justify-center mt-1">
+                  <span className="font-serif text-white font-bold italic">A</span>
+                </div>
+                <div className="flex items-center space-x-1 mt-3">
+                  <TypingIndicator />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Error */}
+          {error && (
+            <div className="absolute bottom-[100px] left-1/2 -translate-x-1/2 rounded-xl bg-error-container text-on-error-container px-6 py-3 text-sm font-label font-bold flex-shrink-0 shadow-lg z-20">
+              {error}
             </div>
+          )}
+
+          {/* Message Input */}
+          <div className="p-4 md:p-8 md:px-24 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest to-transparent relative z-10">
+            <ChatInput
+              value={input}
+              onChange={setInput}
+              onSend={handleSend}
+              disabled={loading}
+            />
           </div>
         </main>
       </div>

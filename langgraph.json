@@ -1,0 +1,7 @@
+{
+    "dependencies": ["."],
+    "graphs": {
+        "AdaptiveRAG": "./main.py:app"
+    },
+    "env": "../../.env"
+}

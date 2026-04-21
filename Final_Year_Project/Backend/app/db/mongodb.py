@@ -48,6 +48,21 @@ class MongoDB:
             IndexModel([("userId", ASCENDING), ("status", ASCENDING)]),
             IndexModel([("lastAccessed", ASCENDING)])
         ])
+        
+        # Skill Roadmap indexes
+        skill_roadmaps_collection = db.get_collection("skill_roadmaps")
+        await skill_roadmaps_collection.create_indexes([
+            IndexModel([("userId", ASCENDING)]),
+            IndexModel([("metadata.createdAt", ASCENDING)])
+        ])
+        
+        # User Skill Roadmap indexes
+        user_skill_roadmaps_collection = db.get_collection("user_skill_roadmaps")
+        await user_skill_roadmaps_collection.create_indexes([
+            IndexModel([("userId", ASCENDING), ("skillRoadmapId", ASCENDING)], unique=True),
+            IndexModel([("userId", ASCENDING), ("status", ASCENDING)]),
+            IndexModel([("lastAccessed", ASCENDING)])
+        ])
     
     @classmethod
     def get_database(cls):

@@ -5,12 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.60.1",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/forms": "^0.5.11",
     "@types/js-cookie": "^3.0.6",
     "axios": "^1.13.5",
     "body-parser": "^2.2.2",

@@ -544,7 +544,7 @@ def _get_sessions_collection():
     return client[DB_NAME][CHAT_SESSIONS_COLLECTION]
 
 
-def create_session() -> tuple[str, str]:
+def create_session(userId: str) -> tuple[str, str]:
     """Create a new session and return (session_id, thread_id)."""
     import datetime
 
@@ -553,6 +553,7 @@ def create_session() -> tuple[str, str]:
 
     doc = {
         "session_id": session_id,
+        "userId": userId,
         "title": "New Chat",
         "created_at": datetime.datetime.utcnow(),
         "messages": [],
@@ -561,9 +562,9 @@ def create_session() -> tuple[str, str]:
     return session_id, thread_id
 
 
-def get_or_create_thread(session_id: str) -> str:
+def get_or_create_thread(session_id: str, userId: str) -> str:
     """Return thread_id for an existing session, or create one if missing."""
-    existing = _get_sessions_collection().find_one({"session_id": session_id})
+    existing = _get_sessions_collection().find_one({"session_id": session_id, "userId": userId})
     if existing:
         return session_id
 
@@ -572,6 +573,7 @@ def get_or_create_thread(session_id: str) -> str:
 
     doc = {
         "session_id": session_id,
+        "userId": userId,
         "title": "New Chat",
         "created_at": datetime.datetime.utcnow(),
         "messages": [],
@@ -580,12 +582,12 @@ def get_or_create_thread(session_id: str) -> str:
     return session_id
 
 
-def list_sessions() -> list[dict]:
+def list_sessions(userId: str) -> list[dict]:
     """Return all sessions with metadata (id, title, created_at, message_count)."""
     import datetime
 
     sessions = []
-    for doc in _get_sessions_collection().find().sort("created_at", -1):
+    for doc in _get_sessions_collection().find({"userId": userId}).sort("created_at", -1):
         created_at = doc.get("created_at")
         if isinstance(created_at, datetime.datetime):
             created_at = created_at.isoformat()
@@ -603,11 +605,11 @@ def list_sessions() -> list[dict]:
     return sessions
 
 
-def get_session(session_id: str) -> dict | None:
+def get_session(session_id: str, userId: str) -> dict | None:
     """Return full session details including messages."""
     import datetime
 
-    doc = _get_sessions_collection().find_one({"session_id": session_id})
+    doc = _get_sessions_collection().find_one({"session_id": session_id, "userId": userId})
     if not doc:
         return None
 
@@ -632,26 +634,26 @@ def get_session(session_id: str) -> dict | None:
     }
 
 
-def update_session_title(session_id: str, title: str) -> bool:
+def update_session_title(session_id: str, title: str, userId: str) -> bool:
     """Update session title. Returns True if successful."""
     result = _get_sessions_collection().update_one(
-        {"session_id": session_id}, {"$set": {"title": title}}
+        {"session_id": session_id, "userId": userId}, {"$set": {"title": title}}
     )
     return result.modified_count > 0
 
 
-def delete_session(session_id: str) -> bool:
+def delete_session(session_id: str, userId: str) -> bool:
     """Delete a session. Returns True if successful."""
-    result = _get_sessions_collection().delete_one({"session_id": session_id})
+    result = _get_sessions_collection().delete_one({"session_id": session_id, "userId": userId})
     return result.deleted_count > 0
 
 
-def add_message_to_session(session_id: str, role: str, content: str):
+def add_message_to_session(session_id: str, role: str, content: str, userId: str):
     """Add a message to the session's messages array."""
     import datetime
 
     _get_sessions_collection().update_one(
-        {"session_id": session_id},
+        {"session_id": session_id, "userId": userId},
         {
             "$push": {
                 "messages": {
@@ -664,7 +666,7 @@ def add_message_to_session(session_id: str, role: str, content: str):
     )
 
 
-def run_agent(thread_id: str, message: str, session_id: str | None = None) -> dict:
+def run_agent(thread_id: str, message: str, session_id: str | None = None, userId: str | None = None) -> dict:
     """
     Invoke the RAG graph for a single question and return a dict that
     matches the shape expected by chat.py:
@@ -724,9 +726,9 @@ def run_agent(thread_id: str, message: str, session_id: str | None = None) -> di
         }]
 
     # Persist messages to MongoDB if session_id provided
-    if session_id:
-        add_message_to_session(session_id, "user", message)
-        add_message_to_session(session_id, "assistant", generation)
+    if session_id and userId:
+        add_message_to_session(session_id, "user", message, userId)
+        add_message_to_session(session_id, "assistant", generation, userId)
 
     return {
         "reply": generation,

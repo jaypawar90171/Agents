@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
+import { useUser } from '@clerk/clerk-react';
 import {
   chatSessionIdAtom,
   chatSidebarOpenAtom,
@@ -13,25 +14,9 @@ import {
   deleteSession,
 } from '../../services/chatService';
 import type { ChatSession, ChatMessage } from '../../types/api';
-import { Briefcase, Plus, Trash2, Pencil, ChevronLeft, MessageSquare } from 'lucide-react';
+import { PlusCircle, Trash2, Pencil, ChevronRight, HelpCircle, Shield, History, Search, Bot, PanelLeftClose, SquarePen } from 'lucide-react';
 
-function formatRelativeTime(dateStr: string): string {
-  if (!dateStr) return '';
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString();
-}
-
-function truncateTitle(title: string, maxLen = 36): string {
+function truncateTitle(title: string, maxLen = 30): string {
   if (title.length <= maxLen) return title;
   return title.slice(0, maxLen) + '…';
 }
@@ -49,11 +34,9 @@ interface SessionItemProps {
 function SessionItem({ session, isActive, onSelect, onRename, onDelete }: SessionItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(session.title);
-  const [isHovered, setIsHovered] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Keep editTitle in sync if the session title prop changes (e.g. auto-title)
   useEffect(() => {
     setEditTitle(session.title);
   }, [session.title]);
@@ -96,20 +79,15 @@ function SessionItem({ session, isActive, onSelect, onRename, onDelete }: Sessio
     <div
       role="button"
       tabIndex={0}
-      className={`group flex items-center gap-2 px-3 py-2.5 rounded-lg cursor-pointer transition-colors ${
+      className={`group flex items-center gap-3 p-3 rounded-lg hover:translate-x-1 transition-transform duration-200 ${
         isActive
-          ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300'
-          : 'hover:bg-slate-100 dark:hover:bg-slate-800'
+          ? 'bg-white dark:bg-neutral-800 text-primary shadow-sm'
+          : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800/50'
       }`}
       onClick={onSelect}
       onKeyDown={(e) => e.key === 'Enter' && onSelect()}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => {
-        setIsHovered(false);
-        setShowDeleteConfirm(false);
-      }}
     >
-      <MessageSquare className="w-4 h-4 flex-shrink-0 text-slate-400" />
+      <History className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-primary' : 'text-outline'}`} strokeWidth={2} />
 
       <div className="flex-1 min-w-0">
         {isEditing ? (
@@ -121,40 +99,39 @@ function SessionItem({ session, isActive, onSelect, onRename, onDelete }: Sessio
             onBlur={commitRename}
             onKeyDown={handleKeyDown}
             onClick={(e) => e.stopPropagation()}
-            className="w-full px-1 py-0.5 text-sm bg-white dark:bg-slate-900 border border-indigo-500 rounded focus:outline-none"
+            className="w-full px-1 py-0.5 text-xs bg-white dark:bg-neutral-900 border border-primary rounded focus:outline-none text-on-surface"
           />
         ) : (
-          <p className="text-sm text-slate-700 dark:text-slate-200 truncate leading-snug">
+          <span className="font-label text-xs font-semibold truncate block">
             {truncateTitle(session.title || 'New Chat')}
-          </p>
+          </span>
         )}
-        <p className="text-xs text-slate-400 mt-0.5">
-          {formatRelativeTime(session.created_at)}
-        </p>
       </div>
 
-      {isHovered && !isEditing && (
-        <div className="flex items-center gap-0.5 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-          <button
-            onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
-            className="p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400"
-            title="Rename"
-          >
-            <Pencil className="w-3.5 h-3.5" />
-          </button>
-          <button
-            onClick={handleDeleteClick}
-            className={`p-1 rounded transition-colors ${
-              showDeleteConfirm
-                ? 'text-red-500 bg-red-50 dark:bg-red-900/30'
-                : 'hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400'
-            }`}
-            title={showDeleteConfirm ? 'Click again to confirm delete' : 'Delete'}
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
+      <div className="flex items-center gap-1 flex-shrink-0 text-outline" onClick={(e) => e.stopPropagation()}>
+        {isEditing ? null : (
+          <>
+            <button
+              onClick={(e) => { e.stopPropagation(); setIsEditing(true); }}
+              className="p-1 rounded hover:bg-neutral-200 dark:hover:bg-neutral-700 transition opacity-0 group-hover:opacity-100"
+              title="Rename"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={handleDeleteClick}
+              className={`p-1 rounded transition-colors opacity-0 group-hover:opacity-100 ${
+                showDeleteConfirm
+                  ? 'text-error bg-error-container/30'
+                  : 'hover:bg-neutral-200 dark:hover:bg-neutral-700'
+              }`}
+              title={showDeleteConfirm ? 'Click again to confirm delete' : 'Delete'}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -166,26 +143,27 @@ interface ChatSidebarProps {
 }
 
 export default function ChatSidebar({ onNewChat }: ChatSidebarProps) {
+  const { user } = useUser();
   const [isOpen, setIsOpen] = useAtom(chatSidebarOpenAtom);
   const [sessionList, setSessionList] = useAtom(chatSessionListAtom);
   const [currentSessionId, setCurrentSessionId] = useAtom(chatSessionIdAtom);
   const setMessages = useSetAtom(chatMessagesAtom);
 
-  // Load session list on mount and whenever the sidebar opens
+  const userId = user?.id ?? 'guest';
+
   const loadSessions = useCallback(async () => {
     try {
-      const sessions = await listSessions();
+      const sessions = await listSessions(userId);
       setSessionList(sessions);
     } catch (err) {
       console.error('[Sidebar] Failed to load sessions:', err);
     }
-  }, [setSessionList]);
+  }, [setSessionList, userId]);
 
   useEffect(() => {
     loadSessions();
   }, [loadSessions]);
 
-  // Allow parent to trigger a refresh by exposing via window (simple approach)
   useEffect(() => {
     (window as any).__reloadChatSidebar = loadSessions;
     return () => { delete (window as any).__reloadChatSidebar; };
@@ -194,81 +172,91 @@ export default function ChatSidebar({ onNewChat }: ChatSidebarProps) {
   const handleSelectSession = useCallback(async (session: ChatSession) => {
     if (session.session_id === currentSessionId) return;
     try {
-      const detail = await getSession(session.session_id);
-      const msgs: ChatMessage[] = detail.messages.map((msg, idx) => ({
+      const detail = await getSession(session.session_id, userId);
+      const msgs: ChatMessage[] = detail.messages.map((msg: any, idx: number) => ({
         id: `${session.session_id}-${idx}`,
         role: msg.role as 'user' | 'assistant',
         content: msg.content,
         createdAt: msg.created_at ? new Date(msg.created_at).getTime() : Date.now(),
+        sources: Array.isArray(msg.sources) ? msg.sources : undefined,
+        web_sources: Array.isArray(msg.web_sources) ? msg.web_sources : undefined,
       }));
       setCurrentSessionId(session.session_id);
       setMessages(msgs);
     } catch (err) {
       console.error('[Sidebar] Failed to load session:', err);
     }
-  }, [currentSessionId, setCurrentSessionId, setMessages]);
+  }, [currentSessionId, setCurrentSessionId, setMessages, userId]);
 
   const handleRenameSession = useCallback(async (sid: string, newTitle: string) => {
     try {
-      await renameSession(sid, newTitle);
+      await renameSession(sid, newTitle, userId);
       setSessionList((prev) =>
         prev.map((s) => s.session_id === sid ? { ...s, title: newTitle } : s)
       );
     } catch (err) {
       console.error('[Sidebar] Failed to rename session:', err);
     }
-  }, [setSessionList]);
+  }, [setSessionList, userId]);
 
   const handleDeleteSession = useCallback(async (sid: string) => {
     try {
-      await deleteSession(sid);
+      await deleteSession(sid, userId);
       setSessionList((prev) => prev.filter((s) => s.session_id !== sid));
-      // If we deleted the active session, start fresh
       if (sid === currentSessionId) {
         onNewChat();
       }
     } catch (err) {
       console.error('[Sidebar] Failed to delete session:', err);
     }
-  }, [currentSessionId, setSessionList, onNewChat]);
+  }, [currentSessionId, setSessionList, onNewChat, userId]);
 
   return (
     <>
-      {/* Sidebar panel */}
       <aside
-        className={`flex-shrink-0 h-full bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 flex flex-col overflow-hidden ${
-          isOpen ? 'w-[260px]' : 'w-0'
+        className={`flex-shrink-0 h-full bg-neutral-50 dark:bg-neutral-900 border-r border-neutral-100 dark:border-neutral-800 transition-all duration-300 flex flex-col py-6 px-4 overflow-hidden relative z-10 ${
+          isOpen ? 'w-72 opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-full px-0 border-r-0'
         }`}
       >
-        {/* Header */}
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex-shrink-0">
-  <div className="flex items-center gap-2">
-    
-    {/* New Chat Button */}
-    <button
-      onClick={onNewChat}
-      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-indigo-500 hover:bg-indigo-600 active:bg-indigo-700 text-white text-sm font-medium transition-colors"
-    >
-      <Plus className="w-4 h-4" />
-      New Chat
-    </button>
 
-    {/* Sidebar Toggle */}
-    <button
-      onClick={() => setIsOpen(false)}
-      className="p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-      title="Collapse sidebar"
-    >
-      <ChevronLeft className="w-4 h-4" />
-    </button>
+        <div className="mb-4 px-2 flex-shrink-0">
+          {/* Header row: Logo and Collapse */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-2 px-1">
+              <Bot className="w-6 h-6 text-neutral-800 dark:text-neutral-200" />
+            </div>
+            
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-1.5 rounded-lg text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 hover:bg-neutral-200/50 dark:hover:bg-neutral-800 transition-colors"
+              title="Close sidebar"
+            >
+              <PanelLeftClose className="w-5 h-5 stroke-[1.5]" />
+            </button>
+          </div>
+          
+          {/* New Chat Button */}
+          <button
+            onClick={onNewChat}
+            className="w-full flex items-center gap-3 px-3 py-3 bg-neutral-200/60 hover:bg-neutral-200 dark:bg-neutral-800/80 dark:hover:bg-neutral-800 text-neutral-900 dark:text-neutral-100 rounded-2xl text-sm font-medium transition-colors border border-transparent dark:border-neutral-700/50"
+          >
+            <SquarePen className="w-5 h-5 stroke-[1.5]" />
+            <span className="text-[15px] font-label">New chat</span>
+          </button>
+          
+          {/* Search Button */}
+          <button
+            className="w-full flex items-center gap-3 px-3 py-2 mt-2 hover:bg-neutral-200/60 dark:hover:bg-neutral-800/50 text-neutral-700 dark:text-neutral-300 rounded-lg text-sm transition-colors"
+          >
+             <Search className="w-5 h-5 stroke-[1.5]" />
+             <span className="text-[15px] font-label">Search chats</span>
+          </button>
+        </div>
 
-  </div>
-</div>
-
-        {/* Session list */}
-        <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
+        <div className="flex-1 overflow-y-auto space-y-1 content-start no-scrollbar">
+          <p className="px-2 pb-2 font-label text-[10px] uppercase tracking-widest font-bold text-outline">Recent Chat</p>
           {sessionList.length === 0 ? (
-            <p className="text-center py-8 text-slate-400 dark:text-slate-500 text-xs">
+            <p className="px-2 py-4 text-outline font-label text-xs">
               No conversations yet
             </p>
           ) : (
@@ -284,16 +272,26 @@ export default function ChatSidebar({ onNewChat }: ChatSidebarProps) {
             ))
           )}
         </div>
+
+        <div className="mt-auto pt-6 border-t border-neutral-100 dark:border-neutral-800 space-y-1 flex-shrink-0">
+           <a className="flex items-center gap-3 p-3 rounded-lg text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer">
+              <HelpCircle className="w-4 h-4" />
+              <span className="font-label text-xs font-semibold">Help</span>
+           </a>
+           <a className="flex items-center gap-3 p-3 rounded-lg text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer">
+              <Shield className="w-4 h-4" />
+              <span className="font-label text-xs font-semibold">Privacy</span>
+           </a>
+        </div>
       </aside>
 
-      {/* Collapse button (shows when sidebar is closed) */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed left-3 top-[72px] z-50 p-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-md hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+          className="absolute left-6 top-[100px] z-[40] p-2 rounded-lg bg-surface-container-lowest border border-outline-variant/30 shadow-md hover:bg-surface-container-low transition-colors text-on-surface"
           title="Open sidebar"
         >
-          <ChevronLeft className="w-4 h-4 text-slate-600 dark:text-slate-300 rotate-180" />
+          <ChevronRight className="w-5 h-5" />
         </button>
       )}
     </>

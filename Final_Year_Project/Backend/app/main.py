@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.api.routes import job_routes, roadmap_routes
-from app.api.routes import job_routes, roadmap_routes, roadmaps, chat
+from app.api.routes import job_routes, roadmap_routes, roadmaps, chat, skill_routes
 from fastapi.middleware.cors import CORSMiddleware
 from app.db.mongodb import MongoDB
 
@@ -21,8 +21,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
 app.include_router(job_routes.router)
 app.include_router(roadmap_routes.router)
 
 app.include_router(roadmaps.router)
 app.include_router(chat.router)
+app.include_router(skill_routes.router)

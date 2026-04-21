@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "../screens/Home";
 import Login from "../screens/Login";
 import Roadmap from "../screens/Roadmap";
+import SkillAnalyzer from "../screens/SkillAnalyzer";
 import Signup from "../screens/Signup";
 import JobChat from "../screens/JobChat";
 import Profile from "../screens/Profile";
@@ -16,6 +17,7 @@ export default function AppRoute() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/home" element={<Home />} />
         <Route path="/roadmap" element={<Roadmap />} />
+        <Route path="/skills" element={<SkillAnalyzer />} />
         <Route path="/chat" element={<JobChat />} />
         <Route path="/profile" element={<Profile />} />
       </Routes>
