@@ -40,7 +40,7 @@ services:
       - job-network
 
   backend:
-    image: job-backend:latest
+    image: akashgurav/job-backend:latest
     container_name: fastapi_app
     ports:
       - "8000:8000"
@@ -66,7 +66,7 @@ services:
       - job-network
 
   frontend:
-    image: job-frontend:latest
+    image: akashgurav/job-frontend:latest
     container_name: react_app
     ports:
       - "5173:80"
@@ -84,4 +84,4 @@ volumes:
 
 networks:
   job-network:
-    driver: bridge
+    driver: bridged
