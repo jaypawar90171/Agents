@@ -1,16 +1,21 @@
-FROM node:20-alpine
+# Build stage
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies
 COPY package.json package-lock.json ./
-RUN npm install
 
-# Copy the rest of the application files
+RUN npm ci
+
 COPY . .
 
-# Expose Vite's default port
-EXPOSE 5173
+RUN npm run build
 
-# Start the dev server and bind to all network interfaces
-CMD ["npm", "run", "dev", "--", "--host"]
+# Production stage
+FROM nginx:alpine
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
