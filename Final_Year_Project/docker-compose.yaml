@@ -1,4 +1,3 @@
-# version: "3.9"
 
 services:
   ollama:
@@ -11,21 +10,21 @@ services:
     environment:
       - OLLAMA_HOST=0.0.0.0:11434
     restart: unless-stopped
-    # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://localhost:11434"]
-    #   interval: 30s      # 👈 increase interval
-    #   timeout: 10s       # 👈 increase timeout
-    #   retries: 10        # 👈 more retries
-    #   start_period: 60s  # 👈 give it time to boot before checking
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     networks:
       - job-network
 
   ollama-init:
     image: ollama/ollama:latest
     container_name: ollama-init
-    # depends_on:
-    #   ollama:
-    #     condition: service_healthy
+    depends_on:
+      ollama:
+        condition: service_healthy
     volumes:
       - ollama_data:/root/.ollama
     environment:
@@ -34,16 +33,13 @@ services:
       sh -c "
       echo 'Pulling Ollama embedding model...' &&
       ollama pull qwen3-embedding:0.6b &&
-      echo 'Models pulled successfully'
+      echo 'Model pulled successfully'
       "
     restart: "no"
     networks:
       - job-network
 
   backend:
-    build: 
-      context: ./backend
-      dockerfile: Dockerfile
     image: job-backend:latest
     container_name: fastapi_app
     ports:
@@ -70,10 +66,7 @@ services:
       - job-network
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    image: job-frontend:latest  
+    image: job-frontend:latest
     container_name: react_app
     ports:
       - "5173:80"
