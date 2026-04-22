@@ -81,7 +81,7 @@ const Profile: React.FC = () => {
 
   return (
     <SignedIn>
-      <div className="min-h-screen bg-gray-50 dark:bg-slate-950 flex flex-col font-body overflow-x-hidden">
+      <div className="min-h-screen bg-background flex flex-col font-body overflow-x-hidden">
         <Header />
 
         <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full flex-grow">
@@ -99,13 +99,13 @@ const Profile: React.FC = () => {
           <div className="mt-10">
             {/* Section Header */}
             <div className="flex items-baseline justify-between mb-6">
-              <h2 className="text-2xl md:text-3xl font-headline font-bold text-on-background dark:text-slate-50 tracking-tight">
+              <h2 className="text-2xl md:text-3xl font-headline font-bold text-on-background tracking-tight">
                 My Roadmaps
               </h2>
               {userRoadmaps.length > 0 && (
                 <button
                   onClick={() => navigate('/roadmap')}
-                  className="hidden sm:flex items-center gap-1.5 text-sm font-label font-semibold text-primary dark:text-primary-fixed-dim hover:text-primary-container dark:hover:text-primary-fixed transition-colors"
+                  className="hidden sm:flex items-center gap-1.5 text-sm font-label font-semibold text-primary hover:text-primary-container transition-colors"
                 >
                   Explore New Paths
                   <ArrowRight className="w-4 h-4" />
@@ -116,21 +116,21 @@ const Profile: React.FC = () => {
             {/* Content */}
             {loading ? (
               <div className="flex flex-col items-center justify-center py-20">
-                <div className="w-10 h-10 rounded-full border-2 border-gray-200 border-t-primary animate-spin" />
-                <p className="text-sm font-label text-outline dark:text-slate-500 mt-4">
+                <div className="w-10 h-10 rounded-full border-2 border-outline-variant/30 border-t-primary animate-spin" />
+                <p className="text-sm font-label text-outline mt-4">
                   Loading your roadmaps…
                 </p>
               </div>
             ) : userRoadmaps.length === 0 ? (
               /* Empty State */
-              <div className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-12 md:p-16 text-center">
+              <div className="rounded-2xl border border-outline-variant/20 bg-card p-12 md:p-16 text-center">
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
                   <Map className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-2xl font-headline font-bold text-on-background dark:text-slate-50 mb-3">
+                <h3 className="text-2xl font-headline font-bold text-on-background mb-3">
                   Begin Your Journey
                 </h3>
-                <p className="text-base font-body text-secondary dark:text-slate-400 mb-8 max-w-md mx-auto leading-relaxed">
+                <p className="text-base font-body text-on-surface-variant mb-8 max-w-md mx-auto leading-relaxed">
                   Generate your first personalized learning roadmap tailored to your dream company and role.
                 </p>
                 <button
@@ -160,13 +160,13 @@ const Profile: React.FC = () => {
           <div className="mt-12">
             {/* Section Header */}
             <div className="flex items-baseline justify-between mb-6">
-              <h2 className="text-2xl md:text-3xl font-headline font-bold text-on-background dark:text-slate-50 tracking-tight">
+              <h2 className="text-2xl md:text-3xl font-headline font-bold text-on-background tracking-tight">
                 My Skill Analyses
               </h2>
               {userSkillRoadmaps.length > 0 && (
                 <button
                   onClick={() => navigate('/skills')}
-                  className="hidden sm:flex items-center gap-1.5 text-sm font-label font-semibold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
+                  className="hidden sm:flex items-center gap-1.5 text-sm font-label font-semibold text-primary hover:text-primary-container transition-colors"
                 >
                   Analyze New Resume
                   <ArrowRight className="w-4 h-4" />
@@ -177,26 +177,26 @@ const Profile: React.FC = () => {
             {/* Content */}
             {userSkillRoadmapsLoading ? (
               <div className="flex flex-col items-center justify-center py-20">
-                <div className="w-10 h-10 rounded-full border-2 border-gray-200 border-t-purple-500 animate-spin" />
-                <p className="text-sm font-label text-outline dark:text-slate-500 mt-4">
+                <div className="w-10 h-10 rounded-full border-2 border-outline-variant/30 border-t-primary animate-spin" />
+                <p className="text-sm font-label text-outline mt-4">
                   Loading your skill analyses…
                 </p>
               </div>
             ) : userSkillRoadmaps.length === 0 ? (
               /* Empty State */
-              <div className="rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-12 md:p-16 text-center">
-                <div className="w-16 h-16 rounded-2xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mx-auto mb-5">
-                  <Target className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+              <div className="rounded-2xl border border-outline-variant/20 bg-card p-12 md:p-16 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
+                  <Target className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-2xl font-headline font-bold text-on-background dark:text-slate-50 mb-3">
+                <h3 className="text-2xl font-headline font-bold text-on-background mb-3">
                   Discover Your Skill Gaps
                 </h3>
-                <p className="text-base font-body text-secondary dark:text-slate-400 mb-8 max-w-md mx-auto leading-relaxed">
+                <p className="text-base font-body text-on-surface-variant mb-8 max-w-md mx-auto leading-relaxed">
                   Upload your resume to identify skill gaps and get a personalized learning roadmap for career growth.
                 </p>
                 <button
                   onClick={() => navigate('/skills')}
-                  className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-label font-semibold uppercase tracking-wider text-sm rounded-lg transition-colors shadow-sm"
+                  className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-gradient-to-r from-primary to-primary-container text-white font-label font-semibold uppercase tracking-wider text-sm rounded-lg transition-colors shadow-sm"
                 >
                   <TrendingUp className="w-4 h-4" />
                   Analyze Resume

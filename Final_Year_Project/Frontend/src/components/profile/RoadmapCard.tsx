@@ -53,23 +53,23 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
     .toUpperCase() || 'N/A';
 
   return (
-    <div className="relative rounded-2xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:shadow-md transition-shadow duration-300 overflow-hidden">
+    <div className="relative rounded-2xl border border-outline-variant/20 bg-card hover:shadow-md transition-shadow duration-300 overflow-hidden">
       <div className="p-5 md:p-6">
         {/* Header: Icon + Title + Trash */}
         <div className="flex items-start gap-3.5 mb-4">
           {/* Role icon */}
-          <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0">
-            <span className="text-base font-headline font-bold text-secondary dark:text-slate-400">
+          <div className="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center flex-shrink-0">
+            <span className="text-base font-headline font-bold text-on-surface-variant">
               {getInitial()}
             </span>
           </div>
 
           {/* Title + subtitle */}
           <div className="flex-1 min-w-0">
-            <h3 className="text-base font-headline font-bold text-on-background dark:text-slate-50 leading-snug line-clamp-1">
+            <h3 className="text-base font-headline font-bold text-on-background leading-snug line-clamp-1">
               {title}
             </h3>
-            <p className="text-[11px] font-label tracking-wider text-outline dark:text-slate-500 mt-0.5 truncate">
+            <p className="text-[11px] font-label tracking-wider text-outline mt-0.5 truncate">
               {subtitle}
             </p>
           </div>
@@ -77,7 +77,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
           {/* Delete icon */}
           <button
             onClick={(e) => { e.stopPropagation(); setShowDeleteConfirm(true); }}
-            className="p-1.5 text-gray-300 dark:text-slate-600 hover:text-error dark:hover:text-error rounded-lg transition-colors flex-shrink-0"
+            className="p-1.5 text-outline hover:text-error rounded-lg transition-colors flex-shrink-0"
             aria-label="Delete roadmap"
           >
             <Trash2 className="w-4 h-4" />
@@ -90,7 +90,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
             {chips.map((chip, idx) => (
               <span
                 key={idx}
-                className="px-2.5 py-1 bg-gray-100 dark:bg-slate-800 text-secondary dark:text-slate-400 text-[11px] font-label tracking-wide rounded-md uppercase"
+                className="px-2.5 py-1 bg-surface-container-low text-on-surface-variant text-[11px] font-label tracking-wide rounded-md uppercase"
               >
                 {chip}
               </span>
@@ -101,14 +101,14 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
         {/* Progress section */}
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-label uppercase tracking-widest text-outline dark:text-slate-500 font-semibold">
+            <span className="text-[10px] font-label uppercase tracking-widest text-outline font-semibold">
               Progress
             </span>
-            <span className="text-sm font-label font-bold text-on-background dark:text-slate-100">
+            <span className="text-sm font-label font-bold text-on-background">
               {progress}%
             </span>
           </div>
-          <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+          <div className="h-2 bg-surface-container-low rounded-full overflow-hidden">
             <div
               className="h-full bg-primary rounded-full transition-all duration-700 ease-out"
               style={{ width: `${progress}%` }}
@@ -118,12 +118,12 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
 
         {/* Footer: Weeks count + View Details */}
         <div className="flex items-center justify-between">
-          <span className="text-xs font-body text-outline dark:text-slate-500">
+          <span className="text-xs font-body text-outline">
             {completedWeeks}/{totalWeeks} weeks completed
           </span>
           <button
             onClick={() => onViewDetails(userRoadmap)}
-            className="text-xs font-label font-semibold text-primary dark:text-primary-fixed-dim hover:text-primary-container dark:hover:text-primary-fixed transition-colors"
+            className="text-xs font-label font-semibold text-primary hover:text-primary-container transition-colors"
           >
             View Details
           </button>
@@ -133,20 +133,20 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 max-w-sm mx-4 shadow-xl border border-gray-200 dark:border-slate-700">
+          <div className="bg-card rounded-2xl p-8 max-w-sm mx-4 shadow-xl border border-outline-variant/20">
             <div className="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center mx-auto mb-4">
               <Trash2 className="w-6 h-6 text-error" />
             </div>
-            <h3 className="text-xl font-headline font-bold text-on-background dark:text-slate-50 text-center mb-2">
+            <h3 className="text-xl font-headline font-bold text-on-background text-center mb-2">
               Delete Roadmap?
             </h3>
-            <p className="text-sm font-body text-secondary dark:text-slate-400 text-center mb-6 leading-relaxed">
+            <p className="text-sm font-body text-on-surface-variant text-center mb-6 leading-relaxed">
               This action cannot be undone. All progress associated with this roadmap will be permanently removed.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-slate-800 text-secondary dark:text-slate-300 text-sm font-label font-semibold uppercase tracking-wider rounded-xl hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                className="flex-1 px-4 py-2.5 bg-surface-container-low text-on-surface-variant text-sm font-label font-semibold uppercase tracking-wider rounded-xl hover:bg-surface-container transition-colors"
               >
                 Cancel
               </button>

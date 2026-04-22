@@ -180,7 +180,7 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-slate-700 shadow-xl">
+      <div className="bg-card rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-outline-variant/20 shadow-xl">
         
         {/* Header */}
         <div className="p-6 md:p-8 pb-6">
@@ -188,38 +188,38 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
           <div className="flex justify-end mb-4">
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-2 rounded-lg hover:bg-surface-container-low transition-colors"
             >
-              <X className="w-5 h-5 text-secondary dark:text-slate-400" />
+              <X className="w-5 h-5 text-on-surface-variant" />
             </button>
           </div>
 
           {/* Path tag + date */}
           <div className="flex items-center gap-3 mb-3">
-            <span className="px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-fixed-dim text-[10px] font-label font-bold uppercase tracking-widest rounded-md">
+            <span className="px-3 py-1 bg-primary/10 text-primary text-[10px] font-label font-bold uppercase tracking-widest rounded-md">
               {getPathTag()}
             </span>
-            <span className="text-xs font-body text-outline dark:text-slate-500">
+            <span className="text-xs font-body text-outline">
               ID: {(roadmapDetail?._id || userRoadmap.roadmapId).slice(-8).toUpperCase()}
             </span>
           </div>
 
           {/* Title */}
-          <h2 className="text-xl md:text-2xl font-headline font-bold text-on-background dark:text-slate-50 tracking-tight leading-tight mb-4">
+          <h2 className="text-xl md:text-2xl font-headline font-bold text-on-background tracking-tight leading-tight mb-4">
             {roadmapDetail?.targetCompany || userRoadmap.roadmap?.targetCompany || ''} — {roadmapDetail?.title || userRoadmap.roadmap?.title || 'Roadmap Details'}
           </h2>
 
           {/* Overall Progress */}
           <div className="mb-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-body italic text-secondary dark:text-slate-400">
+              <span className="text-sm font-body italic text-on-surface-variant">
                 Overall Mastery Progress
               </span>
-              <span className="text-lg font-headline font-bold text-on-background dark:text-slate-50">
+              <span className="text-lg font-headline font-bold text-on-background">
                 {calculatedProgress}%
               </span>
             </div>
-            <div className="h-2.5 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+            <div className="h-2.5 bg-surface-container-low rounded-full overflow-hidden">
               <div
                 className="h-full bg-primary rounded-full transition-all duration-700 ease-out"
                 style={{ width: `${calculatedProgress}%` }}
@@ -228,7 +228,7 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
           </div>
 
           {/* Dates row */}
-          <div className="flex items-center gap-6 text-xs font-body text-outline dark:text-slate-500">
+          <div className="flex items-center gap-6 text-xs font-body text-outline">
             <span>
               <span className="uppercase tracking-wider font-label text-[10px]">Initiated </span>
               {formatDate(userRoadmap.startDate)}
@@ -241,14 +241,14 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-100 dark:border-slate-800" />
+        <div className="border-t border-outline-variant/10" />
 
         {/* Weeks content - scrollable */}
         <div className="flex-1 overflow-y-auto px-6 md:px-8 py-4">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-16">
-              <div className="w-10 h-10 rounded-full border-2 border-gray-200 border-t-primary animate-spin" />
-              <p className="text-sm font-label text-outline dark:text-slate-500 mt-4">Loading roadmap details…</p>
+              <div className="w-10 h-10 rounded-full border-2 border-outline-variant/20 border-t-primary animate-spin" />
+              <p className="text-sm font-label text-outline mt-4">Loading roadmap details…</p>
             </div>
           ) : (
             <div className="space-y-2">
@@ -263,9 +263,9 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
                     key={`${week.weekNumber}-${idx}`}
                     className={`rounded-xl overflow-hidden border transition-all duration-200 ${
                       isExpanded
-                        ? 'border-gray-200 dark:border-slate-700 shadow-sm'
-                        : 'border-gray-100 dark:border-slate-800'
-                    } ${isWeekComplete ? 'bg-green-50/40 dark:bg-green-900/5' : 'bg-white dark:bg-slate-900'}`}
+                        ? 'border-outline-variant/20 shadow-sm'
+                        : 'border-outline-variant/10'
+                    } ${isWeekComplete ? 'bg-green-50/40 dark:bg-green-900/5' : 'bg-card'}`}
                   >
                     {/* Week Header */}
                     <button
@@ -277,48 +277,48 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
                         <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
                           isWeekComplete
                             ? 'bg-green-500'
-                            : 'bg-gray-100 dark:bg-slate-800'
+                            : 'bg-surface-container-low'
                         }`}>
                           {isWeekComplete ? (
                             <CheckCircle2 className="w-5 h-5 text-white" />
                           ) : (
-                            <span className="text-xs font-label font-bold text-secondary dark:text-slate-400">
+                            <span className="text-xs font-label font-bold text-on-surface-variant">
                               {String(week.weekNumber).padStart(2, '0')}
                             </span>
                           )}
                         </div>
                         <div>
-                          <h4 className="font-headline font-semibold text-sm text-on-background dark:text-slate-100 leading-snug">
+                          <h4 className="font-headline font-semibold text-sm text-on-background leading-snug">
                             Week {week.weekNumber}: {week.topic}
                           </h4>
-                          <p className="text-[11px] font-label text-outline dark:text-slate-500 mt-0.5 tracking-wide">
+                          <p className="text-[11px] font-label text-outline mt-0.5 tracking-wide">
                             {week.whatYoullLearn.length} TOPICS · {week.studyPlan.length} STUDY ITEMS · {week.handsOnPractice.length} PRACTICE SETS
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2 ml-3 flex-shrink-0">
                         {isExpanded ? (
-                          <ChevronUp className="w-5 h-5 text-outline dark:text-slate-500" />
+                          <ChevronUp className="w-5 h-5 text-outline" />
                         ) : (
-                          <ChevronDown className="w-5 h-5 text-outline dark:text-slate-500" />
+                          <ChevronDown className="w-5 h-5 text-outline" />
                         )}
                       </div>
                     </button>
 
                     {/* Expanded Content */}
                     {isExpanded && (
-                      <div className="px-4 pb-5 space-y-4 border-t border-gray-100 dark:border-slate-800 pt-4">
+                      <div className="px-4 pb-5 space-y-4 border-t border-outline-variant/10 pt-4">
                         {/* Section Progress */}
                         <div>
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-label text-secondary dark:text-slate-400">
+                            <span className="text-xs font-label text-on-surface-variant">
                               Section Progress
                             </span>
-                            <span className="text-sm font-label font-bold text-on-background dark:text-slate-100">
+                            <span className="text-sm font-label font-bold text-on-background">
                               {weekProgPercent}%
                             </span>
                           </div>
-                          <div className="h-2 bg-gray-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                          <div className="h-2 bg-surface-container-low rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full transition-all duration-500 ${
                                 isWeekComplete ? 'bg-green-500' : 'bg-primary'
@@ -339,8 +339,8 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
                           return (
                             <div key={category}>
                               <div className="flex items-center gap-2 mb-2.5">
-                                <Icon className="w-3.5 h-3.5 text-secondary dark:text-slate-400" />
-                                <h5 className="font-label font-semibold text-xs uppercase tracking-wider text-secondary dark:text-slate-400">
+                                <Icon className="w-3.5 h-3.5 text-on-surface-variant" />
+                                <h5 className="font-label font-semibold text-xs uppercase tracking-wider text-on-surface-variant">
                                   {config.label}
                                 </h5>
                               </div>
@@ -360,7 +360,7 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
                                     <button
                                       key={itemIdx}
                                       onClick={() => handleSubItemToggle(week.weekNumber, category, itemIdx, week)}
-                                      className="flex items-start gap-3 text-left w-full py-2 px-2 -mx-2 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors group/item"
+                                      className="flex items-start gap-3 text-left w-full py-2 px-2 -mx-2 rounded-lg hover:bg-surface-container-low transition-colors group/item"
                                     >
                                       <div className="mt-0.5 flex-shrink-0">
                                         {isChecked ? (
@@ -370,13 +370,13 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
                                             </svg>
                                           </div>
                                         ) : (
-                                          <div className="w-5 h-5 rounded-full border-2 border-gray-300 dark:border-slate-600 group-hover/item:border-primary dark:group-hover/item:border-primary-fixed-dim transition-colors" />
+                                          <div className="w-5 h-5 rounded-full border-2 border-outline-variant hover:border-primary transition-colors" />
                                         )}
                                       </div>
                                       <span className={`text-sm font-body leading-relaxed transition-all ${
                                         isChecked
-                                          ? 'text-outline dark:text-slate-600 line-through'
-                                          : 'text-on-surface-variant dark:text-slate-300'
+                                          ? 'text-outline line-through'
+                                          : 'text-on-surface-variant'
                                       }`}>
                                         {displayContent}
                                       </span>
@@ -440,7 +440,7 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
         </div>
 
         {/* Footer Action Bar */}
-        <div className="border-t border-gray-100 dark:border-slate-800 p-4 md:px-8 flex items-center justify-between gap-3">
+        <div className="border-t border-outline-variant/10 p-4 md:px-8 flex items-center justify-between gap-3">
           {/* Delete */}
           <button
             onClick={() => setShowDeleteConfirm(true)}
@@ -454,7 +454,7 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
           <div className="flex items-center gap-2.5">
             <button
               onClick={onClose}
-              className="px-5 py-2.5 bg-gray-100 dark:bg-slate-800 text-secondary dark:text-slate-300 text-xs font-label font-semibold uppercase tracking-wider rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+              className="px-5 py-2.5 bg-surface-container-low text-on-surface-variant text-xs font-label font-semibold uppercase tracking-wider rounded-lg hover:bg-surface-container transition-colors"
             >
               Archive
             </button>
@@ -471,20 +471,20 @@ const RoadmapDetailModal: React.FC<RoadmapDetailModalProps> = ({
         {/* Delete Confirmation */}
         {showDeleteConfirm && (
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[60]">
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 max-w-sm mx-4 shadow-xl border border-gray-200 dark:border-slate-700">
+            <div className="bg-card rounded-2xl p-8 max-w-sm mx-4 shadow-xl border border-outline-variant/20">
               <div className="w-12 h-12 rounded-xl bg-error/10 flex items-center justify-center mx-auto mb-4">
                 <Trash2 className="w-6 h-6 text-error" />
               </div>
-              <h3 className="text-xl font-headline font-bold text-on-background dark:text-slate-50 text-center mb-2">
+              <h3 className="text-xl font-headline font-bold text-on-background text-center mb-2">
                 Delete Roadmap?
               </h3>
-              <p className="text-sm font-body text-secondary dark:text-slate-400 text-center mb-6 leading-relaxed">
+              <p className="text-sm font-body text-on-surface-variant text-center mb-6 leading-relaxed">
                 This action cannot be undone. Are you sure you want to delete this roadmap?
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-slate-800 text-secondary dark:text-slate-300 text-sm font-label font-semibold uppercase tracking-wider rounded-xl hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+                  className="flex-1 px-4 py-2.5 bg-surface-container-low text-on-surface-variant text-sm font-label font-semibold uppercase tracking-wider rounded-xl hover:bg-surface-container transition-colors"
                 >
                   Cancel
                 </button>

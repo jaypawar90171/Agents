@@ -33,38 +33,38 @@ export const SkillRoadmapDetailModal: React.FC<SkillRoadmapDetailModalProps> = (
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
       onClick={handleBackdropClick}
     >
-      <div className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white dark:bg-slate-900">
+      <div className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-card">
         {/* Header */}
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white/95 px-6 py-4 backdrop-blur dark:border-slate-700 dark:bg-slate-900/95">
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-outline-variant/20 bg-card/95 px-6 py-4 backdrop-blur">
           <div>
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-200">
+            <h2 className="text-2xl font-bold text-on-surface">
               Skill Gap Analysis
             </h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-on-surface-variant">
               {analysis.profile?.seniority_level} • {analysis.profile?.target_roles?.join(', ')}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="rounded-lg p-2 hover:bg-surface-container-low"
           >
-            <X className="h-6 w-6 text-slate-500" />
+            <X className="h-6 w-6 text-on-surface-variant" />
           </button>
         </div>
 
         {/* Content */}
         <div className="space-y-8 p-6">
           {/* Progress */}
-          <div className="rounded-xl border border-slate-200 p-4 dark:border-slate-700">
+          <div className="rounded-xl border border-outline-variant/20 p-4">
             <div className="mb-2 flex items-center justify-between">
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              <span className="text-sm font-medium text-on-surface-variant">
                 Overall Progress
               </span>
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
+              <span className="text-sm font-bold text-on-surface">
                 {userSkillRoadmap.overallProgress}%
               </span>
             </div>
-            <div className="h-3 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+            <div className="h-3 overflow-hidden rounded-full bg-surface-container-low">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500"
                 style={{ width: `${userSkillRoadmap.overallProgress}%` }}
@@ -74,7 +74,7 @@ export const SkillRoadmapDetailModal: React.FC<SkillRoadmapDetailModalProps> = (
 
           {/* Skills Breakdown */}
           <div>
-            <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-200">
+            <h3 className="mb-4 text-lg font-semibold text-on-surface">
               Skills Breakdown
             </h3>
             <SkillsBreakdown
@@ -86,7 +86,7 @@ export const SkillRoadmapDetailModal: React.FC<SkillRoadmapDetailModalProps> = (
           {/* Job Matches */}
           {analysis.matches && analysis.matches.length > 0 && (
             <div>
-              <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-200">
+              <h3 className="mb-4 text-lg font-semibold text-on-surface">
                 Matching Jobs
               </h3>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -96,13 +96,13 @@ export const SkillRoadmapDetailModal: React.FC<SkillRoadmapDetailModalProps> = (
                     href={job.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 rounded-xl border border-slate-200 p-4 transition-colors hover:border-blue-300 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
+                    className="flex items-center gap-3 rounded-xl border border-outline-variant/20 p-4 transition-colors hover:border-blue-300 hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-slate-800 dark:text-slate-200 truncate">
+                      <p className="font-medium text-on-surface truncate">
                         {job.title}
                       </p>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">
+                      <p className="text-sm text-on-surface-variant">
                         {job.required_skills?.slice(0, 3).join(', ')}
                       </p>
                     </div>
@@ -120,7 +120,7 @@ export const SkillRoadmapDetailModal: React.FC<SkillRoadmapDetailModalProps> = (
 
           {/* Gap Analysis */}
           <div>
-            <h3 className="mb-4 text-lg font-semibold text-slate-800 dark:text-slate-200">
+            <h3 className="mb-4 text-lg font-semibold text-on-surface">
               Skill Gap Analysis
             </h3>
             <GapAnalysisCard gaps={analysis.validated_gaps || []} />
@@ -130,7 +130,7 @@ export const SkillRoadmapDetailModal: React.FC<SkillRoadmapDetailModalProps> = (
           {analysis.roadmap?.action_plan && analysis.roadmap.action_plan.length > 0 && (
             <div>
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+                <h3 className="text-lg font-semibold text-on-surface">
                   Learning Roadmap
                 </h3>
                 <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
@@ -140,8 +140,8 @@ export const SkillRoadmapDetailModal: React.FC<SkillRoadmapDetailModalProps> = (
 
               {/* Market Outlook */}
               {analysis.roadmap.market_outlook && (
-                <div className="mb-6 rounded-xl border border-slate-200 bg-gradient-to-r from-blue-50 to-purple-50 p-4 dark:border-slate-700 dark:from-blue-900/20 dark:to-purple-900/20">
-                  <p className="text-sm text-slate-700 dark:text-slate-300">
+                <div className="mb-6 rounded-xl border border-outline-variant/20 bg-gradient-to-r from-primary/5 to-secondary/5 p-4">
+                  <p className="text-sm text-on-surface-variant">
                     {analysis.roadmap.market_outlook}
                   </p>
                 </div>
@@ -150,14 +150,14 @@ export const SkillRoadmapDetailModal: React.FC<SkillRoadmapDetailModalProps> = (
               {/* Learning Sequence */}
               {analysis.roadmap.learning_sequence && analysis.roadmap.learning_sequence.length > 0 && (
                 <div className="mb-6">
-                  <h4 className="mb-3 text-sm font-medium text-slate-600 dark:text-slate-400">
+                  <h4 className="mb-3 text-sm font-medium text-on-surface-variant dark:text-slate-400">
                     Recommended Learning Sequence
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {analysis.roadmap.learning_sequence.map((skill, index) => (
                       <span
                         key={index}
-                        className="rounded-full bg-slate-100 px-3 py-1 text-sm text-slate-600 dark:bg-slate-700 dark:text-slate-400"
+                        className="rounded-full bg-surface-container-low px-3 py-1 text-sm text-on-surface-variant dark:bg-slate-700 dark:text-slate-400"
                       >
                         {index + 1}. {skill}
                       </span>
@@ -177,13 +177,13 @@ export const SkillRoadmapDetailModal: React.FC<SkillRoadmapDetailModalProps> = (
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 flex items-center justify-between border-t border-slate-200 bg-slate-50 px-6 py-4 dark:border-slate-700 dark:bg-slate-800">
-          <div className="text-sm text-slate-500 dark:text-slate-400">
+        <div className="sticky bottom-0 flex items-center justify-between border-t border-outline-variant/20 bg-surface-container-low px-6 py-4">
+          <div className="text-sm text-on-surface-variant">
             Created {new Date(userSkillRoadmap.startDate).toLocaleDateString()}
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-container"
           >
             Close
           </button>

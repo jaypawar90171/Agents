@@ -19,19 +19,19 @@ const Header: React.FC = () => {
   const [query, setQuery] = useAtom(searchQueryAtom);
 
   return (
-    <header className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl shadow-sm dark:shadow-none docked full-width top-0 sticky z-50">
+    <header className="bg-background backdrop-blur-xl shadow-sm dark:shadow-none docked full-width top-0 sticky z-50">
       <nav className="flex justify-between items-center px-8 py-4 w-full">
         {/* Brand & Nav */}
         <div className="flex items-center gap-8">
-          <Link to="/" className="text-2xl font-headline font-bold text-slate-900 dark:text-slate-50 tracking-tight">
+          <Link to="/" className="text-2xl font-headline font-bold text-on-surface tracking-tight">
             SkillForge
           </Link>
           <div className="hidden md:flex items-center gap-6 font-headline text-lg leading-relaxed">
             <Link
               to="/home"
               className={`${location.pathname === "/home"
-                ? "text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1"
-                : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
+                ? "text-primary border-b-2 border-primary pb-1"
+                : "text-on-surface-variant hover:text-primary transition-colors"
                 }`}
             >
               Explore
@@ -39,8 +39,8 @@ const Header: React.FC = () => {
             <Link
               to="/roadmap"
               className={`${location.pathname === "/roadmap"
-                ? "text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1"
-                : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
+                ? "text-primary border-b-2 border-primary pb-1"
+                : "text-on-surface-variant hover:text-primary transition-colors"
                 }`}
             >
               Roadmap
@@ -48,8 +48,8 @@ const Header: React.FC = () => {
             <Link
               to="/skills"
               className={`${location.pathname === "/skills"
-                ? "text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1"
-                : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
+                ? "text-primary border-b-2 border-primary pb-1"
+                : "text-on-surface-variant hover:text-primary transition-colors"
                 }`}
             >
               Skills
@@ -57,8 +57,8 @@ const Header: React.FC = () => {
             <Link
               to="/chat"
               className={`${location.pathname === "/chat"
-                ? "text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1"
-                : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
+                ? "text-primary border-b-2 border-primary pb-1"
+                : "text-on-surface-variant hover:text-primary transition-colors"
                 }`}
             >
               Chat
@@ -66,8 +66,8 @@ const Header: React.FC = () => {
             <Link
               to="/profile"
               className={`${location.pathname === "/profile"
-                ? "text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 dark:border-blue-400 pb-1"
-                : "text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
+                ? "text-primary border-b-2 border-primary pb-1"
+                : "text-on-surface-variant hover:text-primary transition-colors"
                 }`}
             >
               Profile
@@ -89,14 +89,14 @@ const Header: React.FC = () => {
           </div>
 
           <button className="md:hidden">
-            <Menu className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+            <Menu className="w-6 h-6 text-on-surface-variant" />
           </button>
 
           {/* Theme toggle */}
           <button
             type="button"
             onClick={() => toggleTheme()}
-            className="rounded-full flex items-center justify-center p-2 bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="rounded-full flex items-center justify-center p-2 bg-transparent text-on-surface-variant hover:bg-surface-container-low transition-colors"
             aria-label="Toggle dark mode"
           >
             {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}

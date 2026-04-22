@@ -39,14 +39,14 @@ export const SavedSkillRoadmapCard: React.FC<SavedSkillRoadmapCardProps> = ({
 
   return (
     <div
-      className="group relative rounded-xl border border-slate-200 bg-white p-5 transition-all duration-300 hover:border-blue-300 hover:shadow-lg dark:border-slate-700 dark:bg-slate-800 dark:hover:border-blue-600"
+      className="group relative rounded-xl border border-outline-variant/20 bg-card p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-lg"
     >
       <div className="mb-3 flex items-start justify-between">
         <div className="flex-1 min-w-0">
-          <h3 className="mb-1 truncate text-lg font-semibold text-slate-800 dark:text-slate-200">
+          <h3 className="mb-1 truncate text-lg font-semibold text-on-surface">
             {analysis?.profile?.seniority_level || 'Skill Analysis'}
           </h3>
-          <p className="truncate text-sm text-slate-500 dark:text-slate-400">
+          <p className="truncate text-sm text-on-surface-variant">
             {analysis?.profile?.target_roles?.join(', ') || 'Career Development'}
           </p>
         </div>
@@ -60,21 +60,21 @@ export const SavedSkillRoadmapCard: React.FC<SavedSkillRoadmapCardProps> = ({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="rounded-lg p-1 opacity-0 transition-opacity hover:bg-slate-100 group-hover:opacity-100 dark:hover:bg-slate-700">
-                <MoreVertical className="h-5 w-5 text-slate-500" />
+              <button className="rounded-lg p-1 opacity-0 transition-opacity hover:bg-surface-container-low group-hover:opacity-100">
+                <MoreVertical className="h-5 w-5 text-on-surface-variant" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="min-w-32 rounded-lg border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
+            <DropdownMenuContent className="min-w-32 rounded-lg border border-outline-variant/20 bg-card p-1 shadow-lg">
               <DropdownMenuItem
                 onClick={() => onOpen(roadmap)}
-                className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm text-slate-700 outline-none hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700"
+                className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm text-on-surface-variant outline-none hover:bg-surface-container-low"
               >
                 <Eye className="h-4 w-4" />
                 View
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDelete(roadmap._id)}
-                className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm text-red-600 outline-none hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
+                className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm text-error outline-none hover:bg-error-container/20"
               >
                 <Trash2 className="h-4 w-4" />
                 Delete
@@ -87,21 +87,21 @@ export const SavedSkillRoadmapCard: React.FC<SavedSkillRoadmapCardProps> = ({
       {/* Progress Bar */}
       <div className="mb-4">
         <div className="mb-1 flex items-center justify-between text-sm">
-          <span className="text-slate-600 dark:text-slate-400">Progress</span>
-          <span className="font-medium text-slate-800 dark:text-slate-200">
+          <span className="text-on-surface-variant">Progress</span>
+          <span className="font-medium text-on-surface">
             {roadmap.overallProgress}%
           </span>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
+        <div className="h-2 overflow-hidden rounded-full bg-surface-container-low">
           <div
-            className="h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500"
+            className="h-full rounded-full bg-gradient-to-r from-primary to-primary-container transition-all duration-500"
             style={{ width: `${roadmap.overallProgress}%` }}
           />
         </div>
       </div>
 
       {/* Stats */}
-      <div className="mb-4 flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+      <div className="mb-4 flex items-center gap-4 text-sm text-on-surface-variant">
         <div className="flex items-center gap-1">
           <Calendar className="h-4 w-4" />
           <span>{createdDate}</span>
@@ -118,13 +118,13 @@ export const SavedSkillRoadmapCard: React.FC<SavedSkillRoadmapCardProps> = ({
           {analysis.profile.target_roles.slice(0, 3).map((role, index) => (
             <span
               key={index}
-              className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-400"
+              className="rounded-full bg-surface-container-low px-2.5 py-1 text-xs font-medium text-on-surface-variant"
             >
               {role}
             </span>
           ))}
           {analysis.profile.target_roles.length > 3 && (
-            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-400">
+            <span className="rounded-full bg-surface-container-low px-2.5 py-1 text-xs font-medium text-on-surface-variant">
               +{analysis.profile.target_roles.length - 3}
             </span>
           )}
@@ -134,7 +134,7 @@ export const SavedSkillRoadmapCard: React.FC<SavedSkillRoadmapCardProps> = ({
       {/* View Button */}
       <button
         onClick={() => onOpen(roadmap)}
-        className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+        className="flex w-full items-center justify-center gap-2 rounded-lg border border-outline-variant/20 py-2 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container-low"
       >
         View Details
         <ChevronRight className="h-4 w-4" />

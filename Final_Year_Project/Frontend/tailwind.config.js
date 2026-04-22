@@ -165,9 +165,11 @@ export default {
         sm: 'calc(var(--radius) - 4px)'
       },
       fontFamily: {
-        headline: ["Noto Serif"],
-        body: ["Inter"],
-        label: ["Public Sans"]
+        headline: ["Noto Serif", "Georgia", "serif"],
+        body: ["Inter", "system-ui", "sans-serif"],
+        label: ["Public Sans", "system-ui", "sans-serif"],
+        sans: ["Inter", "system-ui", "sans-serif"],
+        serif: ["Noto Serif", "Georgia", "serif"],
       }
     }
   },

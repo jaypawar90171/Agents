@@ -31,7 +31,7 @@ const JobList: React.FC = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <Loader2 className="w-12 h-12 text-primary animate-spin" />
-        <p className="font-label text-sm text-slate-600 font-medium">Loading jobs...</p>
+        <p className="font-label text-sm text-on-surface-variant font-medium">Loading jobs...</p>
       </div>
     );
   }
@@ -43,8 +43,8 @@ const JobList: React.FC = () => {
         <div className="w-16 h-16 rounded-full bg-error-container flex items-center justify-center">
           <AlertCircle className="w-8 h-8 text-error" />
         </div>
-        <h3 className="font-headline text-xl text-slate-900">Failed to Load Jobs</h3>
-        <p className="font-body text-slate-600 text-center max-w-md">{error}</p>
+        <h3 className="font-headline text-xl text-on-surface">Failed to Load Jobs</h3>
+        <p className="font-body text-on-surface-variant text-center max-w-md">{error}</p>
         <button
           onClick={refetch}
           className="mt-4 px-6 py-3 rounded-xl bg-primary hover:bg-primary-container text-on-primary font-label text-xs uppercase tracking-widest font-bold transition-all flex items-center gap-2"
@@ -63,8 +63,8 @@ const JobList: React.FC = () => {
         <div className="w-16 h-16 rounded-full bg-surface-container-high flex items-center justify-center">
           <AlertCircle className="w-8 h-8 text-outline" />
         </div>
-        <h3 className="font-headline text-xl text-slate-900">No Jobs Found</h3>
-        <p className="font-body text-slate-600 text-center max-w-md">
+        <h3 className="font-headline text-xl text-on-surface">No Jobs Found</h3>
+        <p className="font-body text-on-surface-variant text-center max-w-md">
           No jobs match your current filters. Try adjusting your search criteria.
         </p>
       </div>
@@ -123,7 +123,7 @@ const JobList: React.FC = () => {
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
               className={`px-4 py-2 transition-all flex items-center gap-2 ${
-                currentPage === 1 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-400 hover:text-slate-900 opacity-80 hover:opacity-100'
+                currentPage === 1 ? 'text-outline cursor-not-allowed' : 'text-on-surface-variant hover:text-on-surface opacity-80 hover:opacity-100'
               }`}
             >
               Previous
@@ -133,7 +133,7 @@ const JobList: React.FC = () => {
               {getPaginationRange()?.map((page, index) => {
                 if (page === '...') {
                   return (
-                    <span key={`dots-${index}`} className="px-2 text-slate-300">
+                    <span key={`dots-${index}`} className="px-2 text-outline">
                       ...
                     </span>
                   );
@@ -146,7 +146,7 @@ const JobList: React.FC = () => {
                     className={`w-10 h-10 flex items-center justify-center transition-all ${
                       page === currentPage
                         ? 'text-primary font-bold underline underline-offset-4'
-                        : 'text-slate-400 hover:text-slate-900'
+                        : 'text-on-surface-variant hover:text-on-surface'
                     }`}
                   >
                     {page}
@@ -159,7 +159,7 @@ const JobList: React.FC = () => {
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
               className={`px-4 py-2 transition-all flex items-center gap-2 ${
-                currentPage === totalPages ? 'text-slate-300 cursor-not-allowed' : 'text-slate-400 hover:text-slate-900 opacity-80 hover:opacity-100'
+                currentPage === totalPages ? 'text-outline cursor-not-allowed' : 'text-on-surface-variant hover:text-on-surface opacity-80 hover:opacity-100'
               }`}
             >
               Next

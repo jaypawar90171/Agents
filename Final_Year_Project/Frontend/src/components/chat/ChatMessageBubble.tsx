@@ -72,7 +72,7 @@ export const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({ message })
   return (
     <div className="flex gap-6 max-w-4xl mx-auto mb-10">
       <div className="w-10 h-10 rounded-full bg-primary-container flex-shrink-0 flex items-center justify-center mt-1">
-        <span className="font-serif text-white text-xl font-bold italic">A</span>
+        <span className="font-headline text-white text-xl font-bold italic">A</span>
       </div>
       <div className="space-y-4 flex-1 min-w-0">
         <div className="font-headline text-lg leading-relaxed text-on-surface text-justify">

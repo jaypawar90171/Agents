@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
-import { useAtom, useSetAtom } from "jotai";
 import { useUser } from "@clerk/clerk-react";
+import { useAtom, useSetAtom } from "jotai";
 import Header from "../components/Header";
 import { ChatMessageBubble } from "../components/chat/ChatMessageBubble";
 import { ChatInput } from "../components/chat/ChatInput";
@@ -22,7 +22,7 @@ import {
   renameSession,
 } from "../services/chatService";
 import type { ChatMessage } from "../types/api";
-import { MoreHorizontal } from "lucide-react";
+import { MessageSquare, PlusCircle, Briefcase } from "lucide-react";
 
 function generateId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -30,6 +30,7 @@ function generateId(): string {
 
 export default function JobChat() {
   const { user } = useUser();
+  const userId = user?.id ?? "";
   const [sessionId, setSessionId] = useAtom(chatSessionIdAtom);
   const [messages, setMessages] = useAtom(chatMessagesAtom);
   const [loading, setLoading] = useAtom(chatLoadingAtom);
@@ -37,11 +38,8 @@ export default function JobChat() {
   const [input, setInput] = useAtom(chatInputAtom);
   const setSession = useSetAtom(chatSetSessionAtom);
   const clearChat = useSetAtom(chatClearAtom);
-  const [sessionList, setSessionList] = useAtom(chatSessionListAtom);
+  const setSessionList = useSetAtom(chatSessionListAtom);
   const scrollRef = useRef<HTMLDivElement>(null);
-
-  const userId = user?.id ?? "guest";
-  const activeSessionTitle = sessionList.find(s => s.session_id === sessionId)?.title || "New Dialogue";
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
@@ -127,7 +125,6 @@ export default function JobChat() {
     loading,
     sessionId,
     messages.length,
-    userId,
     setInput,
     setMessages,
     setError,
@@ -146,17 +143,18 @@ export default function JobChat() {
         (window as any).__reloadChatSidebar();
       }
     })();
-  }, [clearChat, setSession, setSessionId, userId]);
+  }, [clearChat, setSession, setSessionId]);
 
   return (
-    <div className="h-screen flex flex-col bg-background text-on-background overflow-hidden relative">
+    <div className="h-screen flex flex-col bg-background overflow-hidden">
       <Header />
 
-      <div className="flex flex-1 overflow-hidden relative z-0">
+      {/* Body: sidebar + chat area side by side */}
+      <div className="flex flex-1 overflow-hidden">
         <ChatSidebar onNewChat={handleNewChat} />
 
         {/* Main Chat Area */}
-        <main className="flex-1 flex flex-col bg-surface-container-lowest dark:bg-[hsl(var(--surface-container-lowest-dark))] relative overflow-hidden">
+        <main className="flex-1 flex flex-col bg-surface-container-lowest relative overflow-hidden">
           {/* Chat Header */}
           {/* <header className="h-16 flex items-center px-8 bg-surface-container-lowest z-10 border-b border-outline-variant/10">
             <h2 className="text-xl font-headline font-bold text-on-surface truncate">{activeSessionTitle}</h2>
@@ -169,7 +167,7 @@ export default function JobChat() {
           </header> */}
 
           {/* Chat Content */}
-          <div 
+          <div
             ref={scrollRef}
             className="flex-1 overflow-y-auto px-4 md:px-12 lg:px-24 py-10 space-y-12 no-scrollbar"
           >
@@ -206,34 +204,34 @@ export default function JobChat() {
             {messages.map((msg) => (
               <ChatMessageBubble key={msg.id} message={msg} />
             ))}
-            
+
             {loading && (
               <div className="flex gap-6 max-w-4xl mx-auto">
                 <div className="w-10 h-10 rounded-full bg-primary-container flex-shrink-0 flex items-center justify-center mt-1">
-                  <span className="font-serif text-white font-bold italic">A</span>
+                  <span className="font-headline text-white font-bold italic">A</span>
                 </div>
                 <div className="flex items-center space-x-1 mt-3">
                   <TypingIndicator />
                 </div>
               </div>
             )}
-          </div>
 
-          {/* Error */}
-          {error && (
-            <div className="absolute bottom-[100px] left-1/2 -translate-x-1/2 rounded-xl bg-error-container text-on-error-container px-6 py-3 text-sm font-label font-bold flex-shrink-0 shadow-lg z-20">
-              {error}
+            {/* Error */}
+            {error && (
+              <div className="mb-3 rounded-xl bg-error-container border border-error/20 px-4 py-2 text-sm text-error flex-shrink-0">
+                {error}
+              </div>
+            )}
+
+            {/* Input */}
+            <div className="pt-2 flex-shrink-0">
+              <ChatInput
+                value={input}
+                onChange={setInput}
+                onSend={handleSend}
+                disabled={loading}
+              />
             </div>
-          )}
-
-          {/* Message Input */}
-          <div className="p-4 md:p-8 md:px-24 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest to-transparent relative z-10">
-            <ChatInput
-              value={input}
-              onChange={setInput}
-              onSend={handleSend}
-              disabled={loading}
-            />
           </div>
         </main>
       </div>
