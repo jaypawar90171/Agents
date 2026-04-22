@@ -61,7 +61,6 @@ export const PipelineProgress: React.FC<PipelineProgressProps> = ({
   return (
     <div
       style={{
-        fontFamily: "'Inter', sans-serif",
         borderRadius: '1rem',
         overflow: 'hidden',
         border: '1px solid rgba(195, 198, 213, 0.4)',
@@ -114,7 +113,6 @@ export const PipelineProgress: React.FC<PipelineProgressProps> = ({
         <div>
           <p
             style={{
-              fontFamily: "'Noto Serif', serif",
               fontWeight: 700,
               fontSize: '1.0625rem',
               color: isComplete ? '#ffffff' : '#1b1c1d',
@@ -125,7 +123,6 @@ export const PipelineProgress: React.FC<PipelineProgressProps> = ({
           </p>
           <p
             style={{
-              fontFamily: "'Public Sans', sans-serif",
               fontSize: '0.75rem',
               color: isComplete ? 'rgba(255,255,255,0.75)' : '#737784',
               letterSpacing: '0.02em',
@@ -142,7 +139,6 @@ export const PipelineProgress: React.FC<PipelineProgressProps> = ({
         <div style={{ marginLeft: 'auto' }}>
           <span
             style={{
-              fontFamily: "'Public Sans', sans-serif",
               fontSize: '0.75rem',
               fontWeight: 600,
               letterSpacing: '0.04em',
@@ -237,7 +233,6 @@ export const PipelineProgress: React.FC<PipelineProgressProps> = ({
                   ) : (
                     <span
                       style={{
-                        fontFamily: "'Public Sans', sans-serif",
                         fontSize: '0.6875rem',
                         fontWeight: 700,
                         color: '#737784',
@@ -252,7 +247,6 @@ export const PipelineProgress: React.FC<PipelineProgressProps> = ({
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <span
                     style={{
-                      fontFamily: "'Inter', sans-serif",
                       fontSize: '0.875rem',
                       fontWeight: isActive ? 600 : 400,
                       color: isCompleted
@@ -268,7 +262,6 @@ export const PipelineProgress: React.FC<PipelineProgressProps> = ({
                   {isActive && (
                     <p
                       style={{
-                        fontFamily: "'Public Sans', sans-serif",
                         fontSize: '0.7375rem',
                         color: '#434653',
                         marginTop: '0.125rem',
@@ -284,7 +277,6 @@ export const PipelineProgress: React.FC<PipelineProgressProps> = ({
                 {isCompleted && (
                   <span
                     style={{
-                      fontFamily: "'Public Sans', sans-serif",
                       fontSize: '0.6875rem',
                       fontWeight: 600,
                       color: '#094cb2',
@@ -297,7 +289,6 @@ export const PipelineProgress: React.FC<PipelineProgressProps> = ({
                 {isActive && (
                   <span
                     style={{
-                      fontFamily: "'Public Sans', sans-serif",
                       fontSize: '0.6875rem',
                       fontWeight: 700,
                       color: '#094cb2',
@@ -323,7 +314,6 @@ export const PipelineProgress: React.FC<PipelineProgressProps> = ({
           style={{
             padding: '1rem 1.75rem',
             background: '#1b1c1d',
-            fontFamily: "'Public Sans', monospace",
             fontSize: '0.75rem',
             color: '#c3c6d5',
             lineHeight: 1.8,
@@ -359,7 +349,6 @@ export const PipelineProgress: React.FC<PipelineProgressProps> = ({
       >
         <p
           style={{
-            fontFamily: "'Public Sans', sans-serif",
             fontSize: '0.75rem',
             color: '#737784',
             letterSpacing: '0.01em',
@@ -371,7 +360,6 @@ export const PipelineProgress: React.FC<PipelineProgressProps> = ({
         </p>
         <span
           style={{
-            fontFamily: "'Public Sans', sans-serif",
             fontSize: '0.6875rem',
             fontWeight: 700,
             color: isComplete ? '#094cb2' : '#6d5e00',

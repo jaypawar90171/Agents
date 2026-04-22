@@ -74,8 +74,7 @@ const Roadmap: React.FC = () => {
           background: t.surface,
           display: 'flex',
           flexDirection: 'column',
-          fontFamily: "'Inter',sans-serif",
-        }}
+          }}
       >
         <Header />
 
@@ -95,7 +94,6 @@ const Roadmap: React.FC = () => {
           <div style={{ padding: '2.75rem 0 2.25rem' }}>
             <p
               style={{
-                fontFamily: "'Public Sans',sans-serif",
                 fontWeight: 700,
                 fontSize: '0.625rem',
                 letterSpacing: '0.12em',
@@ -107,7 +105,6 @@ const Roadmap: React.FC = () => {
             </p>
             <h1
               style={{
-                fontFamily: "'Noto Serif',serif",
                 fontWeight: 800,
                 lineHeight: 1.1,
                 marginBottom: '0.875rem',
@@ -122,7 +119,6 @@ const Roadmap: React.FC = () => {
             </h1>
             <p
               style={{
-                fontFamily: "'Inter',sans-serif",
                 fontSize: '1rem',
                 color: t.variant,
                 lineHeight: 1.7,
@@ -173,7 +169,6 @@ const Roadmap: React.FC = () => {
                   border: 'none',
                   outline: 'none',
                   background: 'none',
-                  fontFamily: "'Inter',sans-serif",
                   fontSize: '0.9375rem',
                   color: t.onSurface,
                   cursor: loading ? 'not-allowed' : 'text',
@@ -195,7 +190,6 @@ const Roadmap: React.FC = () => {
                     : `linear-gradient(135deg, ${t.primary}, ${t.container})`,
                   border: 'none',
                   color: loading || !canSubmit ? t.outline : t.white,
-                  fontFamily: "'Public Sans',sans-serif",
                   fontWeight: 700,
                   fontSize: '0.875rem',
                   letterSpacing: '0.04em',
@@ -233,7 +227,6 @@ const Roadmap: React.FC = () => {
             {companyName.trim().length > 0 && companyName.trim().length < MIN_COMPANY_LENGTH && (
               <p
                 style={{
-                  fontFamily: "'Public Sans',sans-serif",
                   fontSize: '0.8125rem',
                   fontWeight: 600,
                   color: t.tertiary,
@@ -274,10 +267,10 @@ const Roadmap: React.FC = () => {
               >
                 <Sparkles size={22} color={t.white} />
               </div>
-              <p style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '1.125rem', color: t.onSurface, marginBottom: '0.375rem' }}>
+              <p style={{ fontWeight: 700, fontSize: '1.125rem', color: t.onSurface, marginBottom: '0.375rem' }}>
                 Curating your roadmap…
               </p>
-              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: t.outline }}>
+              <p style={{ fontSize: '0.875rem', color: t.outline }}>
                 Analyzing job data and generating your personalized path for{' '}
                 <span style={{ color: t.primary, fontWeight: 600 }}>{companyName}</span>
               </p>
@@ -301,10 +294,10 @@ const Roadmap: React.FC = () => {
                 border: '1px solid hsl(var(--error) / 0.2)',
               }}
             >
-              <p style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '1rem', color: t.error, marginBottom: '0.375rem' }}>
+              <p style={{ fontWeight: 700, fontSize: '1rem', color: t.error, marginBottom: '0.375rem' }}>
                 ⚠ Error generating roadmap
               </p>
-              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: t.error, lineHeight: 1.6 }}>
+              <p style={{ fontSize: '0.875rem', color: t.error, lineHeight: 1.6 }}>
                 {error}
               </p>
             </div>
@@ -325,7 +318,7 @@ const Roadmap: React.FC = () => {
               }}
             >
               <CheckCircle size={18} color="#2e7d32" />
-              <p style={{ fontFamily: "'Public Sans',sans-serif", fontWeight: 600, fontSize: '0.875rem', color: 'hsl(142.1 70.6% 25.3%)' }}>
+              <p style={{ fontWeight: 600, fontSize: '0.875rem', color: 'hsl(142.1 70.6% 25.3%)' }}>
                 {saveMessage}
               </p>
             </div>
@@ -340,7 +333,7 @@ const Roadmap: React.FC = () => {
                 border: '1px solid hsl(var(--error) / 0.2)',
               }}
             >
-              <p style={{ fontFamily: "'Public Sans',sans-serif", fontWeight: 600, fontSize: '0.875rem', color: t.error }}>
+              <p style={{ fontWeight: 600, fontSize: '0.875rem', color: t.error }}>
                 {saveMessage}
               </p>
             </div>
@@ -381,7 +374,6 @@ const Roadmap: React.FC = () => {
                     </div>
                     <h2
                       style={{
-                        fontFamily: "'Noto Serif',serif",
                         fontWeight: 800,
                         fontSize: '1.125rem',
                         color: t.onSurface,
@@ -432,7 +424,6 @@ const Roadmap: React.FC = () => {
               </div>
               <h3
                 style={{
-                  fontFamily: "'Noto Serif',serif",
                   fontWeight: 800,
                   fontSize: '1.25rem',
                   color: t.onSurface,
@@ -441,7 +432,7 @@ const Roadmap: React.FC = () => {
               >
                 Ready to start your learning journey?
               </h3>
-              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.9375rem', color: t.variant, maxWidth: '34rem', margin: '0 auto 2.5rem', lineHeight: 1.7 }}>
+              <p style={{ fontSize: '0.9375rem', color: t.variant, maxWidth: '34rem', margin: '0 auto 2.5rem', lineHeight: 1.7 }}>
                 Enter a target company above to generate a personalized roadmap with
                 essential skills, milestones, and curated resources.
               </p>
@@ -474,10 +465,10 @@ const Roadmap: React.FC = () => {
                     >
                       {f.icon}
                     </div>
-                    <p style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '0.9375rem', color: t.onSurface, marginBottom: '0.375rem' }}>
+                    <p style={{ fontWeight: 700, fontSize: '0.9375rem', color: t.onSurface, marginBottom: '0.375rem' }}>
                       {f.title}
                     </p>
-                    <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.8125rem', color: t.variant, lineHeight: 1.6 }}>
+                    <p style={{ fontSize: '0.8125rem', color: t.variant, lineHeight: 1.6 }}>
                       {f.desc}
                     </p>
                   </div>
@@ -500,7 +491,7 @@ const Roadmap: React.FC = () => {
               gap: '1rem',
             }}
           >
-            <p style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.8125rem', color: t.outline }}>
+            <p style={{ fontSize: '0.8125rem', color: t.outline }}>
               © 2026 LearnLaunch Scholarly Systems — All Rights Reserved
             </p>
             <div style={{ display: 'flex', gap: '1.75rem' }}>
@@ -508,7 +499,7 @@ const Roadmap: React.FC = () => {
                 <a
                   key={l}
                   href="#"
-                  style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.8125rem', color: t.outline, textDecoration: 'none', transition: 'color 0.2s' }}
+                  style={{ fontSize: '0.8125rem', color: t.outline, textDecoration: 'none', transition: 'color 0.2s' }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = t.primary; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = t.outline; }}
                 >

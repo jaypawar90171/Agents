@@ -64,7 +64,6 @@ const RoadmapJobsUsed: React.FC<RoadmapJobsUsedProps> = ({ jobs }) => {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <h4
                   style={{
-                    fontFamily: "'Noto Serif',serif",
                     fontWeight: 700,
                     fontSize: '1rem',
                     color: t.onSurface,
@@ -74,13 +73,13 @@ const RoadmapJobsUsed: React.FC<RoadmapJobsUsedProps> = ({ jobs }) => {
                 >
                   {job.job_title}
                 </h4>
-                <p style={{ fontFamily: "'Inter',sans-serif", fontWeight: 500, fontSize: '0.875rem', color: t.variant, marginBottom: '0.25rem' }}>
+                <p style={{ fontWeight: 500, fontSize: '0.875rem', color: t.variant, marginBottom: '0.25rem' }}>
                   {job.company}
                 </p>
                 {job.location && (
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
                     <MapPin size={13} color={t.outline} />
-                    <span style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.75rem', color: t.outline, letterSpacing: '0.01em' }}>
+                    <span style={{ fontSize: '0.75rem', color: t.outline, letterSpacing: '0.01em' }}>
                       {job.location}
                     </span>
                   </div>
@@ -100,7 +99,6 @@ const RoadmapJobsUsed: React.FC<RoadmapJobsUsedProps> = ({ jobs }) => {
                   background: 'rgba(9,76,178,0.06)',
                   border: '1px solid rgba(9,76,178,0.18)',
                   color: t.primary,
-                  fontFamily: "'Public Sans',sans-serif",
                   fontWeight: 600, fontSize: '0.8125rem',
                   textDecoration: 'none',
                   flexShrink: 0,
@@ -127,7 +125,6 @@ const RoadmapJobsUsed: React.FC<RoadmapJobsUsedProps> = ({ jobs }) => {
             <div style={{ marginTop: '1rem', paddingTop: '0.875rem', borderTop: '1px solid rgba(195,198,213,0.35)' }}>
               <p
                 style={{
-                  fontFamily: "'Public Sans',sans-serif",
                   fontSize: '0.625rem', fontWeight: 700,
                   letterSpacing: '0.08em', color: t.outline,
                   marginBottom: '0.5rem',
@@ -140,7 +137,6 @@ const RoadmapJobsUsed: React.FC<RoadmapJobsUsedProps> = ({ jobs }) => {
                   <span
                     key={`${skill}-${i}`}
                     style={{
-                      fontFamily: "'Public Sans',sans-serif",
                       fontSize: '0.75rem', fontWeight: 600,
                       padding: '0.2rem 0.625rem',
                       borderRadius: '999px',

@@ -40,7 +40,6 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
           <div key={i} style={statCard}>
             <p
               style={{
-                fontFamily: "'Noto Serif', serif",
                 fontWeight: 800,
                 fontSize: '1.875rem',
                 color: stat.color,
@@ -51,7 +50,6 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
             </p>
             <p
               style={{
-                fontFamily: "'Public Sans', sans-serif",
                 fontSize: '0.75rem',
                 fontWeight: 600,
                 letterSpacing: '0.04em',
@@ -85,7 +83,6 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
           <div>
             <h3
               style={{
-                fontFamily: "'Noto Serif', serif",
                 fontWeight: 700,
                 fontSize: '1rem',
                 color: 'hsl(var(--on-surface))',
@@ -95,7 +92,6 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
             </h3>
             <p
               style={{
-                fontFamily: "'Inter', sans-serif",
                 fontSize: '0.8125rem',
                 color: 'hsl(var(--outline))',
                 marginTop: '0.125rem',
@@ -107,7 +103,6 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
           <span
             style={{
               marginLeft: 'auto',
-              fontFamily: "'Public Sans', sans-serif",
               fontSize: '0.75rem',
               fontWeight: 700,
               letterSpacing: '0.04em',
@@ -151,10 +146,10 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
                 <Target size={14} color="hsl(var(--error))" />
               </div>
               <div style={{ minWidth: 0 }}>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: '0.875rem', color: 'hsl(var(--on-surface))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <p style={{ fontWeight: 600, fontSize: '0.875rem', color: 'hsl(var(--on-surface))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {gap.skill}
                 </p>
-                <p style={{ fontFamily: "'Public Sans', sans-serif", fontSize: '0.7rem', color: 'hsl(var(--outline))', marginTop: '0.1rem' }}>
+                <p style={{ fontSize: '0.7rem', color: 'hsl(var(--outline))', marginTop: '0.1rem' }}>
                   Found in {gap.frequency} jobs
                 </p>
               </div>
@@ -163,7 +158,7 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
         </div>
 
         {criticalGaps.length === 0 && (
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'hsl(var(--outline))' }}>
+          <p style={{ fontSize: '0.875rem', color: 'hsl(var(--outline))' }}>
             No critical gaps identified — you have the core skills!
           </p>
         )}
@@ -189,7 +184,6 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
           <div>
             <h3
               style={{
-                fontFamily: "'Noto Serif', serif",
                 fontWeight: 700,
                 fontSize: '1rem',
                 color: 'hsl(var(--on-surface))',
@@ -199,7 +193,6 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
             </h3>
             <p
               style={{
-                fontFamily: "'Inter', sans-serif",
                 fontSize: '0.8125rem',
                 color: 'hsl(var(--outline))',
                 marginTop: '0.125rem',
@@ -211,7 +204,6 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
           <span
             style={{
               marginLeft: 'auto',
-              fontFamily: "'Public Sans', sans-serif",
               fontSize: '0.75rem',
               fontWeight: 700,
               letterSpacing: '0.04em',
@@ -255,10 +247,10 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
                 <Users size={14} color="hsl(var(--tertiary))" />
               </div>
               <div style={{ minWidth: 0 }}>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: '0.875rem', color: 'hsl(var(--on-surface))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                <p style={{ fontWeight: 600, fontSize: '0.875rem', color: 'hsl(var(--on-surface))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {gap.skill}
                 </p>
-                <p style={{ fontFamily: "'Public Sans', sans-serif", fontSize: '0.7rem', color: 'hsl(var(--outline))', marginTop: '0.1rem' }}>
+                <p style={{ fontSize: '0.7rem', color: 'hsl(var(--outline))', marginTop: '0.1rem' }}>
                   Found in {gap.frequency} jobs
                 </p>
               </div>
@@ -267,7 +259,7 @@ export const GapAnalysisCard: React.FC<GapAnalysisCardProps> = ({ gaps }) => {
         </div>
 
         {competitiveGaps.length === 0 && (
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'hsl(var(--outline))' }}>
+          <p style={{ fontSize: '0.875rem', color: 'hsl(var(--outline))' }}>
             No competitive edge gaps — you're ahead of the curve!
           </p>
         )}

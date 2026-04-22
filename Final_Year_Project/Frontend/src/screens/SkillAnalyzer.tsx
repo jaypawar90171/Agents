@@ -39,7 +39,6 @@ const card: React.CSSProperties = {
 
 /* ─── Section heading ─── */
 const sh = (color = t.onSurface): React.CSSProperties => ({
-  fontFamily: "'Noto Serif', serif",
   fontWeight: 800,
   fontSize: '1.125rem',
   color,
@@ -115,10 +114,10 @@ const InlineUploadCard: React.FC<InlineUploadProps> = ({
             <FileText size={18} color={t.primary} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontFamily: "'Inter',sans-serif", fontWeight: 600, fontSize: '0.875rem', color: t.primary, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+            <p style={{ fontWeight: 600, fontSize: '0.875rem', color: t.primary, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
               {selectedFile.name}
             </p>
-            <p style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.7rem', color: t.outline, marginTop: '0.1rem' }}>
+            <p style={{ fontSize: '0.7rem', color: t.outline, marginTop: '0.1rem' }}>
               {(selectedFile.size / 1024).toFixed(1)} KB
             </p>
           </div>
@@ -191,15 +190,15 @@ const InlineUploadCard: React.FC<InlineUploadProps> = ({
           </div>
         </div>
 
-        <p style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '1rem', color: t.onSurface, marginBottom: '0.375rem' }}>
+        <p style={{ fontWeight: 700, fontSize: '1rem', color: t.onSurface, marginBottom: '0.375rem' }}>
           Drag and drop your resume
         </p>
-        <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.8125rem', color: t.variant }}>
+        <p style={{ fontSize: '0.8125rem', color: t.variant }}>
           Support for PDF
         </p>
 
         {err && (
-          <p style={{ marginTop: '0.75rem', fontFamily: "'Inter',sans-serif", fontSize: '0.8125rem', fontWeight: 500, color: t.error }}>
+          <p style={{ marginTop: '0.75rem', fontSize: '0.8125rem', fontWeight: 500, color: t.error }}>
             {err}
           </p>
         )}
@@ -217,7 +216,6 @@ const InlineUploadCard: React.FC<InlineUploadProps> = ({
           background: `linear-gradient(135deg, ${t.primary}, ${t.container})`,
           border: 'none',
           color: t.white,
-          fontFamily: "'Public Sans',sans-serif",
           fontWeight: 700,
           fontSize: '0.875rem',
           letterSpacing: '0.06em',
@@ -263,7 +261,6 @@ const InlineUploadCard: React.FC<InlineUploadProps> = ({
           <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
             {icon}
             <span style={{
-              fontFamily: "'Public Sans',sans-serif",
               fontSize: '0.6rem',
               fontWeight: 700,
               letterSpacing: '0.06em',
@@ -318,7 +315,7 @@ const SkillAnalyzer: React.FC = () => {
 
   return (
     <>
-      <div style={{ minHeight: '100vh', background: t.surface, display: 'flex', flexDirection: 'column', fontFamily: "'Inter',sans-serif" }}>
+      <div style={{ minHeight: '100vh', background: t.surface, display: 'flex', flexDirection: 'column', }}>
         <Header />
 
         <main style={{ maxWidth: '72rem', margin: '0 auto', padding: '0 1.5rem 4rem', width: '100%', flex: 1 }}>
@@ -344,7 +341,6 @@ const SkillAnalyzer: React.FC = () => {
                   <div style={{ marginBottom: '1.25rem' }}>
                     <span
                       style={{
-                        fontFamily: "'Public Sans',sans-serif",
                         fontWeight: 800,
                         fontSize: '0.625rem',
                         letterSpacing: '0.1em',
@@ -362,7 +358,6 @@ const SkillAnalyzer: React.FC = () => {
                   {/* Headline */}
                   <h1
                     style={{
-                      fontFamily: "'Noto Serif',serif",
                       lineHeight: 1.1,
                       marginBottom: '1rem',
                     }}
@@ -375,7 +370,7 @@ const SkillAnalyzer: React.FC = () => {
                     </span>
                   </h1>
 
-                  <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.9375rem', color: t.variant, lineHeight: 1.7, maxWidth: '22rem', marginBottom: '2rem' }}>
+                  <p style={{ fontSize: '0.9375rem', color: t.variant, lineHeight: 1.7, maxWidth: '22rem', marginBottom: '2rem' }}>
                     Upload your resume to identify skill gaps and get a personalized learning
                     roadmap curated for your next career milestone.
                   </p>
@@ -409,10 +404,10 @@ const SkillAnalyzer: React.FC = () => {
                           {f.icon}
                         </div>
                         <div>
-                          <p style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '0.9375rem', color: t.onSurface, marginBottom: '0.25rem' }}>
+                          <p style={{ fontWeight: 700, fontSize: '0.9375rem', color: t.onSurface, marginBottom: '0.25rem' }}>
                             {f.title}
                           </p>
-                          <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.8125rem', color: t.variant, lineHeight: 1.6 }}>
+                          <p style={{ fontSize: '0.8125rem', color: t.variant, lineHeight: 1.6 }}>
                             {f.desc}
                           </p>
                         </div>
@@ -445,7 +440,6 @@ const SkillAnalyzer: React.FC = () => {
                           background: `linear-gradient(135deg, ${t.primary}, ${t.container})`,
                           border: 'none',
                           color: t.white,
-                          fontFamily: "'Public Sans',sans-serif",
                           fontWeight: 700,
                           fontSize: '0.875rem',
                           letterSpacing: '0.05em',
@@ -479,11 +473,11 @@ const SkillAnalyzer: React.FC = () => {
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                       <span style={{ width: '0.5rem', height: '0.5rem', borderRadius: '50%', background: '#4caf50', flexShrink: 0, boxShadow: '0 0 0 2px rgba(76,175,80,0.25)' }} />
-                      <span style={{ fontFamily: "'Public Sans',sans-serif", fontWeight: 700, fontSize: '0.625rem', letterSpacing: '0.08em', color: t.outline }}>
+                      <span style={{ fontWeight: 700, fontSize: '0.625rem', letterSpacing: '0.08em', color: t.outline }}>
                         SYSTEM STATUS
                       </span>
                     </div>
-                    <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.8rem', color: t.variant, lineHeight: 1.6 }}>
+                    <p style={{ fontSize: '0.8rem', color: t.variant, lineHeight: 1.6 }}>
                       Curator AI is currently processing at{' '}
                       <span style={{ color: t.primary, fontWeight: 600 }}>High Fidelity</span>.
                       Resume analysis takes approximately{' '}
@@ -534,7 +528,6 @@ const SkillAnalyzer: React.FC = () => {
                     </div>
                     <h3
                       style={{
-                        fontFamily: "'Noto Serif',serif",
                         fontWeight: 700,
                         fontSize: '1rem',
                         color: t.onSurface,
@@ -543,7 +536,7 @@ const SkillAnalyzer: React.FC = () => {
                     >
                       {f.title}
                     </h3>
-                    <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.8125rem', color: t.variant, lineHeight: 1.65 }}>
+                    <p style={{ fontSize: '0.8125rem', color: t.variant, lineHeight: 1.65 }}>
                       {f.desc}
                     </p>
                   </div>
@@ -574,15 +567,15 @@ const SkillAnalyzer: React.FC = () => {
                 border: '1px solid hsl(var(--error) / 0.2)',
               }}
             >
-              <p style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '1rem', color: t.error, marginBottom: '0.375rem' }}>
+              <p style={{ fontWeight: 700, fontSize: '1rem', color: t.error, marginBottom: '0.375rem' }}>
                 Analysis Failed
               </p>
-              <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: t.error, marginBottom: '1rem', lineHeight: 1.6 }}>
+              <p style={{ fontSize: '0.875rem', color: t.error, marginBottom: '1rem', lineHeight: 1.6 }}>
                 {error}
               </p>
               <button
                 onClick={handleNewAnalysis}
-                style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', background: t.error, border: 'none', color: t.white, fontFamily: "'Public Sans',sans-serif", fontWeight: 700, fontSize: '0.8125rem', cursor: 'pointer', letterSpacing: '0.03em' }}
+                style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', background: t.error, border: 'none', color: t.white, fontWeight: 700, fontSize: '0.8125rem', cursor: 'pointer', letterSpacing: '0.03em' }}
               >
                 Try Again
               </button>
@@ -600,7 +593,7 @@ const SkillAnalyzer: React.FC = () => {
                 <button
                   id="new-analysis-btn"
                   onClick={handleNewAnalysis}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1.125rem', borderRadius: '0.625rem', background: t.surface, border: '1px solid hsl(var(--border) / 0.5)', color: t.variant, fontFamily: "'Public Sans',sans-serif", fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', letterSpacing: '0.02em' }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1.125rem', borderRadius: '0.625rem', background: t.surface, border: '1px solid hsl(var(--border) / 0.5)', color: t.variant, fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer', letterSpacing: '0.02em' }}
                 >
                   <FileText size={16} /> New Analysis
                 </button>
@@ -608,7 +601,7 @@ const SkillAnalyzer: React.FC = () => {
                   id="save-to-profile-btn"
                   onClick={handleSaveToProfile}
                   disabled={saveStatus === 'saving' || saveStatus === 'success'}
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.625rem 1.5rem', borderRadius: '0.625rem', background: saveStatus === 'success' ? 'hsl(142.1 70.6% 45.3%)' : `linear-gradient(135deg,${t.primary},${t.container})`, border: 'none', color: t.white, fontFamily: "'Public Sans',sans-serif", fontWeight: 700, fontSize: '0.875rem', cursor: saveStatus === 'saving' || saveStatus === 'success' ? 'default' : 'pointer', letterSpacing: '0.03em', boxShadow: '0 4px 12px hsl(var(--primary) / 0.25)', opacity: saveStatus === 'saving' ? 0.75 : 1 }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.625rem 1.5rem', borderRadius: '0.625rem', background: saveStatus === 'success' ? 'hsl(142.1 70.6% 45.3%)' : `linear-gradient(135deg,${t.primary},${t.container})`, border: 'none', color: t.white, fontWeight: 700, fontSize: '0.875rem', cursor: saveStatus === 'saving' || saveStatus === 'success' ? 'default' : 'pointer', letterSpacing: '0.03em', boxShadow: '0 4px 12px hsl(var(--primary) / 0.25)', opacity: saveStatus === 'saving' ? 0.75 : 1 }}
                 >
                   {saveStatus === 'saving'  ? <Loader2 size={16} style={{ animation: 'sa-spin 0.9s linear infinite' }} /> :
                    saveStatus === 'success' ? <CheckCircle size={16} /> : <Save size={16} />}
@@ -622,7 +615,7 @@ const SkillAnalyzer: React.FC = () => {
                   <div style={ibadge('hsl(var(--primary) / 0.08)')}><BarChart3 size={18} color={t.primary} /></div>
                   Your Expertise Report
                 </div>
-                <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.9375rem', color: t.variant, lineHeight: 1.65, marginBottom: '1.5rem' }}>
+                <p style={{ fontSize: '0.9375rem', color: t.variant, lineHeight: 1.65, marginBottom: '1.5rem' }}>
                   Your current trajectory suggests a high aptitude for architecture-heavy roles.
                   We've identified your key strengths and strategic growth opportunities.
                 </p>
@@ -632,8 +625,8 @@ const SkillAnalyzer: React.FC = () => {
                     { label: 'TARGET ROLES',    value: skillAnalysis.profile.target_roles.slice(0, 2).join(', ') },
                   ].map(({ label, value }) => (
                     <div key={label} style={{ borderRadius: '0.75rem', background: t.surface, border: '1px solid hsl(var(--border) / 0.35)', padding: '1rem 1.25rem' }}>
-                      <p style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', color: t.outline, marginBottom: '0.375rem' }}>{label}</p>
-                      <p style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '1.0625rem', color: t.onSurface }}>{value}</p>
+                      <p style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', color: t.outline, marginBottom: '0.375rem' }}>{label}</p>
+                      <p style={{ fontWeight: 700, fontSize: '1.0625rem', color: t.onSurface }}>{value}</p>
                     </div>
                   ))}
                 </div>
@@ -670,10 +663,10 @@ const SkillAnalyzer: React.FC = () => {
                         onMouseLeave={(e) => { const el = e.currentTarget as HTMLAnchorElement; el.style.borderColor = 'hsl(var(--border) / 0.4)'; el.style.boxShadow = 'none'; el.style.transform = 'none'; }}
                       >
                         <div style={{ minWidth: 0 }}>
-                          <p style={{ fontFamily: "'Inter',sans-serif", fontWeight: 600, fontSize: '0.875rem', color: t.onSurface, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{job.title}</p>
-                          <p style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.7rem', color: t.outline, marginTop: '0.2rem', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{job.required_skills.slice(0, 3).join(' · ')}</p>
+                          <p style={{ fontWeight: 600, fontSize: '0.875rem', color: t.onSurface, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{job.title}</p>
+                          <p style={{ fontSize: '0.7rem', color: t.outline, marginTop: '0.2rem', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{job.required_skills.slice(0, 3).join(' · ')}</p>
                         </div>
-                        <span style={{ fontFamily: "'Noto Serif',serif", fontWeight: 800, fontSize: '1.0625rem', color: t.primary, flexShrink: 0, marginLeft: '0.75rem' }}>
+                        <span style={{ fontWeight: 800, fontSize: '1.0625rem', color: t.primary, flexShrink: 0, marginLeft: '0.75rem' }}>
                           {Math.round(job.score * 100)}%
                         </span>
                       </a>
@@ -707,25 +700,25 @@ const SkillAnalyzer: React.FC = () => {
                       { label: 'TARGET SENIORITY',  value: skillAnalysis.roadmap.seniority_level },
                     ].map(({ label, value }) => (
                       <div key={label}>
-                        <p style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', color: t.outline, marginBottom: '0.25rem' }}>{label}</p>
-                        <p style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '1.0625rem', color: t.onSurface }}>{value}</p>
+                        <p style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', color: t.outline, marginBottom: '0.25rem' }}>{label}</p>
+                        <p style={{ fontWeight: 700, fontSize: '1.0625rem', color: t.onSurface }}>{value}</p>
                       </div>
                     ))}
                   </div>
 
                   {skillAnalysis.roadmap.market_outlook && (
                     <div style={{ borderRadius: '0.75rem', background: t.surface, border: '1px solid hsl(var(--border) / 0.4)', padding: '1rem 1.25rem', marginBottom: '1.25rem' }}>
-                      <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: t.variant, lineHeight: 1.65 }}>{skillAnalysis.roadmap.market_outlook}</p>
+                      <p style={{ fontSize: '0.875rem', color: t.variant, lineHeight: 1.65 }}>{skillAnalysis.roadmap.market_outlook}</p>
                     </div>
                   )}
 
                   {skillAnalysis.roadmap.learning_sequence.length > 0 && (
                     <div style={{ marginBottom: '1.25rem' }}>
-                      <p style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', color: t.outline, marginBottom: '0.625rem' }}>RECOMMENDED LEARNING SEQUENCE</p>
+                      <p style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', color: t.outline, marginBottom: '0.625rem' }}>RECOMMENDED LEARNING SEQUENCE</p>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                         {skillAnalysis.roadmap.learning_sequence.map((skill, index) => (
-                          <span key={index} style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.8125rem', fontWeight: 600, color: t.primary, background: 'hsl(var(--primary) / 0.07)', border: '1px solid hsl(var(--primary) / 0.15)', padding: '0.3rem 0.75rem', borderRadius: '999px', display:'flex', alignItems:'center', gap:'0.375rem' }}>
-                            <span style={{ fontFamily: "'Noto Serif',serif", fontWeight: 800, color: t.tertiary }}>{index + 1}.</span>
+                          <span key={index} style={{ fontSize: '0.8125rem', fontWeight: 600, color: t.primary, background: 'hsl(var(--primary) / 0.07)', border: '1px solid hsl(var(--primary) / 0.15)', padding: '0.3rem 0.75rem', borderRadius: '999px', display:'flex', alignItems:'center', gap:'0.375rem' }}>
+                            <span style={{ fontWeight: 800, color: t.tertiary }}>{index + 1}.</span>
                             {skill}
                           </span>
                         ))}
@@ -743,7 +736,7 @@ const SkillAnalyzer: React.FC = () => {
                   id="save-sticky-btn"
                   onClick={handleSaveToProfile}
                   disabled={saveStatus === 'saving' || saveStatus === 'success'}
-                  style={{ display:'flex', alignItems:'center', gap:'0.625rem', padding:'0.875rem 2.25rem', borderRadius:'999px', background: saveStatus === 'success' ? 'hsl(142.1 70.6% 45.3%)' : `linear-gradient(135deg,${t.primary},${t.container})`, border:'none', color: t.white, fontFamily:"'Public Sans',sans-serif", fontWeight:700, fontSize:'0.9375rem', letterSpacing:'0.03em', cursor: saveStatus === 'saving' || saveStatus === 'success' ? 'default' : 'pointer', boxShadow:'0 8px 28px hsl(var(--primary) / 0.35)', backdropFilter:'blur(8px)', opacity: saveStatus === 'saving' ? 0.8 : 1 }}
+                  style={{ display:'flex', alignItems:'center', gap:'0.625rem', padding:'0.875rem 2.25rem', borderRadius:'999px', background: saveStatus === 'success' ? 'hsl(142.1 70.6% 45.3%)' : `linear-gradient(135deg,${t.primary},${t.container})`, border:'none', color: t.white, fontWeight:700, fontSize:'0.9375rem', letterSpacing:'0.03em', cursor: saveStatus === 'saving' || saveStatus === 'success' ? 'default' : 'pointer', boxShadow:'0 8px 28px hsl(var(--primary) / 0.35)', backdropFilter:'blur(8px)', opacity: saveStatus === 'saving' ? 0.8 : 1 }}
                 >
                   {saveStatus === 'saving'  ? <Loader2 size={20} style={{ animation: 'sa-spin 0.9s linear infinite' }} /> :
                    saveStatus === 'success' ? <CheckCircle size={20} /> : <Save size={20} />}
@@ -757,12 +750,12 @@ const SkillAnalyzer: React.FC = () => {
         {/* Footer */}
         <footer style={{ background: t.white, borderTop: '1px solid hsl(var(--border) / 0.35)', padding: '2.5rem 1.5rem' }}>
           <div style={{ maxWidth: '72rem', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <p style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.8125rem', color: t.outline }}>
+            <p style={{ fontSize: '0.8125rem', color: t.outline }}>
               © 2026 LearnLaunch Scholarly Systems — All Rights Reserved
             </p>
             <div style={{ display: 'flex', gap: '1.75rem' }}>
               {['Privacy', 'Terms', 'Support'].map((l) => (
-                <a key={l} href="#" style={{ fontFamily: "'Public Sans',sans-serif", fontSize: '0.8125rem', color: t.outline, textDecoration: 'none', transition: 'color 0.2s' }}
+                <a key={l} href="#" style={{ fontSize: '0.8125rem', color: t.outline, textDecoration: 'none', transition: 'color 0.2s' }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = t.primary; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = t.outline; }}
                 >

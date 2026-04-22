@@ -92,7 +92,6 @@ export const SkillUploadZone: React.FC<SkillUploadZoneProps> = ({
           <div style={{ flex: 1, minWidth: 0 }}>
             <p
               style={{
-                fontFamily: "'Inter', sans-serif",
                 fontWeight: 600,
                 fontSize: '0.9375rem',
                 color: '#094cb2',
@@ -105,7 +104,6 @@ export const SkillUploadZone: React.FC<SkillUploadZoneProps> = ({
             </p>
             <p
               style={{
-                fontFamily: "'Public Sans', sans-serif",
                 fontSize: '0.75rem',
                 color: '#737784',
                 marginTop: '0.125rem',
@@ -205,7 +203,6 @@ export const SkillUploadZone: React.FC<SkillUploadZoneProps> = ({
         <div style={{ maxWidth: '28rem' }}>
           <p
             style={{
-              fontFamily: "'Noto Serif', serif",
               fontWeight: 700,
               fontSize: '1.25rem',
               color: '#1b1c1d',
@@ -217,7 +214,6 @@ export const SkillUploadZone: React.FC<SkillUploadZoneProps> = ({
           </p>
           <p
             style={{
-              fontFamily: "'Inter', sans-serif",
               fontSize: '0.875rem',
               color: '#434653',
               lineHeight: 1.6,
@@ -227,7 +223,6 @@ export const SkillUploadZone: React.FC<SkillUploadZoneProps> = ({
           </p>
           <p
             style={{
-              fontFamily: "'Public Sans', sans-serif",
               fontSize: '0.75rem',
               color: '#737784',
               marginTop: '0.375rem',
@@ -241,7 +236,6 @@ export const SkillUploadZone: React.FC<SkillUploadZoneProps> = ({
         {error && (
           <p
             style={{
-              fontFamily: "'Inter', sans-serif",
               fontSize: '0.8125rem',
               fontWeight: 500,
               color: '#ba1a1a',

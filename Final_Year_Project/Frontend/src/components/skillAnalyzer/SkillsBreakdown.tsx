@@ -49,7 +49,6 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
           </div>
           <h3
             style={{
-              fontFamily: "'Noto Serif', serif",
               fontWeight: 700,
               fontSize: '1rem',
               color: 'hsl(var(--on-surface))',
@@ -60,7 +59,6 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
           </h3>
           <span
             style={{
-              fontFamily: "'Public Sans', sans-serif",
               fontSize: '0.6875rem',
               fontWeight: 700,
               letterSpacing: '0.04em',
@@ -95,7 +93,6 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
               >
                 <span
                   style={{
-                    fontFamily: "'Inter', sans-serif",
                     fontWeight: 500,
                     fontSize: '0.8125rem',
                     color: 'hsl(var(--on-surface))',
@@ -105,7 +102,6 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
                 </span>
                 <span
                   style={{
-                    fontFamily: "'Public Sans', sans-serif",
                     fontSize: '0.6875rem',
                     fontWeight: 700,
                     letterSpacing: '0.03em',
@@ -123,7 +119,7 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
         </div>
 
         {explicitSkills.length === 0 && (
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'hsl(var(--outline))' }}>
+          <p style={{ fontSize: '0.875rem', color: 'hsl(var(--outline))' }}>
             No skills detected in your resume.
           </p>
         )}
@@ -147,7 +143,6 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
           </div>
           <h3
             style={{
-              fontFamily: "'Noto Serif', serif",
               fontWeight: 700,
               fontSize: '1rem',
               color: 'hsl(var(--on-surface))',
@@ -158,7 +153,6 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
           </h3>
           <span
             style={{
-              fontFamily: "'Public Sans', sans-serif",
               fontSize: '0.6875rem',
               fontWeight: 700,
               letterSpacing: '0.04em',
@@ -190,7 +184,6 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
                 <Info size={13} color="hsl(var(--tertiary))" style={{ flexShrink: 0 }} />
                 <span
                   style={{
-                    fontFamily: "'Inter', sans-serif",
                     fontWeight: 500,
                     fontSize: '0.8125rem',
                     color: 'hsl(var(--on-surface))',
@@ -200,7 +193,6 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
                 </span>
                 <span
                   style={{
-                    fontFamily: "'Public Sans', sans-serif",
                     fontSize: '0.6875rem',
                     color: 'hsl(var(--outline))',
                     marginLeft: 'auto',
@@ -215,7 +207,7 @@ export const SkillsBreakdown: React.FC<SkillsBreakdownProps> = ({
         </div>
 
         {impliedSkills.length === 0 && (
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'hsl(var(--outline))' }}>
+          <p style={{ fontSize: '0.875rem', color: 'hsl(var(--outline))' }}>
             No additional skills inferred.
           </p>
         )}

@@ -16,7 +16,7 @@ const Profile: React.FC = () => {
   const { user } = useUser();
   const hasFetchedRef = useRef(false);
   const hasFetchedSkillRef = useRef(false);
-  
+
   const {
     userRoadmaps,
     loading,
@@ -99,7 +99,7 @@ const Profile: React.FC = () => {
           <div className="mt-10">
             {/* Section Header */}
             <div className="flex items-baseline justify-between mb-6">
-              <h2 className="text-2xl md:text-3xl font-headline font-bold text-on-background tracking-tight">
+              <h2 className="text-2xl md:text-3xl font-body font-bold text-on-background tracking-tight">
                 My Roadmaps
               </h2>
               {userRoadmaps.length > 0 && (
@@ -127,7 +127,7 @@ const Profile: React.FC = () => {
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
                   <Map className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-2xl font-headline font-bold text-on-background mb-3">
+                <h3 className="text-2xl font-body font-bold text-on-background mb-3">
                   Begin Your Journey
                 </h3>
                 <p className="text-base font-body text-on-surface-variant mb-8 max-w-md mx-auto leading-relaxed">
@@ -160,7 +160,7 @@ const Profile: React.FC = () => {
           <div className="mt-12">
             {/* Section Header */}
             <div className="flex items-baseline justify-between mb-6">
-              <h2 className="text-2xl md:text-3xl font-headline font-bold text-on-background tracking-tight">
+              <h2 className="text-2xl md:text-3xl font-body font-bold text-on-background tracking-tight">
                 My Skill Analyses
               </h2>
               {userSkillRoadmaps.length > 0 && (
@@ -188,7 +188,7 @@ const Profile: React.FC = () => {
                 <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
                   <Target className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="text-2xl font-headline font-bold text-on-background mb-3">
+                <h3 className="text-2xl font-body font-bold text-on-background mb-3">
                   Discover Your Skill Gaps
                 </h3>
                 <p className="text-base font-body text-on-surface-variant mb-8 max-w-md mx-auto leading-relaxed">
@@ -225,7 +225,7 @@ const Profile: React.FC = () => {
             roadmapDetail={roadmapDetail}
             loading={roadmapDetailLoading}
             onClose={closeRoadmapDetail}
-            onUpdateProgress={(userRoadmapId, weekNumber, isCompleted, subProgress) => 
+            onUpdateProgress={(userRoadmapId, weekNumber, isCompleted, subProgress) =>
               updateWeekProgress(userRoadmapId, weekNumber, isCompleted, subProgress)
             }
             onDelete={deleteRoadmap}
@@ -238,7 +238,7 @@ const Profile: React.FC = () => {
             userSkillRoadmap={selectedSkillRoadmap}
             analysis={skillRoadmapDetail}
             onClose={closeSkillRoadmapDetail}
-            onSkillToggle={(skill, isCompleted) => 
+            onSkillToggle={(skill, isCompleted) =>
               handleSkillProgress(selectedSkillRoadmap._id, skill, isCompleted)
             }
           />

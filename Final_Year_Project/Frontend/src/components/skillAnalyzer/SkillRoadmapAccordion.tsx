@@ -112,7 +112,6 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', flexWrap: 'wrap' }}>
                   <h4
                     style={{
-                      fontFamily: "'Noto Serif', serif",
                       fontWeight: 700,
                       fontSize: '0.9375rem',
                       color: isCompleted ? 'hsl(var(--outline))' : 'hsl(var(--on-surface))',
@@ -123,7 +122,6 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                   </h4>
                   <span
                     style={{
-                      fontFamily: "'Public Sans', sans-serif",
                       fontSize: '0.6875rem',
                       fontWeight: 700,
                       letterSpacing: '0.04em',
@@ -140,7 +138,6 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                   <Clock size={12} color="hsl(var(--outline))" />
                   <span
                     style={{
-                      fontFamily: "'Public Sans', sans-serif",
                       fontSize: '0.75rem',
                       color: 'hsl(var(--outline))',
                       letterSpacing: '0.01em',
@@ -167,7 +164,6 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                   <div>
                     <h5
                       style={{
-                        fontFamily: "'Noto Serif', serif",
                         fontWeight: 700,
                         fontSize: '0.875rem',
                         color: 'hsl(var(--on-surface))',
@@ -180,7 +176,7 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                       <Award size={14} color="hsl(var(--primary))" />
                       Why it matters
                     </h5>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'hsl(var(--on-surface-variant))', lineHeight: 1.65 }}>
+                    <p style={{ fontSize: '0.875rem', color: 'hsl(var(--on-surface-variant))', lineHeight: 1.65 }}>
                       {step.why_it_matters}
                     </p>
                   </div>
@@ -189,7 +185,6 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                   <div>
                     <h5
                       style={{
-                        fontFamily: "'Noto Serif', serif",
                         fontWeight: 700,
                         fontSize: '0.875rem',
                         color: 'hsl(var(--on-surface))',
@@ -198,7 +193,7 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                     >
                       Leverage from your background
                     </h5>
-                    <p style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.875rem', color: 'hsl(var(--on-surface-variant))', lineHeight: 1.65 }}>
+                    <p style={{ fontSize: '0.875rem', color: 'hsl(var(--on-surface-variant))', lineHeight: 1.65 }}>
                       {step.leverage_from_background}
                     </p>
                   </div>
@@ -207,7 +202,6 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                   <div>
                     <h5
                       style={{
-                        fontFamily: "'Noto Serif', serif",
                         fontWeight: 700,
                         fontSize: '0.875rem',
                         color: 'hsl(var(--on-surface))',
@@ -249,10 +243,10 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                         >
                           <ExternalLink size={15} color="hsl(var(--primary))" style={{ flexShrink: 0 }} />
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 500, fontSize: '0.875rem', color: 'hsl(var(--on-surface))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            <p style={{ fontWeight: 500, fontSize: '0.875rem', color: 'hsl(var(--on-surface))', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                               {resource.title}
                             </p>
-                            <p style={{ fontFamily: "'Public Sans', sans-serif", fontSize: '0.6875rem', color: 'hsl(var(--outline))', marginTop: '0.1rem', letterSpacing: '0.02em' }}>
+                            <p style={{ fontSize: '0.6875rem', color: 'hsl(var(--outline))', marginTop: '0.1rem', letterSpacing: '0.02em' }}>
                               {resource.resource_type.toUpperCase()} · {resource.is_free ? 'FREE' : 'PAID'}
                             </p>
                           </div>
@@ -265,7 +259,6 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                   <div>
                     <h5
                       style={{
-                        fontFamily: "'Noto Serif', serif",
                         fontWeight: 700,
                         fontSize: '0.875rem',
                         color: 'hsl(var(--on-surface))',
@@ -290,12 +283,11 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                           }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.625rem' }}>
-                            <span style={{ fontFamily: "'Noto Serif', serif", fontWeight: 700, fontSize: '0.875rem', color: 'hsl(var(--on-surface))' }}>
+                            <span style={{ fontWeight: 700, fontSize: '0.875rem', color: 'hsl(var(--on-surface))' }}>
                               {week.week_label}
                             </span>
                             <span
                               style={{
-                                fontFamily: "'Public Sans', sans-serif",
                                 fontSize: '0.6875rem',
                                 fontWeight: 700,
                                 letterSpacing: '0.03em',
@@ -312,7 +304,7 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                             {week.tasks.map((task, j) => (
                               <li key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
                                 <span style={{ width: '0.375rem', height: '0.375rem', borderRadius: '50%', background: 'hsl(var(--primary))', flexShrink: 0, marginTop: '0.45rem' }} />
-                                <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '0.8125rem', color: 'hsl(var(--on-surface-variant))', lineHeight: 1.55 }}>
+                                <span style={{ fontSize: '0.8125rem', color: 'hsl(var(--on-surface-variant))', lineHeight: 1.55 }}>
                                   {task}
                                 </span>
                               </li>
@@ -324,7 +316,6 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                               borderRadius: '0.5rem',
                               background: 'hsl(var(--tertiary) / 0.08)',
                               padding: '0.375rem 0.75rem',
-                              fontFamily: "'Public Sans', sans-serif",
                               fontSize: '0.75rem',
                               fontWeight: 600,
                               color: 'hsl(var(--on-surface))',
@@ -342,7 +333,6 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                   <div>
                     <h5
                       style={{
-                        fontFamily: "'Noto Serif', serif",
                         fontWeight: 700,
                         fontSize: '0.875rem',
                         color: 'hsl(var(--on-surface))',
@@ -353,7 +343,6 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                     </h5>
                     <p
                       style={{
-                        fontFamily: "'Inter', sans-serif",
                         fontSize: '0.875rem',
                         color: 'hsl(var(--on-surface-variant))',
                         lineHeight: 1.65,
@@ -371,7 +360,6 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                   <div>
                     <h5
                       style={{
-                        fontFamily: "'Noto Serif', serif",
                         fontWeight: 700,
                         fontSize: '0.875rem',
                         color: 'hsl(var(--on-surface))',
@@ -382,7 +370,6 @@ export const SkillRoadmapAccordion: React.FC<SkillRoadmapAccordionProps> = ({
                     </h5>
                     <p
                       style={{
-                        fontFamily: "'Inter', sans-serif",
                         fontSize: '0.875rem',
                         color: 'hsl(var(--primary))',
                         lineHeight: 1.65,

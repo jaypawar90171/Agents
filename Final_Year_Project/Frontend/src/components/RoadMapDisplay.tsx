@@ -84,14 +84,14 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
 
   if (sections.length === 0) {
     return (
-      <div style={{ padding: '3rem', textAlign: 'center', fontFamily: "'Inter',sans-serif", color: t.outline }}>
+      <div style={{ padding: '3rem', textAlign: 'center', color: t.outline }}>
         No roadmap sections found. The content may be empty or in an unexpected format.
       </div>
     );
   }
 
   return (
-    <div style={{ width: '100%', fontFamily: "'Inter',sans-serif" }}>
+    <div style={{ width: '100%', }}>
 
       {/* ── Header ── */}
       <div
@@ -104,7 +104,6 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
         <div>
           <p
             style={{
-              fontFamily: "'Public Sans',sans-serif",
               fontWeight: 700,
               fontSize: '0.625rem',
               letterSpacing: '0.1em',
@@ -116,7 +115,6 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
           </p>
           <h2
             style={{
-              fontFamily: "'Noto Serif',serif",
               fontWeight: 800,
               fontSize: '1.625rem',
               color: t.onSurface,
@@ -125,7 +123,7 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
           >
             Your Learning Roadmap
           </h2>
-          <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.9375rem', color: t.variant, marginTop: '0.375rem' }}>
+          <p style={{ fontSize: '0.9375rem', color: t.variant, marginTop: '0.375rem' }}>
             Your personalized path to career excellence
           </p>
         </div>
@@ -141,7 +139,6 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
               background: `linear-gradient(135deg, ${t.primary}, ${t.container})`,
               border: 'none',
               color: t.white,
-              fontFamily: "'Public Sans',sans-serif",
               fontWeight: 700,
               fontSize: '0.875rem',
               letterSpacing: '0.03em',
@@ -216,7 +213,7 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
                 }}
                 onClick={() => toggle(index)}
               >
-                <span style={{ fontFamily: "'Noto Serif',serif", fontWeight: 800, fontSize: '0.875rem' }}>
+                <span style={{ fontWeight: 800, fontSize: '0.875rem' }}>
                   {index + 1}
                 </span>
               </div>
@@ -267,7 +264,6 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
                       <h3
                         style={{
-                          fontFamily: "'Noto Serif',serif",
                           fontWeight: 700,
                           fontSize: '1rem',
                           color: t.onSurface,
@@ -278,7 +274,6 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
                       </h3>
                       <span
                         style={{
-                          fontFamily: "'Public Sans',sans-serif",
                           fontSize: '0.625rem', fontWeight: 700,
                           letterSpacing: '0.06em',
                           padding: '0.15rem 0.5rem',
@@ -292,7 +287,7 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
                       </span>
                     </div>
                     {!isOpen && (
-                      <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.8125rem', color: t.variant, marginTop: '0.25rem', lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '32rem' }}>
+                      <p style={{ fontSize: '0.8125rem', color: t.variant, marginTop: '0.25rem', lineHeight: 1.5, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '32rem' }}>
                         {section.content.replace(/[#\-\*\[\]]/g, '').substring(0, 100)}…
                       </p>
                     )}
@@ -316,28 +311,28 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
                     <ReactMarkdown
                       components={{
                         h1: ({ children }) => (
-                          <h1 style={{ fontFamily: "'Noto Serif',serif", fontWeight: 800, fontSize: '1.25rem', color: t.onSurface, marginTop: '1.25rem', marginBottom: '0.625rem' }}>
+                          <h1 style={{ fontWeight: 800, fontSize: '1.25rem', color: t.onSurface, marginTop: '1.25rem', marginBottom: '0.625rem' }}>
                             {children}
                           </h1>
                         ),
                         h2: ({ children }) => (
-                          <h2 style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '1.0625rem', color: t.onSurface, marginTop: '1rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                          <h2 style={{ fontWeight: 700, fontSize: '1.0625rem', color: t.onSurface, marginTop: '1rem', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
                             <Star size={14} color={tc.dot} />
                             {children}
                           </h2>
                         ),
                         h3: ({ children }) => (
-                          <h3 style={{ fontFamily: "'Public Sans',sans-serif", fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.07em', color: t.outline, textTransform: 'uppercase', marginTop: '0.875rem', marginBottom: '0.375rem' }}>
+                          <h3 style={{ fontWeight: 700, fontSize: '0.75rem', letterSpacing: '0.07em', color: t.outline, textTransform: 'uppercase', marginTop: '0.875rem', marginBottom: '0.375rem' }}>
                             {children}
                           </h3>
                         ),
                         h4: ({ children }) => (
-                          <h4 style={{ fontFamily: "'Noto Serif',serif", fontWeight: 700, fontSize: '0.9375rem', color: t.onSurface, marginTop: '0.75rem', marginBottom: '0.25rem' }}>
+                          <h4 style={{ fontWeight: 700, fontSize: '0.9375rem', color: t.onSurface, marginTop: '0.75rem', marginBottom: '0.25rem' }}>
                             {children}
                           </h4>
                         ),
                         p: ({ children }) => (
-                          <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: t.variant, lineHeight: 1.7, marginBottom: '0.75rem' }}>
+                          <p style={{ fontSize: '0.875rem', color: t.variant, lineHeight: 1.7, marginBottom: '0.75rem' }}>
                             {children}
                           </p>
                         ),
@@ -354,7 +349,7 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
                         li: ({ children }) => (
                           <li style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
                             <CheckCircle size={15} color={tc.dot} style={{ flexShrink: 0, marginTop: '0.25rem' }} />
-                            <span style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: t.variant, lineHeight: 1.65 }}>
+                            <span style={{ fontSize: '0.875rem', color: t.variant, lineHeight: 1.65 }}>
                               {children}
                             </span>
                           </li>
@@ -408,7 +403,7 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
                             }}
                           >
                             <Lightbulb size={16} color={tc.dot} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
-                            <span style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.875rem', color: t.variant, fontStyle: 'italic', lineHeight: 1.65 }}>
+                            <span style={{ fontSize: '0.875rem', color: t.variant, fontStyle: 'italic', lineHeight: 1.65 }}>
                               {children}
                             </span>
                           </blockquote>
@@ -452,7 +447,6 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
 
         <h3
           style={{
-            fontFamily: "'Noto Serif',serif",
             fontWeight: 800,
             fontSize: '1.375rem',
             color: t.onSurface,
@@ -461,7 +455,7 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
         >
           Ready to Conquer Your Goals?
         </h3>
-        <p style={{ fontFamily: "'Inter',sans-serif", fontSize: '0.9375rem', color: t.variant, lineHeight: 1.7, maxWidth: '36rem', margin: '0 auto 1.5rem' }}>
+        <p style={{ fontSize: '0.9375rem', color: t.variant, lineHeight: 1.7, maxWidth: '36rem', margin: '0 auto 1.5rem' }}>
           Follow this personalized roadmap step by step and unlock your potential to land your dream role.
         </p>
 
@@ -473,7 +467,6 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
                 display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
                 padding: '0.4rem 1rem',
                 borderRadius: '999px',
-                fontFamily: "'Public Sans',sans-serif",
                 fontWeight: 700,
                 fontSize: '0.8125rem',
                 letterSpacing: '0.03em',
@@ -499,7 +492,6 @@ const RoadmapDisplay: React.FC<RoadmapDisplayProps> = ({
               background: `linear-gradient(135deg, ${t.primary}, ${t.container})`,
               border: 'none',
               color: t.white,
-              fontFamily: "'Public Sans',sans-serif",
               fontWeight: 700,
               fontSize: '0.9375rem',
               letterSpacing: '0.04em',

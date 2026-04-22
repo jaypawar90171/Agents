@@ -26,7 +26,7 @@ const Header: React.FC = () => {
           <Link to="/" className="text-2xl font-headline font-bold text-on-surface tracking-tight">
             SkillForge
           </Link>
-          <div className="hidden md:flex items-center gap-6 font-headline text-lg leading-relaxed">
+          <div className="hidden md:flex items-center gap-6 font-body text-sm font-medium tracking-wide">
             <Link
               to="/home"
               className={`${location.pathname === "/home"
