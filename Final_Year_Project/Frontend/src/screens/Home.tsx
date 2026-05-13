@@ -39,8 +39,8 @@ const Home: React.FC = () => {
       <footer className="bg-surface-container-lowest full-width py-12 border-t border-outline-variant/20 mt-20">
         <div className="flex flex-col md:flex-row justify-between items-center px-8 max-w-7xl mx-auto w-full">
           <div className="mb-8 md:mb-0">
-            <span className="font-headline italic text-on-surface-variant text-xl">LearnLaunch</span>
-            <p className="font-label text-xs uppercase tracking-widest text-outline mt-2">© 2026 LearnLaunch. Curating the future of work.</p>
+            <span className="font-headline italic text-on-surface-variant text-xl">ASQ</span>
+            <p className="font-label text-xs uppercase tracking-widest text-outline mt-2">© 2026 ASQ. Curating the future of work.</p>
           </div>
           <div className="flex items-center gap-6">
             <div className="flex gap-4 font-label text-xs uppercase tracking-widest text-outline">

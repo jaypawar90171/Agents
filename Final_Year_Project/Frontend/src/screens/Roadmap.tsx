@@ -11,19 +11,19 @@ import roadmapService from "../services/roadmapService";
    Alexandria Design Tokens
 ═══════════════════════════════════════════════════════ */
 const t = {
-  primary:   'hsl(var(--primary))',
+  primary: 'hsl(var(--primary))',
   container: 'hsl(var(--primary-container))',
-  surface:   'hsl(var(--background))',
-  surfHigh:  'hsl(var(--surface-container-high))',
-  surfLow:   'hsl(var(--surface-container-low))',
+  surface: 'hsl(var(--background))',
+  surfHigh: 'hsl(var(--surface-container-high))',
+  surfLow: 'hsl(var(--surface-container-low))',
   onSurface: 'hsl(var(--on-surface))',
-  variant:   'hsl(var(--on-surface-variant))',
-  outline:   'hsl(var(--outline))',
-  tertiary:  'hsl(var(--tertiary))',
-  tertCont:  'hsl(var(--secondary-container))',
-  error:     'hsl(var(--error))',
-  errCont:   'hsl(var(--error-container))',
-  white:     'hsl(var(--card))',
+  variant: 'hsl(var(--on-surface-variant))',
+  outline: 'hsl(var(--outline))',
+  tertiary: 'hsl(var(--tertiary))',
+  tertCont: 'hsl(var(--secondary-container))',
+  error: 'hsl(var(--error))',
+  errCont: 'hsl(var(--error-container))',
+  white: 'hsl(var(--card))',
 };
 
 const MIN_COMPANY_LENGTH = 3;
@@ -32,7 +32,7 @@ const Roadmap: React.FC = () => {
   const { user } = useUser();
   const { roadmap, loading, error, generateRoadmap } = useRoadmap();
   const [companyName, setCompanyName] = useState("");
-  const [saveStatus, setSaveStatus]   = useState<"idle" | "saving" | "success" | "error">("idle");
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
   const [saveMessage, setSaveMessage] = useState("");
   const [inputFocused, setInputFocused] = useState(false);
 
@@ -51,9 +51,9 @@ const Roadmap: React.FC = () => {
     setSaveMessage("");
     try {
       const jobDetails = {
-        company:  companyName.trim() || undefined,
-        role:     roadmap.jobs_used?.[0]?.job_title ?? undefined,
-        location: roadmap.jobs_used?.[0]?.location  ?? undefined,
+        company: companyName.trim() || undefined,
+        role: roadmap.jobs_used?.[0]?.job_title ?? undefined,
+        location: roadmap.jobs_used?.[0]?.location ?? undefined,
       };
       await roadmapService.parseAndSaveRoadmap(roadmap.roadmap, userId, jobDetails);
       setSaveStatus("success");
@@ -74,7 +74,7 @@ const Roadmap: React.FC = () => {
           background: t.surface,
           display: 'flex',
           flexDirection: 'column',
-          }}
+        }}
       >
         <Header />
 
@@ -492,7 +492,7 @@ const Roadmap: React.FC = () => {
             }}
           >
             <p style={{ fontSize: '0.8125rem', color: t.outline }}>
-              © 2026 LearnLaunch Scholarly Systems — All Rights Reserved
+              © 2026 ASQ Scholarly Systems — All Rights Reserved
             </p>
             <div style={{ display: 'flex', gap: '1.75rem' }}>
               {['Privacy', 'Terms', 'Support'].map((l) => (

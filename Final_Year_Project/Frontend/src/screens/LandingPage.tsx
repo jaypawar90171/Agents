@@ -28,7 +28,7 @@ export default function LandingPage() {
       {/* TopNavBar */}
       <nav className="fixed top-0 w-full z-50 bg-card/80 dark:bg-background/80 backdrop-blur-xl">
         <div className="flex justify-between items-center px-8 py-4 max-w-7xl mx-auto">
-          <div className="text-2xl font-headline font-bold text-on-surface">SkillForge</div>
+          <div className="text-2xl font-headline font-bold text-on-surface">ASQ</div>
           <div className="hidden md:flex items-center space-gap-8 gap-x-10">
             <a className="text-primary font-bold border-b-2 border-primary mono-label text-xs uppercase tracking-widest" href="#">Discover</a>
             <a className="text-on-surface-variant hover:text-primary transition-colors duration-300 mono-label text-xs uppercase tracking-widest" href="#">Roadmaps</a>
@@ -245,7 +245,7 @@ export default function LandingPage() {
               <div className="w-full md:w-1/2">
                 <span className="font-headline italic text-7xl text-primary/10 block mb-4">03</span>
                 <h3 className="font-headline text-3xl mb-6">Generate Roadmap</h3>
-                <p className="text-on-surface-variant leading-relaxed mb-8">Once you find your target, LearnLaunch constructs a custom learning path. Every module, project, and certification is chosen to maximize your impact during the application process.</p>
+                <p className="text-on-surface-variant leading-relaxed mb-8">Once you find your target, ASQconstructs a custom learning path. Every module, project, and certification is chosen to maximize your impact during the application process.</p>
                 <button className="text-primary font-bold border-b border-primary/30 pb-1 hover:border-primary transition-all">View Sample Roadmap</button>
               </div>
             </div>
@@ -303,7 +303,7 @@ export default function LandingPage() {
                 <span className="material-symbols-outlined text-4xl" data-icon="format_quote">format_quote</span>
               </div>
               <p className="font-headline text-xl leading-relaxed text-on-surface mb-8 italic">
-                "LearnLaunch understood my career gaps better than I did. The AI Chat helped me navigate a difficult salary negotiation with total confidence."
+                "ASQ understood my career gaps better than I did. The AI Chat helped me navigate a difficult salary negotiation with total confidence."
               </p>
             </div>
             <div className="flex items-center gap-4">
@@ -346,7 +346,7 @@ export default function LandingPage() {
         </div>
         <div className="max-w-4xl mx-auto px-8 text-center relative z-10">
           <h2 className="font-headline text-5xl md:text-6xl text-white mb-10">Ready to Curate Your Future?</h2>
-          <p className="text-on-primary-container text-lg mb-12 max-w-2xl mx-auto">Join thousands of professionals who have already redefined their professional narrative with LearnLaunch.</p>
+          <p className="text-on-primary-container text-lg mb-12 max-w-2xl mx-auto">Join thousands of professionals who have already redefined their professional narrative with ASQ.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <SignedOut>
               <SignUpButton mode="modal">
@@ -366,8 +366,8 @@ export default function LandingPage() {
       <footer className="bg-surface-container-lowest w-full border-t border-outline-variant/15">
         <div className="flex flex-col md:flex-row justify-between items-center px-12 py-16 w-full max-w-7xl mx-auto">
           <div className="mb-8 md:mb-0">
-            <div className="text-xl font-headline italic text-primary mb-4">LearnLaunch</div>
-            <p className="text-outline text-sm max-w-xs">© 2024 LearnLaunch. Archival quality career curation.</p>
+            <div className="text-xl font-headline italic text-primary mb-4">ASQ</div>
+            <p className="text-outline text-sm max-w-xs">© 2024 ASQ. Archival quality career curation.</p>
           </div>
           <div className="flex flex-wrap gap-x-12 gap-y-6 justify-center">
             <a className="text-outline hover:underline decoration-primary/50 mono-label text-xs uppercase tracking-widest" href="#">Privacy Policy</a>

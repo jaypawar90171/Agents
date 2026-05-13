@@ -175,7 +175,7 @@ export default function JobChat() {
             {messages.length === 0 && !loading && (
               <div className="flex flex-col items-center justify-center py-16 text-center max-w-2xl mx-auto">
                 <h2 className="text-3xl font-headline font-bold text-on-surface mb-4">
-                  Welcome to Alexandria
+                  Welcome to ASQ Chatbot
                 </h2>
                 <p className="text-on-surface-variant font-body mb-10 max-w-lg leading-relaxed">
                   Your scholarly AI assistant. Ask questions about your career trajectory, market trends, or request a customized learning roadmap.

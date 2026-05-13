@@ -24,7 +24,7 @@ const Header: React.FC = () => {
         {/* Brand & Nav */}
         <div className="flex items-center gap-8">
           <Link to="/" className="text-2xl font-headline font-bold text-on-surface tracking-tight">
-            SkillForge
+            ASQ
           </Link>
           <div className="hidden md:flex items-center gap-6 font-body text-sm font-medium tracking-wide">
             <Link

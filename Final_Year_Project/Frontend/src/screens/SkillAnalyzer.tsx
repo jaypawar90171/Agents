@@ -14,19 +14,19 @@ import { SkillRoadmapAccordion } from '../components/skillAnalyzer/SkillRoadmapA
 
 /* ─── Alexandria Design Tokens ─── */
 const t = {
-  primary:    'hsl(var(--primary))',
-  container:  'hsl(var(--primary-container))',
-  surface:    'hsl(var(--background))',
-  surfHigh:   'hsl(var(--surface-container-high))',
-  surfLow:    'hsl(var(--surface-container-low))',
-  onSurface:  'hsl(var(--on-surface))',
-  variant:    'hsl(var(--on-surface-variant))',
-  outline:    'hsl(var(--outline))',
-  tertiary:   'hsl(var(--tertiary))',
-  tertCont:   'hsl(var(--secondary-container))',
-  error:      'hsl(var(--error))',
-  errCont:    'hsl(var(--error-container))',
-  white:      'hsl(var(--card))',
+  primary: 'hsl(var(--primary))',
+  container: 'hsl(var(--primary-container))',
+  surface: 'hsl(var(--background))',
+  surfHigh: 'hsl(var(--surface-container-high))',
+  surfLow: 'hsl(var(--surface-container-low))',
+  onSurface: 'hsl(var(--on-surface))',
+  variant: 'hsl(var(--on-surface-variant))',
+  outline: 'hsl(var(--outline))',
+  tertiary: 'hsl(var(--tertiary))',
+  tertCont: 'hsl(var(--secondary-container))',
+  error: 'hsl(var(--error))',
+  errCont: 'hsl(var(--error-container))',
+  white: 'hsl(var(--card))',
 };
 
 /* ─── Shared card style ─── */
@@ -114,7 +114,7 @@ const InlineUploadCard: React.FC<InlineUploadProps> = ({
             <FileText size={18} color={t.primary} />
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontWeight: 600, fontSize: '0.875rem', color: t.primary, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+            <p style={{ fontWeight: 600, fontSize: '0.875rem', color: t.primary, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {selectedFile.name}
             </p>
             <p style={{ fontSize: '0.7rem', color: t.outline, marginTop: '0.1rem' }}>
@@ -123,7 +123,7 @@ const InlineUploadCard: React.FC<InlineUploadProps> = ({
           </div>
           <CheckCircle size={18} color={t.primary} />
           {!disabled && (
-            <button onClick={onRemove} style={{ background:'none', border:'none', cursor:'pointer', display:'flex', padding:'0.25rem', borderRadius:'50%' }}>
+            <button onClick={onRemove} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', padding: '0.25rem', borderRadius: '50%' }}>
               <X size={16} color={t.outline} />
             </button>
           )}
@@ -255,8 +255,8 @@ const InlineUploadCard: React.FC<InlineUploadProps> = ({
       >
         {[
           { icon: <Shield size={13} color={t.outline} />, label: 'VERIFIED SECURE' },
-          { icon: <Lock   size={13} color={t.outline} />, label: '256-BIT ENCRYPTION' },
-          { icon: <Eye    size={13} color={t.outline} />, label: 'PRIVACY FIRST' },
+          { icon: <Lock size={13} color={t.outline} />, label: '256-BIT ENCRYPTION' },
+          { icon: <Eye size={13} color={t.outline} />, label: 'PRIVACY FIRST' },
         ].map(({ icon, label }) => (
           <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
             {icon}
@@ -286,11 +286,11 @@ const SkillAnalyzer: React.FC = () => {
   } = useSkillAnalyzer();
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [fileName, setFileName]         = useState<string>('');
-  const [saveStatus, setSaveStatus]     = useState<'idle'|'saving'|'success'|'error'>('idle');
+  const [fileName, setFileName] = useState<string>('');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
 
   const handleFileSelect = (f: File) => { setSelectedFile(f); setFileName(f.name); };
-  const handleRemove     = ()        => setSelectedFile(null);
+  const handleRemove = () => setSelectedFile(null);
 
   const handleAnalyze = async () => {
     if (!selectedFile) return;
@@ -310,7 +310,7 @@ const SkillAnalyzer: React.FC = () => {
   };
 
   /* ── helpers ── */
-  const showUpload   = !skillAnalysis;
+  const showUpload = !skillAnalysis;
   const showProgress = (loading || pipelineStep) && !skillAnalysis;
 
   return (
@@ -603,8 +603,8 @@ const SkillAnalyzer: React.FC = () => {
                   disabled={saveStatus === 'saving' || saveStatus === 'success'}
                   style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.625rem 1.5rem', borderRadius: '0.625rem', background: saveStatus === 'success' ? 'hsl(142.1 70.6% 45.3%)' : `linear-gradient(135deg,${t.primary},${t.container})`, border: 'none', color: t.white, fontWeight: 700, fontSize: '0.875rem', cursor: saveStatus === 'saving' || saveStatus === 'success' ? 'default' : 'pointer', letterSpacing: '0.03em', boxShadow: '0 4px 12px hsl(var(--primary) / 0.25)', opacity: saveStatus === 'saving' ? 0.75 : 1 }}
                 >
-                  {saveStatus === 'saving'  ? <Loader2 size={16} style={{ animation: 'sa-spin 0.9s linear infinite' }} /> :
-                   saveStatus === 'success' ? <CheckCircle size={16} /> : <Save size={16} />}
+                  {saveStatus === 'saving' ? <Loader2 size={16} style={{ animation: 'sa-spin 0.9s linear infinite' }} /> :
+                    saveStatus === 'success' ? <CheckCircle size={16} /> : <Save size={16} />}
                   {saveStatus === 'success' ? 'Saved!' : 'Save to Profile'}
                 </button>
               </div>
@@ -622,7 +622,7 @@ const SkillAnalyzer: React.FC = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                   {[
                     { label: 'SENIORITY LEVEL', value: skillAnalysis.profile.seniority_level },
-                    { label: 'TARGET ROLES',    value: skillAnalysis.profile.target_roles.slice(0, 2).join(', ') },
+                    { label: 'TARGET ROLES', value: skillAnalysis.profile.target_roles.slice(0, 2).join(', ') },
                   ].map(({ label, value }) => (
                     <div key={label} style={{ borderRadius: '0.75rem', background: t.surface, border: '1px solid hsl(var(--border) / 0.35)', padding: '1rem 1.25rem' }}>
                       <p style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', color: t.outline, marginBottom: '0.375rem' }}>{label}</p>
@@ -663,8 +663,8 @@ const SkillAnalyzer: React.FC = () => {
                         onMouseLeave={(e) => { const el = e.currentTarget as HTMLAnchorElement; el.style.borderColor = 'hsl(var(--border) / 0.4)'; el.style.boxShadow = 'none'; el.style.transform = 'none'; }}
                       >
                         <div style={{ minWidth: 0 }}>
-                          <p style={{ fontWeight: 600, fontSize: '0.875rem', color: t.onSurface, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{job.title}</p>
-                          <p style={{ fontSize: '0.7rem', color: t.outline, marginTop: '0.2rem', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{job.required_skills.slice(0, 3).join(' · ')}</p>
+                          <p style={{ fontWeight: 600, fontSize: '0.875rem', color: t.onSurface, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.title}</p>
+                          <p style={{ fontSize: '0.7rem', color: t.outline, marginTop: '0.2rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{job.required_skills.slice(0, 3).join(' · ')}</p>
                         </div>
                         <span style={{ fontWeight: 800, fontSize: '1.0625rem', color: t.primary, flexShrink: 0, marginLeft: '0.75rem' }}>
                           {Math.round(job.score * 100)}%
@@ -697,7 +697,7 @@ const SkillAnalyzer: React.FC = () => {
                   <div style={{ borderRadius: '0.75rem', background: 'linear-gradient(135deg,hsl(var(--primary) / 0.05),hsl(var(--tertiary) / 0.08))', border: '1px solid hsl(var(--border) / 0.35)', padding: '1rem 1.25rem', marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     {[
                       { label: 'CURATED TIMELINE', value: skillAnalysis.roadmap.total_timeline },
-                      { label: 'TARGET SENIORITY',  value: skillAnalysis.roadmap.seniority_level },
+                      { label: 'TARGET SENIORITY', value: skillAnalysis.roadmap.seniority_level },
                     ].map(({ label, value }) => (
                       <div key={label}>
                         <p style={{ fontSize: '0.6875rem', fontWeight: 700, letterSpacing: '0.06em', color: t.outline, marginBottom: '0.25rem' }}>{label}</p>
@@ -717,7 +717,7 @@ const SkillAnalyzer: React.FC = () => {
                       <p style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.05em', color: t.outline, marginBottom: '0.625rem' }}>RECOMMENDED LEARNING SEQUENCE</p>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                         {skillAnalysis.roadmap.learning_sequence.map((skill, index) => (
-                          <span key={index} style={{ fontSize: '0.8125rem', fontWeight: 600, color: t.primary, background: 'hsl(var(--primary) / 0.07)', border: '1px solid hsl(var(--primary) / 0.15)', padding: '0.3rem 0.75rem', borderRadius: '999px', display:'flex', alignItems:'center', gap:'0.375rem' }}>
+                          <span key={index} style={{ fontSize: '0.8125rem', fontWeight: 600, color: t.primary, background: 'hsl(var(--primary) / 0.07)', border: '1px solid hsl(var(--primary) / 0.15)', padding: '0.3rem 0.75rem', borderRadius: '999px', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
                             <span style={{ fontWeight: 800, color: t.tertiary }}>{index + 1}.</span>
                             {skill}
                           </span>
@@ -736,10 +736,10 @@ const SkillAnalyzer: React.FC = () => {
                   id="save-sticky-btn"
                   onClick={handleSaveToProfile}
                   disabled={saveStatus === 'saving' || saveStatus === 'success'}
-                  style={{ display:'flex', alignItems:'center', gap:'0.625rem', padding:'0.875rem 2.25rem', borderRadius:'999px', background: saveStatus === 'success' ? 'hsl(142.1 70.6% 45.3%)' : `linear-gradient(135deg,${t.primary},${t.container})`, border:'none', color: t.white, fontWeight:700, fontSize:'0.9375rem', letterSpacing:'0.03em', cursor: saveStatus === 'saving' || saveStatus === 'success' ? 'default' : 'pointer', boxShadow:'0 8px 28px hsl(var(--primary) / 0.35)', backdropFilter:'blur(8px)', opacity: saveStatus === 'saving' ? 0.8 : 1 }}
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', padding: '0.875rem 2.25rem', borderRadius: '999px', background: saveStatus === 'success' ? 'hsl(142.1 70.6% 45.3%)' : `linear-gradient(135deg,${t.primary},${t.container})`, border: 'none', color: t.white, fontWeight: 700, fontSize: '0.9375rem', letterSpacing: '0.03em', cursor: saveStatus === 'saving' || saveStatus === 'success' ? 'default' : 'pointer', boxShadow: '0 8px 28px hsl(var(--primary) / 0.35)', backdropFilter: 'blur(8px)', opacity: saveStatus === 'saving' ? 0.8 : 1 }}
                 >
-                  {saveStatus === 'saving'  ? <Loader2 size={20} style={{ animation: 'sa-spin 0.9s linear infinite' }} /> :
-                   saveStatus === 'success' ? <CheckCircle size={20} /> : <Save size={20} />}
+                  {saveStatus === 'saving' ? <Loader2 size={20} style={{ animation: 'sa-spin 0.9s linear infinite' }} /> :
+                    saveStatus === 'success' ? <CheckCircle size={20} /> : <Save size={20} />}
                   {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'success' ? 'Saved to Profile!' : 'Save to Profile'}
                 </button>
               </div>
@@ -751,7 +751,7 @@ const SkillAnalyzer: React.FC = () => {
         <footer style={{ background: t.white, borderTop: '1px solid hsl(var(--border) / 0.35)', padding: '2.5rem 1.5rem' }}>
           <div style={{ maxWidth: '72rem', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
             <p style={{ fontSize: '0.8125rem', color: t.outline }}>
-              © 2026 LearnLaunch Scholarly Systems — All Rights Reserved
+              © 2026 ASQ Scholarly Systems — All Rights Reserved
             </p>
             <div style={{ display: 'flex', gap: '1.75rem' }}>
               {['Privacy', 'Terms', 'Support'].map((l) => (

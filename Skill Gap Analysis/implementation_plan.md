@@ -1,6 +1,6 @@
 # Skill Gap Analyzer — Full-Stack Integration
 
-Integrate the existing `skill_service.py` (LangGraph pipeline: resume → skill extraction → vector search → gap analysis → validated gaps → resource fetching → roadmap generation) into the LearnLaunch application as a new **"Skill Analyzer"** feature — distinct from the existing company-specific Roadmap Generator.
+Integrate the existing `skill_service.py` (LangGraph pipeline: resume → skill extraction → vector search → gap analysis → validated gaps → resource fetching → roadmap generation) into the ASQapplication as a new **"Skill Analyzer"** feature — distinct from the existing company-specific Roadmap Generator.
 
 ## User Review Required
 
@@ -64,14 +64,14 @@ Refactor the standalone script into an importable service function:
 
 New API router (`prefix="/api/skills"`) with endpoints:
 
-| Method | Path | Description |
-|--------|------|-------------|
-| `POST` | `/analyze` | Upload PDF resume → runs pipeline → returns full analysis + roadmap |
-| `POST` | `/save` | Save a generated skill roadmap to user's profile |
-| `GET` | `/user/{user_id}` | List all saved skill roadmaps for a user |
-| `GET` | `/{roadmap_id}` | Get a specific skill roadmap by ID |
-| `PUT` | `/progress` | Update per-skill progress (mark skill as completed, add notes) |
-| `DELETE` | `/user/{roadmap_id}` | Delete a saved skill roadmap |
+| Method   | Path                 | Description                                                         |
+| -------- | -------------------- | ------------------------------------------------------------------- |
+| `POST`   | `/analyze`           | Upload PDF resume → runs pipeline → returns full analysis + roadmap |
+| `POST`   | `/save`              | Save a generated skill roadmap to user's profile                    |
+| `GET`    | `/user/{user_id}`    | List all saved skill roadmaps for a user                            |
+| `GET`    | `/{roadmap_id}`      | Get a specific skill roadmap by ID                                  |
+| `PUT`    | `/progress`          | Update per-skill progress (mark skill as completed, add notes)      |
+| `DELETE` | `/user/{roadmap_id}` | Delete a saved skill roadmap                                        |
 
 **`POST /analyze`** details:
 - Accepts `multipart/form-data` with `file: UploadFile`
@@ -216,14 +216,14 @@ export interface UserSkillRoadmap {
 
 Service class (singleton pattern, mirroring `roadmapService.ts`):
 
-| Method | Purpose |
-|--------|---------|
-| `analyzeResume(file: File)` | `POST /api/skills/analyze` (multipart upload, 180s timeout) |
-| `saveAnalysis(data, userId)` | `POST /api/skills/save` |
-| `getUserSkillRoadmaps(userId)` | `GET /api/skills/user/{userId}` |
-| `getSkillRoadmapById(id)` | `GET /api/skills/{id}` |
-| `updateSkillProgress(...)` | `PUT /api/skills/progress` |
-| `deleteSkillRoadmap(id)` | `DELETE /api/skills/user/{id}` |
+| Method                         | Purpose                                                     |
+| ------------------------------ | ----------------------------------------------------------- |
+| `analyzeResume(file: File)`    | `POST /api/skills/analyze` (multipart upload, 180s timeout) |
+| `saveAnalysis(data, userId)`   | `POST /api/skills/save`                                     |
+| `getUserSkillRoadmaps(userId)` | `GET /api/skills/user/{userId}`                             |
+| `getSkillRoadmapById(id)`      | `GET /api/skills/{id}`                                      |
+| `updateSkillProgress(...)`     | `PUT /api/skills/progress`                                  |
+| `deleteSkillRoadmap(id)`       | `DELETE /api/skills/user/{id}`                              |
 
 ---
 
@@ -318,33 +318,33 @@ Add a new section below "My Roadmaps" called **"My Skill Analyses"** displaying 
 
 ### Backend (6 files)
 
-| Action | File | Description |
-|--------|------|-------------|
-| NEW | `app/models/skill_gap.py` | Pydantic models for skill gap data |
-| NEW | `app/api/routes/skill_routes.py` | API routes for skill analysis |
-| MODIFY | `app/services/skill_service.py` | Refactor from script → importable service |
-| MODIFY | `app/db/mongodb.py` | Add indexes for new collections |
-| MODIFY | `app/main.py` | Register new router |
-| MODIFY | `requirements.txt` | Add `python-multipart`, `motor` |
+| Action | File                             | Description                               |
+| ------ | -------------------------------- | ----------------------------------------- |
+| NEW    | `app/models/skill_gap.py`        | Pydantic models for skill gap data        |
+| NEW    | `app/api/routes/skill_routes.py` | API routes for skill analysis             |
+| MODIFY | `app/services/skill_service.py`  | Refactor from script → importable service |
+| MODIFY | `app/db/mongodb.py`              | Add indexes for new collections           |
+| MODIFY | `app/main.py`                    | Register new router                       |
+| MODIFY | `requirements.txt`               | Add `python-multipart`, `motor`           |
 
 ### Frontend (14 files)
 
-| Action | File | Description |
-|--------|------|-------------|
-| NEW | `src/screens/SkillAnalyzer.tsx` | Main skill analyzer screen |
-| NEW | `src/services/skillAnalyzerService.ts` | API service for skill endpoints |
-| NEW | `src/store/skillAnalyzerAtoms.ts` | Jotai state atoms |
-| NEW | `src/hooks/useSkillAnalyzer.ts` | Custom hook for skill analyzer logic |
-| NEW | `src/components/skillAnalyzer/SkillUploadZone.tsx` | File upload component |
-| NEW | `src/components/skillAnalyzer/PipelineProgress.tsx` | Progress indicator |
-| NEW | `src/components/skillAnalyzer/SkillsBreakdown.tsx` | Skills visualization |
-| NEW | `src/components/skillAnalyzer/GapAnalysisCard.tsx` | Gap analysis display |
-| NEW | `src/components/skillAnalyzer/SkillRoadmapAccordion.tsx` | Roadmap per-skill accordion |
-| NEW | `src/components/skillAnalyzer/SavedSkillRoadmapCard.tsx` | Saved roadmap card |
-| NEW | `src/components/skillAnalyzer/SkillRoadmapDetailModal.tsx` | Detail/tracking modal |
-| MODIFY | `src/types/api.ts` | Add skill gap TypeScript interfaces |
-| MODIFY | `src/Routes/AppRoute.tsx` | Add `/skills` route |
-| MODIFY | `src/components/Header.tsx` | Add "Skills" nav link |
+| Action | File                                                       | Description                          |
+| ------ | ---------------------------------------------------------- | ------------------------------------ |
+| NEW    | `src/screens/SkillAnalyzer.tsx`                            | Main skill analyzer screen           |
+| NEW    | `src/services/skillAnalyzerService.ts`                     | API service for skill endpoints      |
+| NEW    | `src/store/skillAnalyzerAtoms.ts`                          | Jotai state atoms                    |
+| NEW    | `src/hooks/useSkillAnalyzer.ts`                            | Custom hook for skill analyzer logic |
+| NEW    | `src/components/skillAnalyzer/SkillUploadZone.tsx`         | File upload component                |
+| NEW    | `src/components/skillAnalyzer/PipelineProgress.tsx`        | Progress indicator                   |
+| NEW    | `src/components/skillAnalyzer/SkillsBreakdown.tsx`         | Skills visualization                 |
+| NEW    | `src/components/skillAnalyzer/GapAnalysisCard.tsx`         | Gap analysis display                 |
+| NEW    | `src/components/skillAnalyzer/SkillRoadmapAccordion.tsx`   | Roadmap per-skill accordion          |
+| NEW    | `src/components/skillAnalyzer/SavedSkillRoadmapCard.tsx`   | Saved roadmap card                   |
+| NEW    | `src/components/skillAnalyzer/SkillRoadmapDetailModal.tsx` | Detail/tracking modal                |
+| MODIFY | `src/types/api.ts`                                         | Add skill gap TypeScript interfaces  |
+| MODIFY | `src/Routes/AppRoute.tsx`                                  | Add `/skills` route                  |
+| MODIFY | `src/components/Header.tsx`                                | Add "Skills" nav link                |
 
 ---
 
