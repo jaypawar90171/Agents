@@ -1,4 +1,3 @@
-
 services:
   ollama:
     image: ollama/ollama:latest
@@ -11,7 +10,7 @@ services:
       - OLLAMA_HOST=0.0.0.0:11434
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "ollama list || exit 1"]
+      test: [ "CMD-SHELL", "ollama list || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -30,17 +29,13 @@ services:
     environment:
       - OLLAMA_HOST=http://ollama:11434
     entrypoint: >
-      sh -c "
-      echo 'Pulling Ollama embedding model...' &&
-      ollama pull qwen3-embedding:0.6b &&
-      echo 'Model pulled successfully'
-      "
+      sh -c " echo 'Pulling Ollama embedding model...' && ollama pull qwen3-embedding:0.6b && echo 'Model pulled successfully' "
     restart: "no"
     networks:
       - job-network
 
   backend:
-    image: akashgurav/job-backend:latest
+    image: akashgurav/job-backend:deployable
     container_name: fastapi_app
     ports:
       - "8000:8000"
@@ -57,7 +52,7 @@ services:
       - TAVILY_API_KEY=${TAVILY_API_KEY}
       - FRONTEND_URL=http://frontend:5173
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -66,7 +61,7 @@ services:
       - job-network
 
   frontend:
-    image: akashgurav/job-frontend:latest
+    image: akashgurav/job-frontend:deployable
     container_name: react_app
     ports:
       - "5173:80"
@@ -84,4 +79,4 @@ volumes:
 
 networks:
   job-network:
-    driver: bridged
+    driver: bridge

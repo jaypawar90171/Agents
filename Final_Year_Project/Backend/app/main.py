@@ -1,5 +1,5 @@
+import os
 from fastapi import FastAPI
-from app.api.routes import job_routes, roadmap_routes
 from app.api.routes import job_routes, roadmap_routes, roadmaps, chat, skill_routes
 from fastapi.middleware.cors import CORSMiddleware
 from app.db.mongodb import MongoDB
@@ -11,11 +11,16 @@ async def lifespan(app: FastAPI):
     # Shutdown
     await MongoDB.close_db()
 
-app = FastAPI(title='Job API', lifespan=lifespan)  
+app = FastAPI(title='Job API', lifespan=lifespan)
+
+# Read allowed origins from env so production URLs are not hardcoded.
+# FRONTEND_URL can be a comma-separated list: "https://app.example.com,http://localhost:5173"
+_frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+allowed_origins = [url.strip() for url in _frontend_url.split(",")]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
