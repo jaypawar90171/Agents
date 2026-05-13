@@ -10,3 +10,8 @@ __pycache__
 
 node_modules
 dist
+.cursor
+.idea
+generate_diagrams.py
+diagrams
+*.xlsx

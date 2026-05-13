@@ -85,7 +85,7 @@ export const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({ message })
 
         {/* Sources Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-          {message.sources && message.sources.length > 0 && message.sources.slice(0, 2).map((source, idx) => (
+          {message.sources && message.sources.length > 0 && message.sources.map((source, idx) => (
              <div key={idx} className="p-5 bg-surface-container-low rounded-xl border border-outline-variant/10">
                <h4 className="font-headline font-bold mb-2 flex items-center gap-2">
                  <span className="w-2 h-2 rounded-full bg-primary inline-block" /> Job Source

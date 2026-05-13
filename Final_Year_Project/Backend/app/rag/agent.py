@@ -1,25 +1,19 @@
 import os
 import uuid
-from typing import TypedDict, Annotated, List, Dict, Optional, Literal
+from typing import TypedDict, Literal, List, Optional
 from dotenv import load_dotenv
-import pymongo
+# pyrefly: ignore [missing-import]
 from langchain_groq import ChatGroq
-from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage, AIMessage
 from langchain_core.output_parsers import StrOutputParser
 from langgraph.graph import StateGraph, START, END
-from langgraph.checkpoint.memory import MemorySaver
-from operator import add
 
-# from langchain_mongodb import MongoDBAtlasVectorSearch
 from pymongo import MongoClient
 from pydantic import BaseModel, Field
 from langchain_core.prompts import ChatPromptTemplate
-from IPython.display import Image, display
 from langchain_community.tools.tavily_search import TavilySearchResults
-from langchain_core.documents import Document
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_ollama import OllamaEmbeddings
 from langchain_mongodb import MongoDBAtlasVectorSearch
-from pymongo import MongoClient
+
 
 load_dotenv()
 
@@ -31,12 +25,13 @@ EMBED_MODEL = os.getenv("MODEL_NAME", "qwen3-embedding:0.6b")
 CHAT_MODEL = "llama-3.3-70b-versatile"
 
 TOP_K = 10
-MIN_SCORE = 0.6
+MIN_SCORE = 0.75
 MAX_CONTEXT_CHARS = 5000
+MAX_DOC_RETRIES = 2          # max times to rewrite query when no docs are found
+MAX_HALLUCINATION_RETRIES = 1 # max times to retry generation on hallucination
 
 print(f"Using embedding model: {EMBED_MODEL}")
 
-# Then your initialization code:
 embeddings = OllamaEmbeddings(model=EMBED_MODEL)
 client = MongoClient(MONGO_URI)
 collection = client[DB_NAME][COLLECTION_NAME]
@@ -49,125 +44,36 @@ vector_store = MongoDBAtlasVectorSearch(
     embedding_key="job_embedding",
 )
 
-retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 5})
+retriever = vector_store.as_retriever(
+    search_type="similarity_score_threshold",
+    search_kwargs={"k": TOP_K, "score_threshold": MIN_SCORE},
+)
 
+
+# ---------------------------------------------------------------------------
+# Schemas
+# ---------------------------------------------------------------------------
 
 class RouteQuery(BaseModel):
     """Route the user query to the most relevant datasource based on topic."""
 
-    datasource: Literal["vectorstore", "web_search"] = Field(
+    datasource: Literal["vectorstore", "web_search", "off_topic"] = Field(
         ...,
-        description="Choose 'vectorstore' for questions about companies, job roles, skills, or placements. Choose 'web_search' for general knowledge or current events.",
+        description=(
+            "Choose 'vectorstore' for questions about companies, job roles, skills, "
+            "or placements. Choose 'web_search' for general career/job knowledge not "
+            "in the internal database. Choose 'off_topic' for greetings, chitchat, "
+            "or topics completely unrelated to jobs, recruitment, or career advice."
+        ),
     )
-
-
-llm = ChatGroq(model=CHAT_MODEL, temperature=0)
-# LLM with function call
-structured_llm_router = llm.with_structured_output(RouteQuery)
-
-# prompt
-system = """You are an expert recruitment and career-path router. 
-Your job is to direct user inquiries to the correct data source.
-
-VECTORSTORE CRITERIA:
-- Questions about specific companies (e.g., 'What is Morgan Stanley looking for?').
-- Inquiries regarding placements, internships, or hiring processes.
-- Requests for skills required for specific roles (e.g., 'Java skills for Accenture').
-- Career advice related to corporate job markets.
-
-WEB_SEARCH CRITERIA:
-- Greetings, chitchat, or conversational messages (e.g., 'hello', 'hi', 'how are you', 'thanks').
-- General knowledge questions not related to specific companies or jobs.
-- Current news, weather, or non-career topics.
-- Topics clearly outside professional recruitment and placements.
-
-IMPORTANT: Greetings and casual messages must ALWAYS go to 'web_search'.
-Only route to 'vectorstore' if the question explicitly asks about companies, job roles, skills, or placements."""
-
-route_prompt = ChatPromptTemplate.from_messages(
-    [("system", system), ("human", "{question}")]
-)
-
-question_router = route_prompt | structured_llm_router
 
 
 class GradeDocuments(BaseModel):
-    """
-    Binary score for relevance check on retrieved documents..
-    """
+    """Binary score for relevance check on retrieved documents."""
 
     binary_score: str = Field(
-        description="Relevance score: 'yes' if the document is useful for answering the question, 'no' if it is not."
+        description="Relevance score: 'yes' if the document is useful for answering the question, 'no' if not."
     )
-
-
-structured_llm_grader = llm.with_structured_output(GradeDocuments)
-
-system = """
-You are a grader assessing relevance of a retrieved document to a user question.\n
-Determines if a retrieved document is relevant to the user's question.\n
-    
-Relevance Criteria:
-- The document contains keywords or semantic concepts related to the question.
-- The document provides information that could help formulate an answer.
-- It does NOT need to be a complete answer to be considered 'yes'.
-- If the document is completely unrelated, score it as 'no'.
-"""
-
-grade_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", system),
-        ("human", "Retrieved document: \n\n {document} \n\n User question: {question}"),
-    ]
-)
-
-retrieval_grader = grade_prompt | structured_llm_grader
-
-from langchain_core.output_parsers import StrOutputParser
-
-# A more robust, professional RAG prompt
-template = """You are an expert assistant for question-answering tasks. 
-Use the following pieces of retrieved context to answer the question. 
-
----
-CONTEXT:
-{context}
----
-
-INSTRUCTIONS:
-1. If the answer is not contained within the context, clearly state that you do not know. 
-2. Do not attempt to make up an answer or use outside knowledge. 
-3. Keep the answer concise (3-5 sentences) and professional.
-4. Use bullet points if the information is a list.
-
-QUESTION: 
-{question}
-
-HELPFUL ANSWER:"""
-
-prompt = ChatPromptTemplate.from_template(template)
-
-rag_chain = prompt | llm | StrOutputParser()
-
-system = """You are an expert Search Query Optimizer. Your goal is to take a vague user 
-question and transform it into a high-precision search query for a web engine.
-
-CRITERIA FOR A GOOD QUERY:
-1. **Semantic Expansion**: Identify the likely industry (e.g., IT Consulting) and role levels.
-2. **Remove Ambiguity**: Replace 'Skills for [Company]' with specific categories like 'Technical Stack', 'Soft Skills', or 'Certification requirements'.
-3. **Recency**: Include keywords for the current year (2024-2026) to ensure the search results aren't outdated.
-4. **Intent-Based**: If the intent is job-seeking, include terms like 'hiring process', 'interview preparation', or 'job requirements'.
-
-Output ONLY the improved query string. No conversational filler."""
-
-re_write_prompt = ChatPromptTemplate.from_messages(
-    [
-        ("system", system),
-        ("human", "Initial Question: {question}\n\nOptimized Search Query:"),
-    ]
-)
-
-question_rewriter = re_write_prompt | llm | StrOutputParser()
 
 
 class GradeHallucination(BaseModel):
@@ -178,335 +84,459 @@ class GradeHallucination(BaseModel):
     )
 
 
-structured_llm_grader = llm.with_structured_output(GradeHallucination)
+class GradeAnswer(BaseModel):
+    """Binary score to assess whether the answer addresses the question."""
 
-system = """You are a grader assessing whether an LLM generation is grounded in / supported by a set of retrieved facts. 
-Give a binary score 'yes' or 'no'. 'yes' means the generation is supported by the facts. 
-Be lenient with phrasing; as long as the factual claim exists in the source, it is 'yes'."""
+    binary_score: str = Field(description="Answer addresses the question, 'yes' or 'no'")
+
+
+# ---------------------------------------------------------------------------
+# LLM & Chains
+# ---------------------------------------------------------------------------
+
+llm = ChatGroq(model=CHAT_MODEL, temperature=0)
+
+# --- Router ---
+structured_llm_router = llm.with_structured_output(RouteQuery)
+
+route_system = """You are an expert recruitment and career-path router.
+Your ONLY job is to classify the user query into one of three categories.
+
+VECTORSTORE — use when the question is explicitly about:
+  • Specific companies (e.g. "What does Accenture look for?")
+  • Job roles, titles, or designations (e.g. "Data Analyst at TCS")
+  • Skills required for a particular role or company
+  • Placements, internships, campus hiring, or hiring processes
+  • Salary/CTC, experience requirements, or job locations
+
+WEB_SEARCH — use when the question is job/career-related but too general for
+  the internal database, such as:
+  • "How do I prepare for a system design interview?"
+  • "What is the average salary for ML engineers in 2025?"
+  • Broad career advice or industry trends
+
+OFF_TOPIC — use for EVERYTHING else:
+  • Greetings: "hi", "hello", "how are you", "thanks"
+  • Chitchat or personal conversation
+  • Non-career topics: weather, sports, politics, coding help, etc.
+  • Any query that has NO connection to jobs, recruitment, or career growth
+
+RULE: When in doubt between vectorstore and web_search, prefer vectorstore.
+RULE: Greetings and casual messages MUST always be 'off_topic'."""
+
+route_prompt = ChatPromptTemplate.from_messages(
+    [("system", route_system), ("human", "{question}")]
+)
+question_router = route_prompt | structured_llm_router
+
+# --- Document Grader ---
+structured_llm_doc_grader = llm.with_structured_output(GradeDocuments)
+
+doc_grade_system = """You are a grader assessing relevance of a retrieved document to a user question.
+
+Relevance Criteria:
+- The document contains keywords or semantic concepts related to the question.
+- The document provides information that could help formulate an answer.
+- It does NOT need to be a complete answer to be considered 'yes'.
+- If the document is completely unrelated, score it as 'no'."""
+
+grade_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", doc_grade_system),
+        ("human", "Retrieved document:\n\n{document}\n\nUser question: {question}"),
+    ]
+)
+retrieval_grader = grade_prompt | structured_llm_doc_grader
+
+# --- RAG Chain ---
+rag_template = """You are an expert assistant for job and recruitment question-answering tasks.
+Use the following pieces of retrieved context to answer the question.
+
+---
+CONTEXT:
+{context}
+---
+
+INSTRUCTIONS:
+1. If the answer is not contained within the context, clearly state that you do not know.
+2. Do not attempt to make up an answer or use outside knowledge.
+3. Keep the answer concise (3-5 sentences) and professional.
+4. Use bullet points when listing skills, requirements, or multiple items.
+
+QUESTION:
+{question}
+
+HELPFUL ANSWER:"""
+
+rag_prompt = ChatPromptTemplate.from_template(rag_template)
+rag_chain = rag_prompt | llm | StrOutputParser()
+
+# --- Query Transformer (IMPROVED) ---
+# Strategy: structured entity extraction → targeted query reconstruction.
+# This dramatically improves retrieval accuracy by producing precise, metadata-aware queries.
+transform_system = """You are an expert at optimizing search queries for a MongoDB Atlas Vector Search
+database that contains job postings with the following fields:
+  - company (e.g., "Infosys", "Google", "Morgan Stanley")
+  - job_title (e.g., "Software Engineer", "Data Analyst")
+  - skills_required (e.g., "Python, SQL, Machine Learning")
+  - location (e.g., "Bangalore", "Remote")
+  - job_description_summary
+
+Your task is to rewrite the user's question into an OPTIMAL retrieval query by following these steps:
+
+STEP 1 — Entity Extraction:
+  Identify: Company | Role/Title | Skills | Location | Intent (skills/process/salary/requirements)
+
+STEP 2 — Query Reconstruction:
+  • Keep any company name EXACTLY as written (do not paraphrase).
+  • Expand role synonyms (e.g., "dev" → "Software Developer Engineer").
+  • Include the specific domain or tech stack if implied (e.g., "banking role" → "Finance Analyst Investment Banking").
+  • Append the primary intent keyword: "skills required", "hiring process", "job requirements", "eligibility criteria".
+  • Drop filler words like "what", "tell me", "I want to know".
+
+STEP 3 — Output:
+  Return ONLY the final optimized query string. No explanation. No punctuation at the end.
+
+EXAMPLES:
+  Input:  "What skills does TCS need?"
+  Output: TCS Tata Consultancy Services job skills required technical stack eligibility
+
+  Input:  "How does Amazon hire freshers?"
+  Output: Amazon fresher hiring process recruitment criteria campus placement requirements
+
+  Input:  "Python jobs in Bangalore"
+  Output: Python developer software engineer Bangalore job requirements skills
+
+  Input:  "What does Morgan Stanley look for in analysts?"
+  Output: Morgan Stanley analyst job requirements skills eligibility finance investment banking"""
+
+re_write_prompt = ChatPromptTemplate.from_messages(
+    [
+        ("system", transform_system),
+        ("human", "User Question: {question}\n\nOptimized Search Query:"),
+    ]
+)
+question_rewriter = re_write_prompt | llm | StrOutputParser()
+
+# --- Hallucination Grader ---
+structured_llm_hallucination_grader = llm.with_structured_output(GradeHallucination)
+
+hallucination_system = """You are a grader assessing whether an LLM generation is grounded in
+a set of retrieved facts. Give a binary score 'yes' or 'no'.
+'yes' means the generation is supported by the facts.
+Be lenient with phrasing — as long as the factual claim exists in the source, it is 'yes'."""
 
 hallucination_prompt = ChatPromptTemplate.from_messages(
     [
-        ("system", system),
-        ("human", "Set of facts: \n\n {documents} \n\n LLM Generation: {generation}"),
+        ("system", hallucination_system),
+        ("human", "Set of facts:\n\n{documents}\n\nLLM Generation: {generation}"),
     ]
 )
+hallucination_grader = hallucination_prompt | structured_llm_hallucination_grader
 
-hallucination_grader = hallucination_prompt | structured_llm_grader
+# --- Answer Grader ---
+structured_llm_answer_grader = llm.with_structured_output(GradeAnswer)
 
-
-class GradeAnswer(BaseModel):
-    """Binary score to assess answer address question."""
-
-    binary_score: str = Field(description="Answer address the question, 'yes' or 'no'")
-
-
-structured_llm_grader = llm.with_structured_output(GradeAnswer)
-
-system = """You are a grader assisting whether an answer address / resolves question. 
-Give a binary score 'yes' or 'no'. 'yes' means answers resolves the question. 
-Be lenient with phrasing; as long as the factual claim exists in the source, it is 'yes'."""
+answer_system = """You are a grader assessing whether an answer resolves a question.
+Give a binary score 'yes' or 'no'. 'yes' means the answer resolves the question.
+Be lenient with phrasing."""
 
 answer_prompt = ChatPromptTemplate.from_messages(
     [
-        ("system", system),
-        ("human", "User Question: \n\n {question} \n\n LLM Generation: {generation}"),
+        ("system", answer_system),
+        ("human", "User Question:\n\n{question}\n\nLLM Generation: {generation}"),
     ]
 )
-
-answer_grader = answer_prompt | structured_llm_grader
-
+answer_grader = answer_prompt | structured_llm_answer_grader
 
 web_search_tool = TavilySearchResults(k=3)
 
 
-from typing import List
-
+# ---------------------------------------------------------------------------
+# Graph State
+# ---------------------------------------------------------------------------
 
 class GraphState(TypedDict):
     """
-    Represents the state of our graph.
+    Represents the state of the RAG graph.
 
     Attributes:
-        question: question
-        generation: LLM generation
-        web_search: whether to add search
-        documents: list of documents (flat text context string)
-        source_docs: raw Document objects from retriever (for structured source metadata)
-        web_docs: raw Tavily result dicts (for web source url/title)
-        retries: number of transform_query retries (prevents infinite loops)
+        question:              Current (possibly rewritten) question
+        original_question:     The original user question (preserved for answer grading)
+        generation:            LLM generation
+        documents:             Flat text context string passed to LLM
+        source_docs:           Raw Document objects from retriever
+        web_docs:              Raw Tavily result dicts
+        path:                  "vectorstore" | "web_search" — tracks which route was taken
+                               so transform_query can re-route to the correct node
+        retries:               Number of query rewrites due to missing/irrelevant docs
+        hallucination_retries: Number of generation retries due to hallucination
     """
 
     question: str
+    original_question: str
     generation: str
-    web_search: str
-    documents: List[str]
-    source_docs: List  # List[Document]
-    web_docs: List     # List[dict] from Tavily
+    documents: str
+    source_docs: List
+    web_docs: List
+    path: str
     retries: int
+    hallucination_retries: int
+    next_step: str
 
 
-def retrieve(state):
-    """
-    Retrieves relevant documents from the vector database based on the user's question.
+# ---------------------------------------------------------------------------
+# Nodes
+# ---------------------------------------------------------------------------
 
-    This function acts as a retrieval node in the RAG graph. It takes the current
-    'question' from the state, converts it into a search query (embedding),
-    and fetches the top-k most semantically similar document chunks from the
-    ChromaDB/Pinecone vector store.
-
-    Args:
-        state (dict): The current graph state containing:
-            - "question": The string query to search for.
-
-    Returns:
-        dict: An updated state dictionary with:
-            - "documents": A list of retrieved Document objects.
-            - "question": The original question.
-    """
-
+def retrieve(state: GraphState) -> dict:
+    """Retrieve documents from the vector store."""
     print("---RETRIEVE NODE---")
     question = state["question"]
 
     docs = retriever.invoke(question)
 
-    # Build flat text context for LLM prompts
     context = "\n\n".join(
         [
-            f"""
-    Company: {doc.metadata.get("company")}
-    Title: {doc.metadata.get("job_title")}
-    Skills: {doc.metadata.get("skills_required")}
-    Location: {doc.metadata.get("location")}
-    Job URL: {doc.metadata.get("job_url")}
-    Description: {doc.page_content}
-    """
+            f"Company: {doc.metadata.get('company')}\n"
+            f"Title: {doc.metadata.get('job_title')}\n"
+            f"Skills: {doc.metadata.get('skills_required')}\n"
+            f"Location: {doc.metadata.get('location')}\n"
+            f"Job URL: {doc.metadata.get('job_url')}\n"
+            f"Description: {doc.page_content}"
             for doc in docs
         ]
     )
-    # Also store raw docs for structured source metadata in the API response
-    return {"documents": context, "source_docs": docs, "question": question}
+    return {"documents": context, "source_docs": docs, "question": question, "path": "vectorstore"}
 
 
-def generate(state):
-    """
-    Synthesizes a final answer by grounding the LLM's response in retrieved context.
-
-    This node performs the 'R' (Retrieval) and 'G' (Generation) alignment. It
-    constructs a prompt using the 'documents' list and the 'question' stored
-    in the state, then invokes the LLM to generate a concise, fact-based response.
-
-    Args:
-        state (dict): The current graph state containing:
-            - "question" (str): The user's original or rewritten query.
-            - "documents" (List[Document]): A list of filtered, relevant document
-              chunks to be used as context.
-
-    Returns:
-        dict: The updated state dictionary with:
-            - "generation" (str): The final natural language response from the LLM.
-            - "documents" (List[Document]): Passes through the context used for
-              potential citation or source-tracking.
-    """
-
+def generate(state: GraphState) -> dict:
+    """Generate an answer using RAG."""
     print("---GENERATE NODE---")
     question = state["question"]
     context = state["documents"]
 
-    # RAG generation
     generation = rag_chain.invoke({"context": context, "question": question})
-    return {"documents": context, "question": question, "generation": generation}
+    return {"generation": generation}
 
 
-def grade_documents(state):
-    """
-    Determines whether the retrieved documents are relevant to the question.
-
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        state (dict): Updates documents key with only filtered relevant documents
-    """
-
-    print("---GRADE DOCUEMENT NODE---")
+def grade_documents(state: GraphState) -> dict:
+    """Filter retrieved documents to only those relevant to the question."""
+    print("---GRADE DOCUMENTS NODE---")
     question = state["question"]
-    documents = state["documents"]
+    source_docs = state.get("source_docs", [])
 
-    # Score each doc
     filtered_docs = []
-    for c in documents.split("\n\n"):
-        if not c.strip():
-            continue
-        score = retrieval_grader.invoke({"question": question, "document": c})
-
-        grade = score.binary_score
-        if grade == "yes":
-            print("---GRADE: DOCUMENT RELEVANT---")
-            filtered_docs.append(c)
+    for doc in source_docs:
+        doc_text = (
+            f"Company: {doc.metadata.get('company')}\n"
+            f"Title: {doc.metadata.get('job_title')}\n"
+            f"Skills: {doc.metadata.get('skills_required')}\n"
+            f"Description: {doc.page_content}"
+        )
+        score = retrieval_grader.invoke({"question": question, "document": doc_text})
+        if score.binary_score == "yes":
+            print("  ✓ Relevant document kept")
+            filtered_docs.append(doc)
         else:
-            print("---GRADE: DOCUMENT NOT RELEVANT---")
-            continue
+            print("  ✗ Irrelevant document dropped")
 
-    return {"documents": "\n\n".join(filtered_docs), "question": question}
+    # Rebuild context string from filtered docs
+    context = "\n\n".join(
+        f"Company: {doc.metadata.get('company')}\n"
+        f"Title: {doc.metadata.get('job_title')}\n"
+        f"Skills: {doc.metadata.get('skills_required')}\n"
+        f"Location: {doc.metadata.get('location')}\n"
+        f"Job URL: {doc.metadata.get('job_url')}\n"
+        f"Description: {doc.page_content}"
+        for doc in filtered_docs
+    )
+    return {"documents": context, "source_docs": filtered_docs, "question": question}
 
 
-def transform_query(state):
+def transform_query(state: GraphState) -> dict:
     """
-    Transform the query to produce a better question.
-
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        state (dict): Updates question key with a re-phrased question
+    Rewrite the question into an optimised retrieval query.
+    Increments the retry counter and preserves the original question
+    for final answer grading.
     """
-
-    print("---TRANSFORM QUERY---")
+    print("---TRANSFORM QUERY NODE---")
     question = state["question"]
-    documents = state["documents"]
     retries = state.get("retries", 0) + 1
 
-    # Re-write question
     better_question = question_rewriter.invoke({"question": question})
-    return {"documents": documents, "question": better_question, "retries": retries}
+    print(f"  Original : {question}")
+    print(f"  Rewritten: {better_question}")
+
+    return {
+        "question": better_question,
+        "retries": retries,
+    }
 
 
-def web_search(state):
-    """
-    Web search based on the re-phrased question.
-
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        state (dict): Updates documents key with appended web results
-    """
-
-    print("---WEB SEARCH---")
+def web_search(state: GraphState) -> dict:
+    """Perform a web search and store results."""
+    print("---WEB SEARCH NODE---")
     question = state["question"]
 
-    # Web search — keep raw docs so we can extract url/title for the frontend
     docs = web_search_tool.invoke({"query": question})
     web_results = "\n".join([d["content"] for d in docs])
 
-    return {"documents": web_results, "web_docs": docs, "question": question}
+    return {"documents": web_results, "web_docs": docs, "question": question, "path": "web_search"}
 
 
-def route_question(state):
+def off_topic_response(state: GraphState) -> dict:
     """
-    Route the question to web search or RAG.
-
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        str: Next node to call (the router result)
+    Return a polite, single-message response for queries unrelated to jobs/recruitment.
+    This node terminates immediately — no retrieval or generation needed.
     """
+    print("---OFF-TOPIC NODE---")
+    msg = (
+        "I'm a job and recruitment assistant, so I can only help with questions about "
+        "companies, job roles, required skills, hiring processes, placements, and career "
+        "guidance. Please ask me something along those lines and I'll be happy to help!"
+    )
+    return {"generation": msg}
 
+
+# ---------------------------------------------------------------------------
+# Conditional Edges
+# ---------------------------------------------------------------------------
+
+def route_question(state: GraphState) -> str:
+    """
+    Route the question to vectorstore, web search, or off-topic handler.
+    Note: path is set in the destination nodes (retrieve, web_search),
+    not here, because LangGraph conditional edges cannot mutate state.
+    """
     print("---ROUTING QUESTION---")
     question = state["question"]
     source = question_router.invoke({"question": question})
 
+    if source.datasource == "off_topic":
+        print("---ROUTE: OFF-TOPIC---")
+        return "off_topic"
+
     if source.datasource == "web_search":
-        print("---ROUTE TO WEB SEARCH---")
+        print("---ROUTE: WEB SEARCH---")
         return "web_search"
-    elif source.datasource == "vectorstore":
-        print("---ROUTE TO RETRIEVAL---")
-        return "vectorstore"
+
+    print("---ROUTE: VECTORSTORE---")
+    return "vectorstore"
 
 
-def decide_to_generate(state):
+def decide_to_generate(state: GraphState) -> str:
     """
-    Determines whether to generate an answer, or re-generate a question.
+    After document grading, decide whether to generate or rewrite the query.
 
-    Args:
-        state (dict): The current graph state
-
-    Returns:
-        str: Binary decision for next node to call
+    Guard rails:
+      • If no relevant docs were found AND retries < MAX_DOC_RETRIES → rewrite.
+      • If no relevant docs AND retries >= MAX_DOC_RETRIES → force generate
+        (the RAG chain will say it doesn't know, which is honest).
+      • If there are relevant docs → generate.
     """
-
     print("---ASSESS GRADED DOCUMENTS---")
-    filtered_documents = state["documents"]
+    filtered_documents = state.get("documents", "").strip()
     retries = state.get("retries", 0)
 
     if not filtered_documents:
-        if retries >= 2:
-            # Loop guard: too many retries, fall through to generate
-            # The generate node will respond that it lacks info
-            print("---DECISION: MAX RETRIES REACHED, FORCING GENERATE---")
+        if retries >= MAX_DOC_RETRIES:
+            print(f"---DECISION: MAX RETRIES ({MAX_DOC_RETRIES}) REACHED — FORCING GENERATE---")
             return "generate"
-        # All documents have been filtered — re-generate a new query
-        print(
-            "---DECISION: ALL DOCUMENTS ARE NOT RELEVANT TO QUESTION, TRANSFORM QUERY---"
-        )
+        print("---DECISION: NO RELEVANT DOCS — REWRITING QUERY---")
         return "transform_query"
-    else:
-        # We have relevant documents, so generate answer
-        print("---DECISION: GENERATE---")
-        return "generate"
+
+    print("---DECISION: RELEVANT DOCS FOUND — GENERATING---")
+    return "generate"
 
 
-def grade_generation_v_documents_and_question(state):
+def check_generation(state: GraphState) -> dict:
     """
-    Determines whether the generation is grounded in the document and answers question.
+    Node that checks for hallucinations and answer relevance.
+    Returns state updates including the routing decision in 'next_step'.
 
-    Args:
-        state (dict): The current graph state
+    This is a NODE (not a conditional edge) so that state mutations
+    like incrementing hallucination_retries are properly persisted.
 
-    Returns:
-        str: Decision for next node to call
+    Uses original_question for answer-grading so a rewritten query
+    doesn't cause a false "not useful" verdict.
     """
-
     print("---CHECK HALLUCINATIONS---")
-    question = state["question"]
+    question = state.get("original_question") or state["question"]
     documents = state["documents"]
     generation = state["generation"]
+    hallucination_retries = state.get("hallucination_retries", 0)
+    path = state.get("path", "vectorstore")
 
-    score = hallucination_grader.invoke(
-        {"documents": documents, "generation": generation}
-    )
-    grade = score.binary_score
+    # Hard guard — never loop more than MAX_HALLUCINATION_RETRIES times
+    if hallucination_retries >= MAX_HALLUCINATION_RETRIES:
+        print(f"---DECISION: MAX HALLUCINATION RETRIES REACHED — ENDING---")
+        return {"next_step": "useful"}
 
-    # Check hallucination
-    if grade == "yes":
-        print("---DECISION: GENERATION IS GROUNDED IN DOCUMENTS---")
-        # Check question-answering
-        print("---GRADE GENERATION vs QUESTION---")
-        score = answer_grader.invoke({"question": question, "generation": generation})
-        grade = score.binary_score
-        if grade == "yes":
+    score = hallucination_grader.invoke({"documents": documents, "generation": generation})
+
+    if score.binary_score == "yes":
+        print("---DECISION: GENERATION GROUNDED IN DOCUMENTS---")
+        score2 = answer_grader.invoke({"question": question, "generation": generation})
+        if score2.binary_score == "yes":
             print("---DECISION: GENERATION ADDRESSES QUESTION---")
-            return "useful"
+            return {"next_step": "useful"}
         else:
-            print("---DECISION: GENERATION DOES NOT ADDRESS QUESTION---")
-            return "not useful"
+            print("---DECISION: GENERATION DOES NOT ADDRESS QUESTION — RETRYING---")
+            return {
+                "hallucination_retries": hallucination_retries + 1,
+                "next_step": f"retry_{path}",
+            }
     else:
-        print(
-            "---DECISION: GENERATION IS NOT GROUNDED IN DOCUMENTS, TRANSFORM QUERY---"
-        )
-        return "transform_query"
+        print("---DECISION: HALLUCINATION DETECTED — RETRYING---")
+        return {
+            "hallucination_retries": hallucination_retries + 1,
+            "next_step": f"retry_{path}",
+        }
 
+
+def route_after_generation(state: GraphState) -> str:
+    """Simple conditional edge that reads the routing decision set by check_generation."""
+    return state.get("next_step", "useful")
+
+
+# ---------------------------------------------------------------------------
+# Graph Assembly
+# ---------------------------------------------------------------------------
 
 workflow = StateGraph(GraphState)
 
-# Define the nodes
-workflow.add_node("web_search", web_search)  # web search
-workflow.add_node("retrieve", retrieve)  # retrieve
-workflow.add_node("grade_documents", grade_documents)  # grade documents
-workflow.add_node("generate", generate)  # generate
-workflow.add_node("transform_query", transform_query)  # transform_query
+# Nodes
+workflow.add_node("off_topic_response", off_topic_response)
+workflow.add_node("web_search", web_search)
+workflow.add_node("retrieve", retrieve)
+workflow.add_node("grade_documents", grade_documents)
+workflow.add_node("generate", generate)
+workflow.add_node("transform_query", transform_query)
+workflow.add_node("check_generation", check_generation)
 
-# Build graph
+# --- Entry routing ---
+# Vectorstore queries go through transform_query FIRST for optimised retrieval.
+# Raw user questions produce poor embeddings; the rewriter converts them into
+# keyword-rich queries that match the vector store much better.
 workflow.add_conditional_edges(
     START,
     route_question,
     {
+        "off_topic": "off_topic_response",
         "web_search": "web_search",
-        "vectorstore": "retrieve",
+        "vectorstore": "transform_query",
     },
 )
+
+# --- Off-topic short-circuits to END ---
+workflow.add_edge("off_topic_response", END)
+
+# --- Web search path ---
 workflow.add_edge("web_search", "generate")
+
+# --- Vectorstore path ---
+workflow.add_edge("transform_query", "retrieve")
 workflow.add_edge("retrieve", "grade_documents")
 workflow.add_conditional_edges(
     "grade_documents",
@@ -516,17 +546,20 @@ workflow.add_conditional_edges(
         "generate": "generate",
     },
 )
-workflow.add_edge("transform_query", "retrieve")
+
+# --- Generation quality check (node-based to properly persist state) ---
+# check_generation is a NODE that sets next_step + increments hallucination_retries.
+# route_after_generation is a thin conditional edge that reads next_step.
+workflow.add_edge("generate", "check_generation")
 workflow.add_conditional_edges(
-    "generate",
-    grade_generation_v_documents_and_question,
+    "check_generation",
+    route_after_generation,
     {
-        "transform_query": "transform_query",
         "useful": END,
-        "not useful": "transform_query",
+        "retry_vectorstore": "transform_query",
+        "retry_web_search": "web_search",
     },
 )
-
 
 # Compile
 app = workflow.compile()
@@ -540,17 +573,13 @@ CHAT_SESSIONS_COLLECTION = "chat_sessions"
 
 
 def _get_sessions_collection():
-    """Get the chat_sessions collection from MongoDB."""
     return client[DB_NAME][CHAT_SESSIONS_COLLECTION]
 
 
 def create_session(userId: str) -> tuple[str, str]:
-    """Create a new session and return (session_id, thread_id)."""
     import datetime
 
     session_id = str(uuid.uuid4())
-    thread_id = session_id
-
     doc = {
         "session_id": session_id,
         "userId": userId,
@@ -559,16 +588,16 @@ def create_session(userId: str) -> tuple[str, str]:
         "messages": [],
     }
     _get_sessions_collection().insert_one(doc)
-    return session_id, thread_id
+    return session_id, session_id  # thread_id == session_id
 
 
 def get_or_create_thread(session_id: str, userId: str) -> str:
-    """Return thread_id for an existing session, or create one if missing."""
-    existing = _get_sessions_collection().find_one({"session_id": session_id, "userId": userId})
+    existing = _get_sessions_collection().find_one(
+        {"session_id": session_id, "userId": userId}
+    )
     if existing:
         return session_id
 
-    # Create if doesn't exist
     import datetime
 
     doc = {
@@ -583,7 +612,6 @@ def get_or_create_thread(session_id: str, userId: str) -> str:
 
 
 def list_sessions(userId: str) -> list[dict]:
-    """Return all sessions with metadata (id, title, created_at, message_count)."""
     import datetime
 
     sessions = []
@@ -606,10 +634,11 @@ def list_sessions(userId: str) -> list[dict]:
 
 
 def get_session(session_id: str, userId: str) -> dict | None:
-    """Return full session details including messages."""
     import datetime
 
-    doc = _get_sessions_collection().find_one({"session_id": session_id, "userId": userId})
+    doc = _get_sessions_collection().find_one(
+        {"session_id": session_id, "userId": userId}
+    )
     if not doc:
         return None
 
@@ -617,13 +646,12 @@ def get_session(session_id: str, userId: str) -> dict | None:
     if isinstance(created_at, datetime.datetime):
         created_at = created_at.isoformat()
 
-    messages = doc.get("messages", [])
     formatted_messages = []
-    for msg in messages:
+    for msg in doc.get("messages", []):
         msg_copy = dict(msg)
-        msg_created_at = msg_copy.get("created_at")
-        if isinstance(msg_created_at, datetime.datetime):
-            msg_copy["created_at"] = msg_created_at.isoformat()
+        ts = msg_copy.get("created_at")
+        if isinstance(ts, datetime.datetime):
+            msg_copy["created_at"] = ts.isoformat()
         formatted_messages.append(msg_copy)
 
     return {
@@ -635,7 +663,6 @@ def get_session(session_id: str, userId: str) -> dict | None:
 
 
 def update_session_title(session_id: str, title: str, userId: str) -> bool:
-    """Update session title. Returns True if successful."""
     result = _get_sessions_collection().update_one(
         {"session_id": session_id, "userId": userId}, {"$set": {"title": title}}
     )
@@ -643,13 +670,13 @@ def update_session_title(session_id: str, title: str, userId: str) -> bool:
 
 
 def delete_session(session_id: str, userId: str) -> bool:
-    """Delete a session. Returns True if successful."""
-    result = _get_sessions_collection().delete_one({"session_id": session_id, "userId": userId})
+    result = _get_sessions_collection().delete_one(
+        {"session_id": session_id, "userId": userId}
+    )
     return result.deleted_count > 0
 
 
 def add_message_to_session(session_id: str, role: str, content: str, userId: str):
-    """Add a message to the session's messages array."""
     import datetime
 
     _get_sessions_collection().update_one(
@@ -666,32 +693,42 @@ def add_message_to_session(session_id: str, role: str, content: str, userId: str
     )
 
 
-def run_agent(thread_id: str, message: str, session_id: str | None = None, userId: str | None = None) -> dict:
+def run_agent(
+    thread_id: str,
+    message: str,
+    session_id: str | None = None,
+    userId: str | None = None,
+) -> dict:
     """
-    Invoke the RAG graph for a single question and return a dict that
-    matches the shape expected by chat.py:
+    Invoke the RAG graph for a single question and return:
         {
-            "reply":       str,          # the generated answer
-            "sources":     list[dict],   # structured vector-store source objects
-            "web_sources": list[dict],   # web-search results (if used)
+            "reply":       str,
+            "sources":     list[dict],   # vector-store sources
+            "web_sources": list[dict],   # web-search sources (if used)
         }
-
-    If session_id is provided, also persist the messages to MongoDB.
     """
-    inputs = {"question": message, "source_docs": [], "web_docs": [], "retries": 0}
+    inputs: GraphState = {
+        "question": message,
+        "original_question": message,   # preserved for final answer grading
+        "generation": "",
+        "documents": "",
+        "source_docs": [],
+        "web_docs": [],
+        "path": "vectorstore",          # default; overwritten by retrieve/web_search nodes
+        "retries": 0,
+        "hallucination_retries": 0,
+        "next_step": "",                # routing decision from check_generation
+    }
     result = app.invoke(inputs)
 
     generation = result.get("generation", "")
-    raw_source_docs = result.get("source_docs", [])  # List[Document]
-    raw_docs_text = result.get("documents", "")  # flat text (web search)
-    web_search_was_used = bool(raw_docs_text) and not bool(raw_source_docs)
+    raw_source_docs = result.get("source_docs", [])
 
-    # --- Vector-store sources: build structured objects from Document metadata ---
+    # --- Vector-store sources ---
     sources: list[dict] = []
     for doc in raw_source_docs:
         m = doc.metadata
         skills_raw = m.get("skills_required", [])
-        # skills may be stored as a comma-separated string or already a list
         if isinstance(skills_raw, str):
             skills_list = [s.strip() for s in skills_raw.split(",") if s.strip()]
         else:
@@ -704,28 +741,27 @@ def run_agent(thread_id: str, message: str, session_id: str | None = None, userI
                 "location": m.get("location"),
                 "job_url": m.get("job_url"),
                 "skills_required": skills_list,
-                "job_description_summary": doc.page_content[:300]
-                if doc.page_content
-                else None,
+                "job_description_summary": doc.page_content[:300] if doc.page_content else None,
                 "experience": m.get("experience"),
                 "salary": m.get("salary"),
                 "employment_type": m.get("employment_type"),
             }
         )
 
-    # --- Web sources: build structured objects from raw Tavily results ---
+    # --- Web sources ---
     web_sources: list[dict] = []
-    raw_web_docs = result.get("web_docs", [])   # List[dict] from Tavily
+    raw_web_docs = result.get("web_docs", [])
     if raw_web_docs:
-        # Limit to 1 result as requested
         first = raw_web_docs[0]
-        web_sources = [{
-            "title":   first.get("title") or first.get("url", "Web Result"),
-            "url":     first.get("url"),
-            "content": first.get("content", "")[:400],
-        }]
+        web_sources = [
+            {
+                "title": first.get("title") or first.get("url", "Web Result"),
+                "url": first.get("url"),
+                "content": first.get("content", "")[:400],
+            }
+        ]
 
-    # Persist messages to MongoDB if session_id provided
+    # Persist to MongoDB if session info provided
     if session_id and userId:
         add_message_to_session(session_id, "user", message, userId)
         add_message_to_session(session_id, "assistant", generation, userId)
