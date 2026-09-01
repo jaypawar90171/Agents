@@ -1,3 +1,17 @@
 .env
 venv
 __pycache__
+*.jsonl
+*.csv
+*.pdf
+*.pptx
+*.docx
+*.tldr
+
+node_modules
+dist
+.cursor
+.idea
+generate_diagrams.py
+diagrams
+*.xlsx

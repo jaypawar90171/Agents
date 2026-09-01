@@ -21,6 +21,7 @@ import pymongo
 from dotenv import load_dotenv
 import os
 import ollama
+from datetime import datetime
 load_dotenv()
 
 
@@ -39,6 +40,7 @@ class AgentState(TypedDict):
     extracted_data: dict    # Output: The final JSON result
     skills_required: list   
     company: str
+    location: str
     job_description_summary: str
 
 MONGO_URI = os.getenv("MONGO_URI")
@@ -67,7 +69,7 @@ def setup_driver():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     return driver
 
-def get_job_links(keyword, location=None, max_pages=1):
+def get_job_links(keyword, location=None, max_pages=10):
     """
     Standard Python function (not a node) to get a list of URLs.
     """
@@ -122,8 +124,18 @@ def get_job_links(keyword, location=None, max_pages=1):
                     company_elem = card.find_element(By.TAG_NAME, "span")
                     company_a = company_elem.find_element(By.TAG_NAME, "a")
                     company = company_a.text.strip()
+                     # --- NEW: extract location ---
+                    location = ""
+                    try:
+                        location_elem = card.find_element(By.XPATH,
+                        ".//*[contains(@class,'loc') or contains(@class,'Loc') or contains(@class,'location')]"
+                    )
+                        location = location_elem.text.strip()
+                    except:
+                        print("⚠️ Location not found for this job, leaving blank.")
+                        pass
                     if link:
-                        jobs_data.append({"title": title, "url": link, "company": company})
+                        jobs_data.append({"title": title, "url": link, "company": company, "location": location})
                 except:
                     continue
             
@@ -227,25 +239,43 @@ def store_to_database(state: AgentState):
     keys_to_exclude = {"extracted_data", "cleaned_content"}
     job_data = {k: v for k, v in state.items() if k not in keys_to_exclude} # Remove non-essential keys
 
-    skills_text = "Job Skills: " + ", ".join(job_data["skills_required"]) # Convert list to comma-separated string
+    skills_text = "Job Skills: " + ", ".join(job_data.get("skills_required", [])) # Convert list to comma-separated string
+
+    embedding_text = f"""
+        Job Title: {job_data.get('job_title','')}
+        Company: {job_data.get('company','')}
+        Location: {job_data.get('location','')}
+
+        Skills: {", ".join(job_data.get('skills_required', []))}
+
+    Summary:
+        {job_data.get('job_description_summary','')}
+        """
 
     print(f"Generating embedding for: {skills_text}")
+    print(f"Generating embedding for: {embedding_text}")
 
     try:    
-        response = ollama.embeddings(
+        skills_response = ollama.embeddings(
             model=MODEL_NAME,
             prompt=skills_text
         ) # Tokenization and embedding generation
+        jobs_response = ollama.embeddings(
+            model=MODEL_NAME,
+            prompt=embedding_text
+        ) # Tokenization and embedding generation
 
-        vector_embedding = response['embedding'] # Extract the embedding
+        skills_vector_embedding = skills_response['embedding'] # Extract the embedding
+        jobs_vector_embedding = jobs_response['embedding'] # Extract the embedding
 
         # CRITICAL: Print the dimension to confirm (usually 1024 for this model)
-        print(f"Vector Dimensions Generated: {len(vector_embedding)}")
+        print(f"Vector Dimensions Generated: {len(skills_vector_embedding)}")
 
         # 5. Add Embedding to Document
         document_to_save = job_data.copy()
-        document_to_save["skills_embedding"] = vector_embedding
-
+        document_to_save["skills_embedding"] = skills_vector_embedding
+        document_to_save["job_embedding"] = jobs_vector_embedding
+        document_to_save["ingested_at"] =str(datetime.now())
         # 6. Save to MongoDB
         result = collection.insert_one(document_to_save)
         print(f"Document saved with ID: {result.inserted_id}")
@@ -283,17 +313,18 @@ if __name__ == "__main__":
     LOCATION = "mumbai"
 
     # 1. Get List of Links (Standard Python)
-    job_list = get_job_links(KEYWORD, LOCATION, max_pages=1)
+    job_list = get_job_links(KEYWORD, LOCATION, max_pages=10)
 
     print(f"\n Found {len(job_list)} jobs. Starting AI Pipeline...\n")
 
     # 2. Loop through and invoke Agent for each
     for i, job in enumerate(job_list):
-        if i == 3:
-            break
+        # if i == 3:
+        #     break
         url = job['url']
         title = job['title']
         company = job['company']
+        location= job["location"]
         
         print(f"--- Processing Job {i+1}/{len(job_list)}: {title} ---")
         
@@ -302,10 +333,11 @@ if __name__ == "__main__":
             "job_url": url,
             "job_title": title,
             "company": company,
+            "location": location,   # NEW
             "cleaned_content": "",
             "extracted_data": {},
-            "skills_requied": [],
-            "job_desc": ""
+            "skills_required": [],
+            "job_description_summary": ""
         }
         
         # Invoke the Graph

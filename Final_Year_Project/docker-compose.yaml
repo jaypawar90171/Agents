@@ -1,0 +1,82 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "ollama list || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - job-network
+
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: ollama-init
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    entrypoint: >
+      sh -c " echo 'Pulling Ollama embedding model...' && ollama pull qwen3-embedding:0.6b && echo 'Model pulled successfully' "
+    restart: "no"
+    networks:
+      - job-network
+
+  backend:
+    image: akashgurav/job-backend:deployable
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    depends_on:
+      ollama-init:
+        condition: service_completed_successfully
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - MONGO_URI=${MONGO_URI:-mongodb://localhost:27017}
+      - DB_NAME=${DB_NAME:-job_records}
+      - COLLECTION_NAME=${COLLECTION_NAME:-jobs}
+      - MODEL_NAME=qwen3-embedding:0.6b
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - TAVILY_API_KEY=${TAVILY_API_KEY}
+      - FRONTEND_URL=http://frontend:5173
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - job-network
+
+  frontend:
+    image: akashgurav/job-frontend:deployable
+    container_name: react_app
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://backend:8000
+    restart: unless-stopped
+    networks:
+      - job-network
+
+volumes:
+  ollama_data:
+    driver: local
+
+networks:
+  job-network:
+    driver: bridge

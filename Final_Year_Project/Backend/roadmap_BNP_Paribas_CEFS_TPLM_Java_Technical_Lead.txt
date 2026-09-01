@@ -1,0 +1,332 @@
+Career Roadmap: BNP Paribas
+Generated: 2026-02-13 15:30:02
+================================================================================
+
+### ROADMAP SUMMARY
+- **Target Company**: BNP Paribas
+- **Role Title**: CEFS TPLM Java Technical Lead
+- **Duration**: 20 weeks (10 skills × 2 weeks per skill)
+- **Total Skills to Master**: 10
+- **Location**: Mumbai, India
+
+---
+
+### SKILLS ANALYSIS
+Core Technical Skills:
+- Java/J2EE
+- Frameworks (e.g. Spring, Hibernate)
+- Messaging (e.g. MQ)
+- Core Java
+- Hibernate/JPA/ORM Framework
+- Spring
+- Oracle PL/SQL programming
+- Web development using JSP/servlet and Angular technologies
+- Automated Test writing using Selenium
+- RDBMS / SQL with Oracle or SQL server or Postgres
+
+Soft Skills / Supporting Skills:
+- Communicate and interact with BA's in understanding different business requirements
+- Working with QA team during the test lifecycle to analyze and fix the bugs
+- Level 3 production support tasks
+- Estimate and track deadlines against sprint delivery
+
+---
+
+### WEEKLY BREAKDOWN
+
+**Week 1-2: Java/J2EE**
+- **What You'll Learn**: 
+  - Object-Oriented Programming principles
+  - Java syntax and basics
+  - J2EE architecture and components
+- **Study Plan**:
+  - Day 1-3: Java basics, OOP concepts
+  - Day 4-6: Java syntax, data types, operators
+  - Day 7-10: J2EE introduction, servlets, JSP
+  - Day 11-14: J2EE advanced topics, EJB, JMS
+- **Hands-on Practice**:
+  - Build a simple Java web application
+  - Create a Java console application
+  - Implement a J2EE-based project
+- **Free Resources**:
+  1. Oracle Java Tutorials: https://docs.oracle.com/javase/tutorial/
+  2. Java Programming Course by freeCodeCamp (YouTube)
+  3. Exercism Java Track: https://exercism.org/tracks/java
+  4. Practice on HackerRank Java domain
+- **Success Criteria**: 
+  - Can write clean, maintainable Java code
+  - Understand J2EE architecture and components
+
+**Week 3-4: Frameworks (e.g. Spring, Hibernate)**
+- **What You'll Learn**: 
+  - Spring framework basics
+  - Hibernate framework basics
+  - Dependency injection and AOP
+- **Study Plan**:
+  - Day 1-3: Spring introduction, dependency injection
+  - Day 4-6: Hibernate introduction, ORM basics
+  - Day 7-10: Spring and Hibernate integration
+  - Day 11-14: Advanced topics, AOP, transaction management
+- **Hands-on Practice**:
+  - Build a Spring-based web application
+  - Create a Hibernate-based database application
+  - Implement a Spring and Hibernate integration project
+- **Free Resources**:
+  1. Spring Framework Documentation: https://docs.spring.io/spring/docs/current/spring-framework-reference/
+  2. Hibernate Documentation: https://hibernate.org/orm/documentation/
+  3. Spring and Hibernate Tutorial by freeCodeCamp (YouTube)
+  4. Practice on Spring and Hibernate projects on GitHub
+- **Success Criteria**: 
+  - Can build a Spring-based application
+  - Understand Hibernate ORM basics
+
+**Week 5-6: Messaging (e.g. MQ)**
+- **What You'll Learn**: 
+  - Messaging basics
+  - MQ introduction
+  - Message queues and topics
+- **Study Plan**:
+  - Day 1-3: Messaging basics, MQ introduction
+  - Day 4-6: Message queues and topics
+  - Day 7-10: Advanced topics, message brokers
+  - Day 11-14: Hands-on practice with MQ
+- **Hands-on Practice**:
+  - Build a messaging application using MQ
+  - Create a message queue and topic
+  - Implement a message broker
+- **Free Resources**:
+  1. IBM MQ Documentation: https://www.ibm.com/docs/en/ibm-mq
+  2. RabbitMQ Tutorial: https://www.rabbitmq.com/tutorials/
+  3. Apache Kafka Tutorial: https://kafka.apache.org/documentation.html
+  4. Practice on MQ projects on GitHub
+- **Success Criteria**: 
+  - Can build a messaging application using MQ
+  - Understand message queues and topics
+
+**Week 7-8: Core Java**
+- **What You'll Learn**: 
+  - Java syntax and basics
+  - Object-Oriented Programming principles
+  - Java collections and generics
+- **Study Plan**:
+  - Day 1-3: Java basics, OOP concepts
+  - Day 4-6: Java syntax, data types, operators
+  - Day 7-10: Java collections and generics
+  - Day 11-14: Advanced topics, Java 8 features
+- **Hands-on Practice**:
+  - Build a Java console application
+  - Create a Java web application
+  - Implement a Java-based project
+- **Free Resources**:
+  1. Oracle Java Tutorials: https://docs.oracle.com/javase/tutorial/
+  2. Java Programming Course by freeCodeCamp (YouTube)
+  3. Exercism Java Track: https://exercism.org/tracks/java
+  4. Practice on HackerRank Java domain
+- **Success Criteria**: 
+  - Can write clean, maintainable Java code
+  - Understand Java collections and generics
+
+**Week 9-10: Hibernate/JPA/ORM Framework**
+- **What You'll Learn**: 
+  - Hibernate introduction
+  - JPA basics
+  - ORM basics
+- **Study Plan**:
+  - Day 1-3: Hibernate introduction, JPA basics
+  - Day 4-6: ORM basics, entity mapping
+  - Day 7-10: Advanced topics, caching, transactions
+  - Day 11-14: Hands-on practice with Hibernate
+- **Hands-on Practice**:
+  - Build a Hibernate-based database application
+  - Create a JPA-based project
+  - Implement an ORM-based project
+- **Free Resources**:
+  1. Hibernate Documentation: https://hibernate.org/orm/documentation/
+  2. JPA Tutorial: https://www.baeldung.com/jpa-tutorial
+  3. ORM Tutorial: https://www.tutorialspoint.com/orm/index.htm
+  4. Practice on Hibernate projects on GitHub
+- **Success Criteria**: 
+  - Can build a Hibernate-based application
+  - Understand JPA and ORM basics
+
+**Week 11-12: Spring**
+- **What You'll Learn**: 
+  - Spring introduction
+  - Dependency injection and AOP
+  - Spring MVC and REST
+- **Study Plan**:
+  - Day 1-3: Spring introduction, dependency injection
+  - Day 4-6: AOP and Spring MVC
+  - Day 7-10: Spring REST and advanced topics
+  - Day 11-14: Hands-on practice with Spring
+- **Hands-on Practice**:
+  - Build a Spring-based web application
+  - Create a Spring RESTful API
+  - Implement a Spring-based project
+- **Free Resources**:
+  1. Spring Framework Documentation: https://docs.spring.io/spring/docs/current/spring-framework-reference/
+  2. Spring Tutorial: https://www.tutorialspoint.com/spring/index.htm
+  3. Spring and Hibernate Tutorial by freeCodeCamp (YouTube)
+  4. Practice on Spring projects on GitHub
+- **Success Criteria**: 
+  - Can build a Spring-based application
+  - Understand Spring MVC and REST
+
+**Week 13-14: Oracle PL/SQL programming**
+- **What You'll Learn**: 
+  - PL/SQL introduction
+  - Oracle database basics
+  - Stored procedures and functions
+- **Study Plan**:
+  - Day 1-3: PL/SQL introduction, Oracle database basics
+  - Day 4-6: Stored procedures and functions
+  - Day 7-10: Advanced topics, triggers, packages
+  - Day 11-14: Hands-on practice with PL/SQL
+- **Hands-on Practice**:
+  - Build a PL/SQL-based database application
+  - Create a stored procedure and function
+  - Implement a PL/SQL-based project
+- **Free Resources**:
+  1. Oracle PL/SQL Documentation: https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/index.html
+  2. PL/SQL Tutorial: https://www.tutorialspoint.com/plsql/index.htm
+  3. Oracle Database Tutorial: https://www.oracle.com/database/technologies/appdev/tutorials.html
+  4. Practice on PL/SQL projects on GitHub
+- **Success Criteria**: 
+  - Can build a PL/SQL-based application
+  - Understand stored procedures and functions
+
+**Week 15-16: Web development using JSP/servlet and Angular technologies**
+- **What You'll Learn**: 
+  - JSP and servlet introduction
+  - Angular introduction
+  - Web development basics
+- **Study Plan**:
+  - Day 1-3: JSP and servlet introduction
+  - Day 4-6: Angular introduction, web development basics
+  - Day 7-10: Advanced topics, Angular services, routing
+  - Day 11-14: Hands-on practice with JSP, servlet, and Angular
+- **Hands-on Practice**:
+  - Build a JSP and servlet-based web application
+  - Create an Angular-based web application
+  - Implement a web development project
+- **Free Resources**:
+  1. Oracle JSP and Servlet Documentation: https://docs.oracle.com/javaee/7/tutorial/jsp.htm
+  2. Angular Documentation: https://angular.io/docs
+  3. Web Development Tutorial: https://www.w3schools.com/html/default.asp
+  4. Practice on JSP, servlet, and Angular projects on GitHub
+- **Success Criteria**: 
+  - Can build a JSP and servlet-based web application
+  - Understand Angular basics
+
+**Week 17-18: Automated Test writing using Selenium**
+- **What You'll Learn**: 
+  - Selenium introduction
+  - Automated testing basics
+  - TestNG and JUnit
+- **Study Plan**:
+  - Day 1-3: Selenium introduction, automated testing basics
+  - Day 4-6: TestNG and JUnit introduction
+  - Day 7-10: Advanced topics, Selenium WebDriver, grid
+  - Day 11-14: Hands-on practice with Selenium
+- **Hands-on Practice**:
+  - Build a Selenium-based test automation project
+  - Create a TestNG and JUnit-based test suite
+  - Implement a test automation project
+- **Free Resources**:
+  1. Selenium Documentation: https://www.selenium.dev/documentation/en/
+  2. TestNG Documentation: https://testng.org/doc/documentation-main.html
+  3. JUnit Documentation: https://junit.org/junit5/docs/current/user-guide/
+  4. Practice on Selenium projects on GitHub
+- **Success Criteria**: 
+  - Can build a Selenium-based test automation project
+  - Understand TestNG and JUnit basics
+
+**Week 19-20: RDBMS / SQL with Oracle or SQL server or Postgres**
+- **What You'll Learn**: 
+  - RDBMS introduction
+  - SQL basics
+  - Oracle, SQL server, or Postgres introduction
+- **Study Plan**:
+  - Day 1-3: RDBMS introduction, SQL basics
+  - Day 4-6: Oracle, SQL server, or Postgres introduction
+  - Day 7-10: Advanced topics, indexing, normalization
+  - Day 11-14: Hands-on practice with RDBMS and SQL
+- **Hands-on Practice**:
+  - Build a RDBMS-based database application
+  - Create a SQL-based query
+  - Implement a database project
+- **Free Resources**:
+  1. Oracle RDBMS Documentation: https://docs.oracle.com/en/database/oracle/oracle-database/21/index.html
+  2. SQL Server Documentation: https://docs.microsoft.com/en-us/sql/sql-server/?view=sql-server-ver15
+  3. Postgres Documentation: https://www.postgresql.org/docs/
+  4. Practice on RDBMS and SQL projects on GitHub
+- **Success Criteria**: 
+  - Can build a RDBMS-based database application
+  - Understand SQL basics
+
+### INTEGRATION WEEKS (Final 2-3 weeks)
+
+**Week 19: Project Integration**
+- Build a complete project combining ALL skills learned
+- Suggest specific project based on role requirements
+
+**Week 20: Interview Preparation**
+- Technical interview prep for this specific role
+- Behavioral questions related to the position
+- Resume tailoring
+- Application submission
+
+### OVERALL PROGRESS TRACKER
+- 0% complete • Week 0 of 20
+
+### RECOMMENDED RESOURCES
+
+**Company-Specific**:
+- BNP Paribas Career Portal: https://careers.bnpparibas.com/
+- BNP Paribas Tech Blog: https://www.bnpparibas.com/en/news/tech.html
+
+**Skill-Specific** (organized by skill):
+For Java/J2EE:
+- Oracle Java Tutorials: https://docs.oracle.com/javase/tutorial/
+- Java Programming Course by freeCodeCamp (YouTube)
+
+For Frameworks (e.g. Spring, Hibernate):
+- Spring Framework Documentation: https://docs.spring.io/spring/docs/current/spring-framework-reference/
+- Hibernate Documentation: https://hibernate.org/orm/documentation/
+
+For Messaging (e.g. MQ):
+- IBM MQ Documentation: https://www.ibm.com/docs/en/ibm-mq
+- RabbitMQ Tutorial: https://www.rabbitmq.com/tutorials/
+
+For Core Java:
+- Oracle Java Tutorials: https://docs.oracle.com/javase/tutorial/
+- Java Programming Course by freeCodeCamp (YouTube)
+
+For Hibernate/JPA/ORM Framework:
+- Hibernate Documentation: https://hibernate.org/orm/documentation/
+- JPA Tutorial: https://www.baeldung.com/jpa-tutorial
+
+For Spring:
+- Spring Framework Documentation: https://docs.spring.io/spring/docs/current/spring-framework-reference/
+- Spring Tutorial: https://www.tutorialspoint.com/spring/index.htm
+
+For Oracle PL/SQL programming:
+- Oracle PL/SQL Documentation: https://docs.oracle.com/en/database/oracle/oracle-database/21/lnpls/index.html
+- PL/SQL Tutorial: https://www.tutorialspoint.com/plsql/index.htm
+
+For Web development using JSP/servlet and Angular technologies:
+- Oracle JSP and Servlet Documentation: https://docs.oracle.com/javaee/7/tutorial/jsp.htm
+- Angular Documentation: https://angular.io/docs
+
+For Automated Test writing using Selenium:
+- Selenium Documentation: https://www.selenium.dev/documentation/en/
+- TestNG Documentation: https://testng.org/doc/documentation-main.html
+
+For RDBMS / SQL with Oracle or SQL server or Postgres:
+- Oracle RDBMS Documentation: https://docs.oracle.com/en/database/oracle/oracle-database/21/index.html
+- SQL Server Documentation: https://docs.microsoft.com/en-us/sql/sql-server/?view=sql-server-ver15
+- Postgres Documentation: https://www.postgresql.org/docs/
+
+**General Preparation**:
+- Interview prep resources: https://www.glassdoor.com/Interview/index.htm
+- Portfolio building guides: https://www.freecodecamp.org/news/how-to-build-a-portfolio-website-as-a-developer-2c9a1cb37b46/

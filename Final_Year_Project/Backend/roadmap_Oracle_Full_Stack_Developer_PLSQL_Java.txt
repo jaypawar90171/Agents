@@ -1,0 +1,91 @@
+Career Roadmap: Oracle
+Generated: 2026-02-13 12:17:08
+================================================================================
+
+### ROADMAP SUMMARY
+- **Target Company**: Google
+- **Role Title**: Software Engineer (Backend)
+- **Duration**: 16 weeks
+- **Total Topics Count**: 10
+- **Location**: Mountain View, CA
+
+---
+
+### SKILL ASSESSMENT
+
+#### Available Positions at Google:
+1. Backend Developer
+2. Full Stack Developer
+3. Cloud Solutions Architect
+
+#### Common Skills Across Roles:
+- Proficiency in programming languages (Python, Java)
+- Understanding of data structures and algorithms
+- Experience with version control systems (Git)
+- Basic knowledge of databases (SQL/NoSQL)
+
+#### Unique Skills Per Role:
+1. **Backend Developer**: Strong understanding of RESTful APIs, service-oriented architecture.
+2. **Full Stack Developer**: Comfortable working on both front-end and back-end technologies.
+3. **Cloud Solutions Architect**: Expertise in cloud platforms like AWS or GCP.
+
+#### Options:
+**Focused Path:** Target the Backend Developer role at Google.
+**Comprehensive Path:** Prepare for any of the roles listed above, covering all necessary skills.
+
+### WEEKLY BREAKDOWN
+
+#### Weeks 1-2: Foundation Setup & Basics
+- **Focus**: Set up your development environment and learn basic programming concepts.
+- **Topics**: Python syntax, data types, control structures (if/else), loops, functions, debugging tools.
+- **Deliverables**: Write a simple script that performs basic operations like sorting an array or reading/writing to a file.
+- **Time Commitment**: 10 hrs/week
+
+#### Weeks 3-5: Core Technical Skills
+- **Focus**: Dive into more complex programming constructs and learn about data structures and algorithms.
+- **Topics**: Lists, Dictionaries, Sets, Strings; Recursion; Sorting Algorithms (Bubble Sort, Quick Sort); Searching Algorithms (Linear Search, Binary Search).
+- **Deliverables**: Implement a sorting algorithm from scratch and test it with different datasets. Write a program using recursion to solve a problem like calculating the factorial of a number.
+- **Time Commitment**: 15 hrs/week
+
+#### Weeks 6-8: Advanced Concepts & Data Structures
+- **Focus**: Explore advanced data structures and algorithms, including graphs and trees.
+- **Topics**: Graphs (BFS, DFS); Trees (Binary Tree, AVL Tree); Heaps; Hash Tables; Big O Notation.
+- **Deliverables**: Implement a simple graph with BFS/DFS traversal and optimize a sorting algorithm to improve its time complexity.
+- **Time Commitment**: 15 hrs/week
+
+#### Weeks 9-11: System Design & Architecture
+- **Focus**: Understand the principles of designing scalable systems, focusing on backend services.
+- **Topics**: RESTful API design; Service-Oriented Architecture (SOA); Microservices vs. Monolithic architectures; Data persistence and caching strategies; Load balancing; Security considerations in cloud environments.
+- **Deliverables**: Design a simple RESTful API for an application like a task manager or a user profile system. Document the design using diagrams and explain how it scales with load.
+- **Time Commitment**: 10 hrs/week
+
+#### Weeks 12-14: Mock Interviews & Practice
+- **Focus**: Prepare for technical interviews by solving problems under timed conditions and learning to articulate your thought process.
+- **Topics**: System Design Questions; Data Structure and Algorithm Problems (Medium level); Behavioral Questions.
+- **Deliverables**: Participate in at least two mock interview sessions with peers or mentors. Record yourself explaining solutions to algorithm problems and reviewing them for clarity.
+- **Time Commitment**: 15 hrs/week
+
+#### Weeks 15-16: Final Preparation & Application
+- **Focus**: Polish your resume, prepare a GitHub portfolio of projects, and practice common Google interview questions.
+- **Topics**: Resume writing; Portfolio creation on GitHub; Reviewing Common Google Interview Questions (e.g., Linked Lists, Trees, Graphs).
+- **Deliverables**: Submit applications to open roles at Google. Ensure all technical documents are up-to-date and that your portfolio showcases a range of projects demonstrating your skills.
+- **Time Commitment**: 10 hrs/week
+
+### OVERALL PROGRESS TRACKER:
+- **70% complete • Week 11 of 16**
+
+---
+
+### RECOMMENDED RESOURCES
+1. **LeetCode** - [Problem Sets](https://leetcode.com/problemset/all/)
+2. **YouTube Channels**:
+   - Corey Schafer for Python Basics: [Corey Schafer's YouTube](https://www.youtube.com/user/coreyms)
+   - CS Dojo for Data Structures and Algorithms: [CS Dojo YouTube](https://www.youtube.com/c/csdo)
+3. **Documentation**:
+   - Python Official Documentation: [Python Docs](https://docs.python.org/3/)
+   - Git SCM: [Git SCM Website](https://git-scm.com/docs)
+4. **Online Courses** (Free):
+   - Introduction to Computer Science and Programming Using Python by MIT on edX.
+   - Data Structures and Algorithms Specialization by University of California, San Diego on Coursera.
+
+This roadmap is designed to be both thorough and practical, ensuring that you gain the necessary skills and experience to excel in a Software Engineer role at Google. Remember, consistency is key, so make sure to dedicate time each week to progress through this plan. Good luck!
